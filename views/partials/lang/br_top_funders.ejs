@@ -1,0 +1,217 @@
+<div class="widget-container boxed" style="overflow-y: auto;">
+	<div class="inner">
+
+		<div class="facebook_nav_light p-tip">
+			<span class="facebook_date">
+			</span>
+			<div class="tiptext">
+				Clique para editar o intervalo de tempo
+			</div>
+		</div>
+		<h3 class="widget-title">
+			Anúncios políticos nas plataformas da Meta
+			<div class="tip">
+				<img src="/images/info.png">
+				<div class="tiptext">
+					Este módulo mostra os anunciantes mais ativos (indivíduos ou organizações) atualmente veiculando anúncios sobre questões sociais, eleições ou política nos produtos do Facebook para o país selecionado.
+				</div>
+			</div>
+		</h3>
+		<div class="navigation-instructions" id="left-navigation-instructions">
+			<button class="exit-button" onclick="d3.select('#left-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
+			<strong>Instruções de navegação</strong>
+			<ul>
+				<li>Melhor visualizado em um navegador de desktop como Chrome ou Firefox.</li>
+				<li>Clique em <img src="/images/sort_icon.png" /> para classificar os anunciantes por um determinado intervalo de gastos com anúncios.</li>
+				<li>
+					Clique em uma entidade financiadora na lista para ver:
+					<ul>
+						<li>Quais páginas do Facebook eles financiam</li>
+						<li>Os anúncios que eles estão executando</li>
+						<li>Onde seus anúncios estão sendo exibidos e para quem</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div class="row p-0">
+			<div class="col-sm-6">
+			  <div class="row">
+				<div class="infographic_box">
+				  <h3>
+					<i class="fas fa-users red"></i>
+					<span class="total_advertisers_replace"></span>
+				  </h3>
+				  <p>Total de anunciantes</p>
+				</div>
+			  </div>
+			</div>
+			<div class="col-sm-6">
+				<div class="row">
+				  <div class="infographic_box">
+					<h3>
+						<i class="fas fa-layer-group red"></i>
+					  	<span class="total_advertisements_replace"></span>
+					</h3>
+					<p>Anúncios totais</p>
+				  </div>
+				</div>
+			  </div>
+		</div>
+		<form id="heatmap_filter_form" onsubmit="return false">
+			<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
+		</form>
+		<div class="second-thead">
+			Intervalo de gastos com anúncios (<%= currency %>)
+		</div>
+		<table id="top_funders" class="heatmap">
+			<colgroup>
+				<col  />
+				<col style="width:28px" />
+				<col class="box_width" />
+				<col class="box_width" />
+				<col class="box_width" />
+				<col class="box_width" />
+				<col class="box_width" />
+			</colgroup>
+			<thead>
+				<tr id="top_funders_legend">
+					<th class="key" colspan="2">Entidades financiadoras</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+		<div class="loader red" id="top_funders_loader">
+			<div class="lds-grid">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+
+	const fbStartDay = <%- JSON.stringify(fbStartDay) %>
+	const fbEndDay = <%- JSON.stringify(fbEndDay) %>
+	const currency = <%- JSON.stringify(currency) %>
+	const currencySymbol = <%- JSON.stringify(currencySymbol) %>
+
+	funders(30)
+	function funders(n) {
+		// Displays the number of funders (n) in the heatmap
+
+		// Get data from the API
+		$.post('/facebook_ads_v2/heatmap', 
+			{
+				startDay: fbStartDay,
+				endDay: fbEndDay,
+				country: country
+			},
+			data => {
+				console.log(data)
+				var cleaned = []	
+				var spendRanges = ['0 - 99', '100 - 499', '500 - 999', '1000 - 4999', '5000+', 'Total']
+				var grandTotal = 0
+
+				// Organize the list of spend ranges into the 2D matrix for the heatmap
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].funding_entity == null) {
+						data[i].funding_entity = 'Nenhuma entidade financiadora fornecida'
+					}
+					var row = [data[i].funding_entity, 0, 0, 0, 0, 0, 0]
+					for (var j = 0; j < data[i].spends.length; j++) {
+						var range = data[i].spends[j].spend
+						var idx = spendRanges.indexOf(rangeToLabel(range))+1
+						var n = data[i].spends[j].count
+						row[idx] += n
+						row[6] += n
+						grandTotal += n
+					}
+					cleaned.push(row)
+				}
+
+				// Update the number of total advertisers
+				d3.select('.total_advertisers_replace')
+					.text(d3.format(',')(cleaned.length))
+				// Update the number of total advertisements
+				d3.select('.total_advertisements_replace')
+					.text(d3.format(',')(grandTotal))
+				
+				var heatmap = new Heatmap(cleaned, colorSchemes.red, 'top_funders', spendRanges)
+
+				$('#top_funders_loader').remove()
+			}
+		)
+	}
+
+	function isInRange(reportedRange, chartRange) {
+		// Check whether a range given by Facebook falls within a range from our chart
+		var lowerBoundGreater = reportedRange.lower_bound >= chartRange.lower_bound
+		var upperBoundLess = (reportedRange.upper_bound <= chartRange.upper_bound) || (lowerBoundGreater && (chartRange.upper_bound == "any"))
+		return lowerBoundGreater && upperBoundLess
+	}
+
+	function rangeToLabel(range) {
+		// Get string for a range
+		if (range.upper_bound < 100) {
+			return '0 - 99'
+		} else if (range.upper_bound < 500) {
+			return '100 - 499'
+		} else if (range.upper_bound < 1000) {
+			return '500 - 999'
+		} else if (range.upper_bound < 5000) {
+			return '1000 - 4999'
+		} else {
+			return '5000+'
+		}
+	}
+
+	makeDateRangePickers()
+	function makeDateRangePickers() {
+		// Create all of the date range pickers across the site
+
+		var today = moment()
+		var startDate = moment().subtract(fbStartDay, 'days')
+		var endDate = moment().subtract(fbEndDay, 'days')
+		var minDate = moment(<%- JSON.stringify(firstDay) %>, 'DD-MM-YYYY')
+
+		$(function() {
+			$('.facebook_date').daterangepicker({
+				opens: 'right',
+				startDate: startDate,
+				endDate: endDate,
+				minDate: minDate,
+				maxDate: today
+			}, function(start, end, label) {
+				// Parse input and redirect to the new page
+				end = end.startOf('day')
+				start = start.startOf('day')
+				today = moment().startOf('day')
+
+				var newEndDate = today.diff(end, 'days')
+				var newStartDate = today.diff(start, 'days')
+
+				if ((newStartDate - newEndDate) >= 8 && country=='us') {
+					alert('Due the large volume of data from the US, we are unable to show time ranges greater than one week. Please select a shorter range to continue.')
+				} else 
+					window.location.href = `/facebook_ads_v2?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
+
+			});
+		});
+	}
+
+
+function print(something) {
+	console.log(something);
+}
+</script>

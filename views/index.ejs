@@ -1,0 +1,162 @@
+<!doctype html>
+<!--[if lt IE 8 ]><html lang="en" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9 ]><html lang="en" class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Ryerson University Social Media Lab">
+	<meta name="keywords" content="twitter, dashboard, #cdnpoli">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="cache-control" content="public">
+	<meta http-equiv="cache-control" content="max-age=86400">
+
+	<title>PoliDashboard</title>
+	<link rel="icon" type="image/png" href="/images/PD.png">
+	
+	<!-- main JS libs -->
+	<script src="/js/modernizr.min.js"></script>
+	<script src="/js/jquery-1.10.2.min.js"></script>
+	<script src="/js/jquery-ui.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/jquery.customInput.js"></script>
+	<script src="/js/countrySelect.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/daterangepicker.min.js"></script>
+
+	<!-- icons -->
+	<script src="https://kit.fontawesome.com/44a34ac94f.js"></script>
+
+    <!-- Font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+	<!-- Style -->
+	<link rel="stylesheet" href="/css/countrySelect.min.css">
+    <link href="/css/bootstrap.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/css/style.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/css/custom_styles.css" media="screen" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/daterangepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c3.min.css" />
+
+	<!-- General Scripts -->
+    <script src="/js/general.js"></script>
+
+	<!-- Responsive Menu -->
+	<script src="/js/jquery.slicknav.min.js"></script>
+    <script src="/js/d3.v5.min.js"></script>
+    <script src="/js/c3.min.js"></script>
+
+	<script>
+	  
+    $(document).ready(function(){
+      $('.menu').slicknav();
+    });
+
+    $("#filter_date_in, #filter_date_out").datepicker({
+        dateFormat: 'MM dd, yy',
+        minDate: 0,
+        showOtherMonths: true
+	});
+	
+	const numberOfDays = <%- days %>
+	const urlParams = new URLSearchParams(window.location.search)
+	const endDay = (urlParams.has('endDay')) ? urlParams.get('endDay') : 1
+	
+	var textStyle = {
+		bold: false,
+		fontSize: 10
+	};
+	let colorSchemes = {
+		'blue' :		'#2276b4',
+		'green' :		'#009966',
+		'red' :			'#cd5c5c',
+		'dark_blue' :	'#08485f',
+		'blue_green' :	'#007277',
+		'gray' :		'#aab6c7',
+		'purple' :		'#75538a',
+		'black' :		'#000000',
+		'pink' :		'#e69696',
+		'dark_green' :	'#05553b',
+		'light_blue' :	'#a2c8e2',
+	}
+	colorSchemes.range = [
+		colorSchemes.green, 
+		colorSchemes.blue_green, 
+		colorSchemes.dark_blue, 
+		colorSchemes.purple, 
+		colorSchemes.red
+	]
+	colorSchemes.discrete = [
+		colorSchemes.green, 
+		colorSchemes.blue, 
+		colorSchemes.gray, 
+		colorSchemes.red, 
+		colorSchemes.dark_blue, 
+		colorSchemes.blue_green, 
+		colorSchemes.purple
+	]
+
+	var barOptions = {
+		'height':400,
+		'vAxis':{
+			textStyle: textStyle,
+			title: '',
+		},
+		bars: 'horizontal',
+		'legend':{'position':'none'},
+		'colors': colorSchemes.blue,
+		chartArea: {width: '100%', height: '100%', left: '100%'},
+		hAxis: {textPosition: 'in', bold: false},
+		isStacked: true
+	};
+  </script>
+
+
+
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--[if lt IE 9]><script src="js/respond.min.js"></script><![endif]-->
+</head>
+
+<body>
+	<div class="body-wrap">
+		<!--container-->
+		<div class="container">
+			<div class="content">
+				<header>
+					<a href="https://polidashboard.com/">
+						<img alt="polidashboard" src="/images/main-logo.png" id="main-logo">
+					</a>
+				</header>
+				
+				<!--menu-->
+				<div class="row">
+						<div class="col-sm-12">
+							<div class="menu boxed">
+								<ul class="pull-left">
+									<li>
+										<a href="https://ads.polidashboard.com/facebook_ads_v2"><span>An Election Transparency Initiative</span></a>
+									</li>
+								</ul>
+								<ul class="pull-right">
+									<li>
+										<a href="https://polidashboard.com/about/"><span>About</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+				</div>
+				
+				<%- include(child) %>
+
+				<footer>
+					<p><a href="/status">Status</a></p>
+				</footer>
+			</div>
+		</div>
+	</div>
+	<!--/ container -->
+</body>
+</html>

@@ -1,0 +1,75 @@
+<div class="row">
+	<div class="col-sm-6">
+		<div class="widget-container boxed">
+            <div class="inner">
+                <h3 class="widget-title">
+                    Collectors
+                </h3>
+                <table id="collector-table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Total Ads to Date</th>
+                            <th>Most Recent Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+	</div>
+	<div class="col-sm-6">
+		<div class="widget-container boxed">
+            <div class="inner">                
+                <h3 class="widget-title">
+                    About the Module
+                </h3>
+                    <p>
+                        <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is a data visualization tool designed to help voters, journalists, and campaign staffers to monitor the health of political discussions online and learn about the political and social issue ads that are being shown to users on Facebook and its various other products including Instagram. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+                    </p>
+                    <p>
+                        <img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 4em; width: auto; float: left; padding-right: 10px;">
+                        The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at Toronto Metropolitan University as part of an international election transparency initiative. Country-specific modules are presented in partnership with various academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available.
+                    </p>
+                <div id='log'>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+countries = <%- JSON.stringify(countries) %>
+
+countries.forEach(c => {
+    var row = d3.select('#collector-table tbody')
+        .append('tr')
+    $.post('/status/country', {country: c.code}, data => {
+        console.log(data)
+        row.append('td')
+            .text(c.name)
+        row.append('td')
+            .text(data.total_ads)
+        row.append('td')
+            .text(data.timestamp)
+
+        var now = moment()
+        var last = moment(data.timestamp)
+        if (now.diff(last, 'hours') > 24) {
+            var status = 'Down'
+        } else {
+            var status = 'Up'
+        }
+
+        row.append('td')
+            .text(status)
+            .attr('class', status)
+
+    })
+
+    
+})
+</script>

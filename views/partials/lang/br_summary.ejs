@@ -1,0 +1,1058 @@
+<!-- <script src= "http://d3js.org/topojson.v1.min.js"></script> -->
+
+<div class="widget-container boxed">
+	<div class="inner" id="summary">
+		<div class="facebook_nav_light p-tip">
+			<span class="facebook_date">
+			</span>
+			<div class="tiptext">
+				Clique para editar o intervalo de tempo
+			</div>
+		</div>
+		<div id="summary-home">
+			<h3 class="widget-title" id="top_10_title">
+				Sobre o Módulo
+			</h3>
+			<p>
+				O <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> é uma ferramenta de visualização de dados projetada para ajudar eleitores, jornalistas e funcionários de campanha a monitorar a qualidade das discussões políticas on-line e aprender sobre os anúncios de temáticas políticas e sociais que estão sendo exibidos aos usuários no Facebook e seus vários outros produtos, incluindo o Instagram. Os dados são atualizados automaticamente a cada quatro horas por meio da <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+			</p>
+			<p>
+				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 4em; width: auto; float: left; padding-right: 10px;">
+                O painel é desenvolvido pelo <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> na Ted Rogers School of Management em Toronto como parte de uma iniciativa internacional de transparência eleitoral. Os módulos específicos de cada país são apresentados em parceria com vários parceiros acadêmicos e cívicos em países onde a <a href="https://www.facebook.com/ads/library" target= "_blank">Biblioteca de anúncios do Facebook</a> está disponível.				
+			</p>
+		</div>
+		<div id="summary-focus">
+			
+			<h3 class="widget-title">
+				Páginas do Facebook financiadas por
+				<div class="tip">
+					<img src="/images/info.png">
+					<div class="tiptext">
+						Este módulo mostra as Páginas do Facebook controladas por uma entidade financiadora. As entidades financiadoras no Facebook podem configurar e controlar várias páginas do Facebook. Ter uma página no Facebook é um pré-requisito para executar anúncios de Públicos Personalizados e Públicos Semelhantes no Facebook.					</div>
+				</div>
+			</h3>
+			
+			<div class="navigation-instructions" id="right-navigation-instructions">
+				<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
+				<strong>Instruções de navegação</strong>
+				<ul>
+					<li>Clique em <i class="fas fa-chart-bar"></i> para ver um gráfico do número total de anúncios ativos por dia postados por uma página controlada por um financiador.</li>
+					<li>Passe o mouse sobre qualquer ponto no gráfico de linhas para ver o número total de anúncios ativos por um financiador (ou uma página que ele controla) em uma data específica no período selecionado.</li>
+				</ul>
+			</div>
+			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+			<div class="loader red" id="funder_pages_loader">
+				<div class="lds-grid">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			
+			<div id="funder_pages"></div>
+
+			
+			<h3 class="widget-title" id="page-scroll">
+				Número total de anúncios ativos por dia
+				<div class="tip">
+					<img src="/images/info.png">
+					<div class="tiptext">
+						Este gráfico mostra o número total de anúncios ativos para cada dia do período selecionado.
+					</div>
+				</div>
+			</h3>
+			
+			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+			<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+			<div class="loader red" id="timeline_loader">
+				<div class="lds-grid">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			<div id="timeline">
+			</div>
+
+			<h3 class="widget-title">
+				Quem viu esses anúncios
+				<div class="tip">
+					<img src="/images/info.png">
+					<div class="tiptext">
+						Este módulo mostra as divisões por idade e sexo das pessoas que viram anúncios desta entidade financiadora - cada ponto representa um anúncio.
+						<br><br>
+						Passe o mouse sobre um ponto para ver a distribuição desse anúncio em todos os dados demográficos e clique para ver o resumo desse anúncio (o anúncio será aberto em uma nova guia).
+					</div>
+				</div>
+			</h3>
+
+			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+			<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+			
+			<div class="navigation-instructions" id="right-navigation-instructions">
+				<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
+				<strong>Instruções de navegação</strong>
+                <ul>
+                    <li>Passe o mouse e mantenha o mouse sobre um ponto para ver a distribuição desse anúncio em todos os grupos demográficos no Facebook.</li>
+                    <li>Se todos os outros pontos (exceto o ponto sobre o qual você passou o mouse) estiverem na marca de 0% ou perto dela no eixo x, isso indica que o anúncio foi segmentado apenas (ou principalmente) para esse grupo demográfico específico e nenhum outro.</li>
+                    <li>Clique em um ponto para ver o anúncio e estatísticas adicionais sobre o anúncio (o anúncio será aberto em uma nova guia).</li>
+                    <li>Novo em diagrama de caixa? Aqui está um <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">tutorial</a> sobre como interpretar um diagrama de caixa.</li>
+                    <li>Observação: se mais de 1.000 anúncios estiverem visíveis, eles serão ocultados e substituídos por um gráfico de violino para economizar recursos. Selecione um período de tempo mais curto ou use os filtros de página para ver anúncios individuais.</li>
+                </ul>
+			</div>
+
+			<div id="demographics_legend">
+				<span id="demographics_men">Homens</span>
+				<span id="demographics_women">Mulheres</span>
+				<span id="demographics_other">?</span>
+			</div>
+			<div class="loader red" id="demographics_loader">
+				<div class="lds-grid">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			<div id="demographics">
+
+			</div>
+
+			<% if (country != 'us') { %>	
+				<h3 class="widget-title">
+					Onde esses anúncios foram exibidos
+					<div class="tip">
+						<img src="/images/info.png">
+						<div class="tiptext">
+                            Este módulo mostra as regiões onde estão localizadas as pessoas que viram os anúncios deste financiador - cada ponto representa um anúncio.
+                            <br><br>
+                            Passe o mouse sobre um ponto para ver a distribuição desse anúncio em todas as regiões e clique para ver o resumo desse anúncio (o anúncio será aberto em uma nova guia).
+                            <br><br>
+                            Os anúncios para os quais não há dados regionais disponíveis são omitidos
+						</div>
+					</div>
+				</h3>
+				<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+				<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+				<div class="loader red" id="regions_loader">
+					<div class="lds-grid">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
+				<div id="regions">
+				</div>
+			<% } %>			
+
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	const ALL = '.*?'
+	const desktopMapWidth = 1
+	let initial = true
+	
+	showAbout()
+	function showAbout() {
+		// Switch to 'about' view
+		d3.select('#summary-home').style('display', 'block')
+		d3.select('#summary-focus').style('display', 'none')
+		d3.select('#summary-navigation-instructions').style('display', 'none')
+		d3.select('#top_pages_loader').style('display', 'block')
+	}
+
+	var timelineData;
+	var demographicsData;
+	var chosenPage = null;
+
+	function showFunder(funder) {
+		// Show statistics on a funding entity
+
+		chosenPage = null;
+		d3.selectAll('.page_name')
+			.style('display', 'none')
+			.html('')
+
+		d3.select('#summary-home').style('display', 'none')
+		d3.select('#summary-focus').style('display', 'block')
+		d3.select('#summary-navigation-instructions').style('display', 'inline-block')
+		d3.select('#demographics').html('')
+		d3.select('#regions').html('')
+		d3.select('#timeline').html('')
+		d3.selectAll('.advertiser_name')
+			.text('Funded by: ' + funder)
+		d3.select('#funder_pages_loader').style('display', 'block')
+		d3.select('#demographics_loader').style('display', 'block')
+		d3.select('#timeline_loader').style('display', 'block')
+		if (country != 'us') d3.select('#regions_loader').style('display', 'block')
+		d3.select('#funder_pages').html('')
+		d3.select('#funder_note').remove()
+		d3.select('.page_name')
+			.style('display', 'none')
+			.html('')
+
+		// Scroll to the funder, if mobile
+		if (isMobile) {
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $("#summary").offset().top
+			}, 500);
+		}
+
+		// Handle null funder
+		if (funder == 'Nenhuma entidade financiadora fornecida') {
+			funder = null;
+		}
+
+		// Get the funder's pages
+		$.post(
+			'/facebook_ads_v2/funder_pages',
+			{
+				startDay: fbStartDay,
+				endDay: fbEndDay,
+				funder: funder,
+				country: country
+			},
+            data => {
+				d3.select('#funder_pages_loader').style('display', 'none')
+				drawPages(data, '#funder_pages')
+			}
+		)
+
+		// Get the funder's targetted demographics
+		$.post(
+			'/facebook_ads_v2/funder_demographics',
+			{
+				startDay: fbStartDay,
+				endDay: fbEndDay,
+				funder: funder,
+				country: country
+			},
+            data => {
+				demographicsData = data;
+				drawDemographics(pageFilter(data))
+				if (country != 'us') drawRegions(pageFilter(data))
+			}
+		)
+		
+		// Get the funder's timeline
+		$.post(
+			'/facebook_ads_v2/funder_timeline',
+			{
+				startDay: fbStartDay,
+				endDay: fbEndDay,
+				funder: funder,
+				country: country
+			},
+            data => {
+				timelineData = data;
+				drawTimeline(data)
+			}
+		)
+	}
+
+	function showPage(p) {
+		// Highlight statistics on a specific page
+
+		d3.select('#demographics_loader').style('display', 'block')
+		d3.select('#demographics').html('')
+		d3.select('#timeline_loader').style('display', 'block')
+		d3.select('#timeline').html('')
+		if (country != 'us') {
+			d3.select('#regions_loader').style('display', 'block')
+			d3.select('#regions').html('')
+		}
+		// Scroll to show data if on mobile
+		$([document.documentElement, document.body]).animate({
+			scrollTop: $("#page-scroll").offset().top
+		}, 500);
+
+		chosenPage = p.page_id
+		setTimeout(() => {
+			// Add the "Posted by" subtitles
+			d3.selectAll('.page_name')
+				.style('display', 'block')
+				.text(`Posted by: "${p.page_name}" Page`)
+				.append('button')
+				.attr('class', 'page_exit_button')
+				.html('<i class="fas fa-times-circle"></i>')
+				.on('click', revertPage)
+
+			// Draw the three charts
+			drawTimeline(pageFilter(timelineData))
+			drawDemographics(pageFilter(demographicsData))
+			if (country != 'us') drawRegions(pageFilter(demographicsData))
+		}, 10)
+
+	}
+
+	function revertPage() {
+		// Remove a selected page and redraw charts
+		chosenPage = null;
+		d3.selectAll('.page_name')
+			.style('display', 'none')
+			.html('')
+		drawTimeline(pageFilter(timelineData))
+		drawDemographics(pageFilter(demographicsData))
+		if (country != 'us')  drawRegions(pageFilter(demographicsData))
+	}
+
+	function pageFilter(d) {
+		// Remove all the results from a funder's data that don't match the current page (stored in global chosenPage)
+		if (chosenPage == null) return d;
+		else return d.filter(x => {
+			return x.page_id == chosenPage
+		})
+	}
+
+	function spendToText(spend) {
+		// Format spend range
+		return `${currencySymbol + d3.format('.4s')(spend.lower_bound)} - ${currencySymbol + d3.format('.4s')(spend.upper_bound)} Spent`
+	}
+
+	function impressionsToText(impressions) {
+		// Format impression minimum
+		return `More than ${d3.format('.4s')(impressions.lower_bound)} Impressions`
+	}
+
+	function perturb(y, amount) {
+		// Add a random amount - used to stagger the scatter plot's y-axis
+		return y + (Math.random() - 0.5)*amount
+	}
+
+	function getDemographicLabel(demographic) {
+		// Format demographic for scatter plots
+		if (demographic.gender=='female') return ('W ' + demographic.age)
+		if (demographic.gender=='male') return ('M ' + demographic.age)
+		return '? 18-65+'
+	}
+
+	// List of regions is given by server from countries.json
+	var regionCodes = <%- JSON.stringify(regions) %>
+	function getRegionLabel(id) {
+		code = regionCodes[id.region]
+		if (code == undefined) {
+			console.log("Region not found (adding to 'other'):")
+			console.log(id.region)
+			return 'Other'
+		}
+		return code
+	}
+
+	const ageRanges = [
+		'13-17',
+		'18-24',
+		'25-34',
+		'35-44',
+		'45-54',
+		'55-64',
+		'65+'
+	]
+
+	const ageLowerBounds = [
+		13,
+		18,
+		25,
+		35,
+		45,
+		55,
+		65
+	]
+
+	function getAgeIndex(lowerBound) {
+		// Get corresponding integer from age range (lower bound)
+		for (i in ageLowerBounds) {
+			if (ageLowerBounds[i] == lowerBound) return i
+		}
+	}
+
+	function funderToFbUrl (funder) {
+		// Format funding entity URL for Facebook
+		return `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=CA&q=${ encodeURIComponent(funder) }`
+	}
+
+	function demographicsCheckBoxId (plainText) {
+		return 'demographics-checkbox-' + plainText.replace(/\s/g, '')
+	}
+
+	function drawPages(data, anchor) {
+		// Draw the list of a funder's pages
+
+		// Create the container for the page widget
+		var pageContainers = d3.select(anchor)
+			.html("")
+			.selectAll('pageContainers')
+			.data(data)
+			.enter()
+			.append('div')
+				.attr('class', 'page-container')
+
+		// Create the left column (with the filter button)
+		var pageLefts = pageContainers.append('div')
+			.attr('class', 'page-left')
+			.append('button')
+				.html('<i class="fas fa-chart-bar"></i>')
+				.attr('class', 'page-filter-button')
+				.on('click', d => {
+					showPage(d)
+				})
+		
+		// Create the right column with all the data
+		var pageRights = pageContainers.append('div')
+			.attr('class', 'page-right')
+		
+		// Create the page's name and link
+		pageRights.append('p')
+			.text(function (d) {
+				if (data.length > 1) return (data.indexOf(d) + 1) + '. '
+				else return ''
+			})
+			.append('a')
+			.attr('href', function(d) {return (`https://www.facebook.com/${d.page_id}`)})
+			.attr('target', '_blank')
+			.text(function(d) {return d.page_name})
+	
+		// Create the number of ads
+		pageRights.append('p')
+			.text(function(d){return `${d.total_ads} Unique Ads `})
+			.append('a')
+				.attr('href', function(d) {return `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&view_all_page_id=${d.page_id}&sort_data[direction]=desc&sort_data[mode]=relevancy_monthly_grouped&search_type=keyword_unordered&media_type=all`})
+				.attr('target', '_blank')
+				.html('<ion-icon name="search"></ion-icon>')
+		
+		// Create the spend range and tooltip explanation
+		pageRights.append('p')
+			.text(function(d){return spendToText(d.spend)})
+			.attr('class', 'p-tip')
+			.append('div')
+				.attr('class', 'tiptext')
+                .html('O Facebook informa os gastos com anúncios como um intervalo com um máximo e um mínimo. Esses valores são a soma desses máximos e mínimos para todos os anúncios da página.')		
+		// Create the number of impressions range and tooltip explanation
+		pageRights.append('p')
+			.text(function(d) {return impressionsToText(d.impressions)})
+			.attr('class', 'p-tip')
+			.append('div')
+			.attr('class', 'tiptext')
+            .html('O Facebook informa as impressões de anúncios como um intervalo com um máximo e um mínimo. Este valor é o número mínimo possível de impressões com base nesses dados para todos os anúncios da página.')
+        }
+
+	updateFacebookTimestamps()
+	function updateFacebookTimestamps() {
+		end = new Date()
+		end.setDate(end.getDate() - fbEndDay)
+		startDay = new Date()
+		startDay.setDate(startDay.getDate() - fbStartDay)
+		format = d3.timeFormat('%b %d')
+
+		d3.selectAll('.facebook_date')
+			.html(`Intervalo de tempo: ${format(startDay)} - ${format(end)}`)
+		d3.selectAll('.facebook_timestamp_no_calendar')
+			.html(`${format(startDay)} - ${format(end)}`)
+	}
+
+	function drawTimeline(data, pageId=null) {
+		// Draw the funder's ad timeline
+		d3.select('#timeline_loader').style('display', 'none')
+
+		// Get the start and end dates
+		var end = new Date()
+		end.setDate(end.getDate() - fbEndDay)
+		var start = new Date()
+		start.setDate(start.getDate() - fbStartDay)
+
+		var rows = [
+			['date'],
+			['0 - 99'],
+			['100 - 499'],
+			['500 - 999'],
+			['1000 - 4999'],
+			['5000+']
+		]
+
+		// Create empty rows
+		for (var day = new Date(start.getTime()); day <= end; day.setDate(day.getDate() + 1)) {
+			rows[0].push(new Date(day.getTime()))
+			for (var r = 1; r < rows.length; r++) {
+				rows[r].push(0)
+			}
+		}
+
+		// Fill rows based on data
+		console.log("timeline data")
+		console.log(data)
+		data.forEach(ad => {
+			var row = rows.map(el => el[0]).indexOf(rangeToLabel(ad.spend))
+			for (var c = 1; c < rows[0].length; c++) {
+				//console.log("rows[0][c] = ", rows[0][c])
+				//console.log("ad.first_collected = ", ad.first_collected, "; ad.latest_collected = ", ad.latest_collected)
+				//console.log("Date.parse(ad.first_collected) = ", Date.parse(ad.first_collected), ";  Date.parse(ad.latest_collected) = ",  Date.parse(ad.latest_collected))
+				if (rows[0][c] > Date.parse(ad.first_collected) && rows[0][c] < Date.parse(ad.latest_collected)) {
+					rows[row][c]++;
+				}
+			}
+		})
+
+		// Generate chart with C3.js
+		var chart = c3.generate({
+			data: {
+				x: 'date',
+				columns: rows,
+				// type: 'timeseries',
+				// groups: [group],
+				// order: order
+			},
+			axis: {
+				x: {
+					type: 'timeseries',
+					tick: {
+						format: '%Y-%m-%d',
+						culling: true
+					},
+					padding: {
+						right: 0,
+						left: 0
+					}
+				},
+				y: {
+					tick: {
+						count: 4,
+						format: d3.format('d')
+					},
+					min: 0,
+					padding: {
+						bottom: 0
+					}
+				}
+			},
+			bindto: '#timeline',
+			size: {
+				height: '200'
+			},
+			padding: {
+				right: 25
+			}
+		});
+	}
+
+	function drawDemographics(data) {
+		// Create the targetted demographics chart
+
+		// Clear existing chart if there is one
+		var container = d3.select("#demographics")
+		container.html("")
+
+		// Get the chart dimensions
+		var margin = {top: 10, right: 30, bottom: 30, left: 50}
+		var width = container.node().getBoundingClientRect().width - margin.left - margin.right
+		var height = 400 - margin.top - margin.bottom
+
+		// Create the drawing space
+		var svg = container
+			.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+				.attr("transform",
+					"translate(" + margin.left + "," + margin.top + ")");
+		
+		// Create x axis
+		var x = d3.scaleLinear()
+			.domain([0, 1])
+			.range([ 0, width ]);
+		svg.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(
+				d3.axisBottom(x)
+					.tickFormat(d3.format('.0%'))
+			);
+
+
+		
+		var yDomain = ['M 13-17', 'W 13-17', 'M 18-24', 'W 18-24', 'M 25-34', 'W 25-34', 'M 35-44', 'W 35-44', 'M 45-54', 'W 45-54', 'M 55-64', 'W 55-64', 'M 65+', 'W 65+', '? 18-65+', '']
+
+		// Used to determine the color of the dots
+		var color = function(d) {
+			if (d.demographic[0] == 'M') return colorSchemes.blue
+			if (d.demographic[0] == 'W') return colorSchemes.green
+			return '#F0A202'
+		}
+		
+		// Clean the data for use in the chart
+		var cleanedData = [] // The cleaned data will be a list of objects corresponding to each dot
+		var foundUnderage = false // Most of the time we only show engagement for users 18+, 
+		// but sometimes there is underage engagement that needs to be shown.
+		for (var i = 0; i < data.length; i++) {
+			var foundDemos = []
+
+			for (var j = 0; j < data[i].demographics.length; j++) {
+				var point = data[i].demographics[j]
+				var demo = getDemographicLabel(point._id)
+
+				if (yDomain.includes(demo)) {
+					cleanedData.push({
+						demographic: demo,
+						percentage: point.percentage,
+						ad: data[i]._id,
+						url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
+						spend: rangeToLabel(data[i].spend)
+					})
+
+					foundDemos.push(demo)
+					
+					if (demo.includes('13')) {
+						foundUnderage = true
+					}
+				} else {
+					console.log("NOT IN DOMAIN")
+					console.log(point)
+				}
+			}
+
+			for (var j = 0; j < yDomain.length-1; j++) {
+				if (!foundDemos.includes(yDomain[j])) {
+					cleanedData.push({
+						demographic: yDomain[j],
+						percentage: 0,
+						ad: data[i]._id,
+						url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
+						spend: rangeToLabel(data[i].spend)
+					})
+				}
+			}
+		}
+
+		// Remove the underage demographics if they are all zero
+		if (!foundUnderage) {
+			yDomain.splice(0, 2)
+			cleanedData = cleanedData.filter(d => {return yDomain.includes(d.demographic)})
+		}
+
+		// Calculate y-coordinates of each row
+		var yRange = []
+		for (var i = 0; i < yDomain.length; i++) {
+			yRange.push(height * i / (yDomain.length - 1))
+		}
+
+		// Create y-axis
+		var y = d3.scaleOrdinal()
+			.domain(yDomain)
+			.range(yRange)
+		svg.append("g")
+			.call(d3.axisLeft(y));
+
+		var defaultRadius = 3
+
+		// Function to be called when you mouseover a dot
+		var highlight = function(d) {
+			d3.selectAll('.ad_'+d.ad)
+				.transition()
+				.duration(200)
+				.attr('r', 6)
+				.style('opacity', 1)
+				.style('fill', "black")
+		}
+
+		// Function to be called when you mouse out of a dot
+		var doNotHighlight = function(d) {
+			d3.selectAll('.demo_dot')
+				.transition()
+				.duration(200)
+				.attr('r', defaultRadius)
+				.style('opacity', 0.2)
+				.style('fill', color)
+		}
+
+		// Function to be called when you click a dot
+		var viewAd = function(d) {
+			window.open(d.url, '_blank')
+		}
+
+		console.log(cleanedData)
+		if (data.length < 1000) {
+			// Draw and style each of the dots
+			svg.append('g')
+				.selectAll('dot')
+				.data(cleanedData)
+				.enter()
+				.append('circle')
+					.attr('class', function (d) {return 'demo_dot ad_' + d.ad})
+					.attr('cx', function(d) {return x(d.percentage)})
+					.attr('cy', function(d) {return perturb(y(d.demographic), 12)})
+					.attr('r', defaultRadius)
+					.style('fill', color)
+					.style('opacity', 0.2)
+					.style('cursor', 'pointer')
+					.on("mouseover", highlight)
+					.on("mouseleave", doNotHighlight)
+					.on("click", viewAd)
+		} else {
+			// If there are too many dots, show a violin plot instead of dots
+
+			// Create a histogram of x-axis frequencies
+			var histogram = d3.histogram()
+				.domain([0, 1])
+				.thresholds(x.ticks(160))
+				.value(d => d)
+			
+			// Create the nested statistics
+			var numstat = d3.nest()
+				.key(function(d) { return d.demographic;})
+				.rollup(function(d) {   // For each key..
+					input = d.map(function(g) { return g.percentage;})
+					bins = histogram(input)   // And compute the binning on it.
+					var lengths = bins.map(b => b.length)
+					var maxLength = d3.max(lengths)
+					return lengths.map((v, i) => {
+						return {
+							size: v / maxLength,
+							start: i / lengths.length
+						}
+					})
+				})
+				.entries(cleanedData)
+			
+			// Draw the violins
+			svg
+				.selectAll("myViolin")
+				.data(numstat)
+				.enter()        // So now we are working group per group
+				.append("g")
+				.attr("transform", function(d){ return("translate(0, " + y(d.key) +")") } ) // Translation on the right to be at the group position
+				.append("path")
+					.style("fill", function(d) {
+						if (d.key[0] == 'M') return colorSchemes.blue
+						if (d.key[0] == 'W') return colorSchemes.green
+						return '#F0A202'
+					})
+					.datum(function(d){ return(d.value)})
+					.attr("d", d3.area()
+						.y0(function(d){return(d.size * 10)} )
+						.y1(function(d){return(-d.size * 10) } )
+						.x(function(d){return(x(d.start)) } )
+						   // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
+					)
+
+		}
+		// boxplot height
+		var boxHeight = 12
+
+		// Calculate quartiles and median for each row
+		var sumstat = d3.nest()
+			.key(function(d) {return d.demographic})
+			.rollup(function(d) {
+				q1 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.25)
+				median = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.5)
+				q3 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.75)
+				interQuantileRange = q3 - q1
+				min = q1 - 1.5 * interQuantileRange
+				max = q3 + 1.5 * interQuantileRange
+				return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+			})
+			.entries(cleanedData)
+		
+		// Draw the horizontal lines ("whiskers")
+		svg.selectAll('horizLines')
+			.data(sumstat)
+			.enter()
+			.append('line')
+				.attr("y1", function(d){return y(d.key)})
+				.attr("y2", function(d){return y(d.key)})
+				.attr("x1", function(d){return x(d.value.min)})
+				.attr("x1", function(d){return x(d.value.max)})
+				.attr('stroke', 'black')
+		
+		// Draw the boxes
+		svg.selectAll('boxes')
+			.data(sumstat)
+			.enter()
+			.append('rect')
+				.attr('y', function(d){return(y(d.key) - boxHeight/2)})
+				.attr('x', function(d){return(x(d.value.q1))})
+				.attr('width', function(d){return(x(d.value.q3) - x(d.value.q1))})
+				.attr('height', boxHeight)
+				.attr('stroke', 'black')
+				.attr('fill', 'transparent')
+				.style('pointer-events', 'none')
+		
+		// Draw the media lines
+		svg.selectAll('medianLines')
+			.data(sumstat)
+			.enter()
+			.append('line')
+				.attr('x1', function(d){return(x(d.value.median))})
+				.attr('x2', function(d){return(x(d.value.median))})
+				.attr('y1', function(d){return(y(d.key) - boxHeight/2)})
+				.attr('y2', function(d){return(y(d.key) + boxHeight/2)})
+				.attr('stroke', 'black')
+
+
+		// Remove the loading indicator once the chart is finished
+		d3.select('#demographics_loader').style('display', 'none')
+	}
+
+	function drawRegions(data) {
+		
+		// Remove loading indicator
+		d3.select('#regions_loader').style('display', 'none')
+
+		// Clear the region chart if one exists
+		var container = d3.select("#regions")
+		container.html("")
+		var margin = {top: 10, right: 30, bottom: 30, left: 50}
+		var width = container.node().getBoundingClientRect().width - margin.left - margin.right
+		var height = Object.keys(regionCodes).length * 30 + 50
+
+		// Create the drawing area
+		var svg = container
+			.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+				.attr("transform",
+					"translate(" + margin.left + "," + margin.top + ")");
+
+		// Create the x-axis
+		var x = d3.scaleLinear()
+			.domain([0, 1])
+			.range([ 0, width ]);
+		svg.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(
+				d3.axisBottom(x)
+					.tickFormat(d3.format('.0%'))
+			);
+
+		// Get the y-domain from list of regions
+		var yDomain = Object.values(regionCodes)
+		yDomain.push('Other')
+		yDomain.push('')
+
+		// Used to pick the color of the dots
+		var color = function(d) {
+			return colorSchemes.red
+		}
+		
+		// Create a list of objects (one corresponding to each dot)
+		var cleanedData = []
+		for (var i = 0; i < data.length; i++) {
+			var foundRegions = []
+
+			for (var j = 0; j < data[i].regions.length; j++) {
+				var point = data[i].regions[j]
+				var region = getRegionLabel(point._id)
+
+				cleanedData.push({
+					region: region,
+					percentage: point.percentage,
+					ad: data[i]._id,
+					url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
+					spend: rangeToLabel(data[i].spend)
+				})
+
+				foundRegions.push(region)
+			}
+
+			if (data[i].regions.length != 0) {
+				for (var j = 0; j < yDomain.length-1; j++) {
+					if (!foundRegions.includes(yDomain[j])) {
+						cleanedData.push({
+							region: yDomain[j],
+							percentage: 0,
+							ad: data[i]._id,
+							url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
+							spend: rangeToLabel(data[i].spend)
+						})
+					}
+				}
+			}
+		}
+		
+		// Get quartiles and media for box plots
+		var sumstat = d3.nest()
+			.key(function(d) {return d.region})
+			.rollup(function(d) {
+				q1 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.25)
+				median = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.5)
+				q3 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.75)
+				interQuantileRange = q3 - q1
+				min = Math.max(q1 - 1.5 * interQuantileRange, 0)
+				max = Math.min(q3 + 1.5 * interQuantileRange, 1)
+				return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+			})
+			.entries(cleanedData)
+			.sort((a, b) => d3.descending(a.value.median, b.value.median))
+
+		// Sort y-domain (regions) by their prevalence
+		yDomain = yDomain.sort((a, b) => {
+			var arr = sumstat.map(d => d.key)
+			return d3.ascending(
+				(arr.indexOf(a) == -1) ? 100000 : arr.indexOf(a),
+				(arr.indexOf(b) == -1) ? 100000 : arr.indexOf(b)
+			)
+		})
+
+		// Calculate y-coordinates of each row
+		var yRange = []
+		for (var i = 0; i < yDomain.length; i++) {
+			yRange.push(height * i / (yDomain.length - 1))
+		}
+
+		// Create y-axis
+		var y = d3.scaleOrdinal()
+			.domain(yDomain)
+			.range(yRange)
+		svg.append("g")
+			.call(d3.axisLeft(y));
+
+		var defaultRadius = 3
+
+		// Used when dots are moused over
+		var highlight = function(d) {
+			d3.selectAll('.ad_region_'+d.ad)
+				.transition()
+				.duration(200)
+				.attr('r', 6)
+				.style('opacity', 1)
+				.style('fill', 'black')
+		}
+
+		// Removes highlights when mouse leaves
+		var doNotHighlight = function(d) {
+			d3.selectAll('.region_dot')
+				.transition()
+				.duration(200)
+				.attr('r', defaultRadius)
+				.style('opacity', 0.2)
+				.style('fill', color)
+		}
+
+		// Opens the ad's page on facebook (on click)
+		var viewAd = function(d) {
+			window.open(d.url, '_blank')
+		}
+
+		
+		if (data.length < 1000) {
+			// Draw the dots
+			svg.append('g')
+				.selectAll('dot')
+				.data(cleanedData)
+				.enter()
+				.append('circle')
+					.attr('class', function (d) {return 'region_dot ad_region_' + d.ad})
+					.attr('cx', function(d) {return x(d.percentage)})
+					.attr('cy', function(d) {return perturb(y(d.region), 12)})
+					.attr('r', defaultRadius)
+					.style('fill', color)
+					.style('opacity', 0.2)
+					.style('cursor', 'pointer')
+					.on("mouseover", highlight)
+					.on("mouseleave", doNotHighlight)
+					.on("click", viewAd)
+		} else {
+			// If there are more than 1000 ads, use a violin plot instead of dots
+
+			// Create histogram for violin plot
+			var histogram = d3.histogram()
+				.domain([0, 1])
+				.thresholds(x.ticks(160))
+				.value(d => d)
+			
+			// Calculate statistics for each bin on the histogram
+			var numstat = d3.nest()
+				.key(function(d) { return d.region;})
+				.rollup(function(d) {   // For each key..
+					input = d.map(function(g) { return g.percentage;})
+					bins = histogram(input)   // And compute the binning on it.
+					var lengths = bins.map(b => b.length)
+					var maxLength = d3.max(lengths)
+					return lengths.map((v, i) => {
+						return {
+							size: v / maxLength,
+							start: i / lengths.length
+						}
+					})
+				})
+				.entries(cleanedData)
+
+			// Draw the violins
+			svg.selectAll("myViolin")
+				.data(numstat)
+				.enter()
+				.append("g")
+				.attr("transform", function(d){ return("translate(0, " + y(d.key) +")") } ) 
+				.append("path")
+					.style("fill", color)
+					.datum(function(d){ return(d.value)})
+					.attr("d", d3.area()
+						.y0(function(d){return(d.size * 10)} )
+						.y1(function(d){return(-d.size * 10) } )
+						.x(function(d){return(x(d.start)) } )
+					)
+
+		}
+
+		var boxHeight = 12
+		// Draw the horizontal lines ('whiskers') of the boxplots
+		svg.selectAll('horizLines')
+			.data(sumstat)
+			.enter()
+			.append('line')
+				.attr("y1", function(d){return y(d.key)})
+				.attr("y2", function(d){return y(d.key)})
+				.attr("x1", function(d){return x(d.value.min)})
+				.attr("x1", function(d){return x(d.value.max)})
+				.attr('stroke', 'black')
+				.style('pointer-events', 'none')
+		
+		// Draw the rectangles of the boxplots
+		svg.selectAll('boxes')
+			.data(sumstat)
+			.enter()
+			.append('rect')
+				.attr('y', function(d){return(y(d.key) - boxHeight/2)})
+				.attr('x', function(d){return(x(d.value.q1))})
+				.attr('width', function(d){return(x(d.value.q3) - x(d.value.q1))})
+				.attr('height', boxHeight)
+				.attr('stroke', 'black')
+				.attr('fill', 'transparent')
+				.style('pointer-events', 'none')
+		
+		// Draw the media lines of the box plot
+		svg.selectAll('medianLines')
+			.data(sumstat)
+			.enter()
+			.append('line')
+				.attr('x1', function(d){return(x(d.value.median))})
+				.attr('x2', function(d){return(x(d.value.median))})
+				.attr('y1', function(d){return(y(d.key) - boxHeight/2)})
+				.attr('y2', function(d){return(y(d.key) + boxHeight/2)})
+				.attr('stroke', 'black')
+				.style('pointer-events', 'none')
+
+	}
+</script>

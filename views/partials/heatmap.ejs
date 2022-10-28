@@ -1,0 +1,114 @@
+<script type="text/javascript">
+	const boxSize = 45
+	var heatmaps = []
+
+	function sortMap(map, index) {
+		heatmaps[map].sort(index)
+	}
+
+	class Heatmap {
+		constructor(data, color, tableName, labels) {
+
+			this.index = heatmaps.length
+			heatmaps.push(this)
+
+			this.data = data
+			this.tableName = tableName
+			this.color = color
+			this.nShown = 0
+			this.numberShown = 15
+			this.mostAds = data[0][1]
+			this.labels = labels
+			this.allData = data
+
+			$(`#${this.tableName}_legend th`)
+				.not('.key')
+				.remove()
+
+			for (var i = 0; i < this.labels.length; i++) {
+				$(`<th class="range_header box_width"></th>`)
+					.appendTo(`#${this.tableName}_legend`)
+				
+				$(`#${this.tableName}_legend th:last`)
+					.append(`
+						<button 
+							id="${this.tableName}_filter_${i+1}"
+							onclick="heatmaps[${this.index}].sort(${i+1})"
+						>
+							<p class="sort-label">${(this.labels[i]=='Total'?'':currencySymbol)+this.labels[i]}</p>
+							<p class="sort"><img src="/images/sort_icon.png" /></p>
+						</button>
+					`)
+			}
+			this.draw()
+		}
+
+		draw() {
+			let d = this.data
+			var table = $(`#${this.tableName} tbody`)
+					.empty()
+			for (var row = 0; row < this.numberShown && row < d.length; row++) {
+				var tr = $(`<tr id="#${this.tableName}_${row}"></tr>`)
+					.appendTo(table)
+					.css('height', boxSize)
+					.on('click', function() {
+						showFunder(this.getAttribute('data_funder'))
+					})
+					.append(`
+						<td class="heatmap_name_cell">
+							${d[row][0].trim()}
+						</td>
+						<td class="heatmap_filter_cell">
+							<i class="fas fa-chart-bar"></i>
+						</td>
+					`)
+				
+				tr.attr('data_funder', d[row][0])
+				for (var col = 1; col < d[row].length; col++) {
+					var nAds = d[row][col]
+					var opacity = Math.log(nAds) / Math.log(this.mostAds)
+					var rgba = convertHex(this.color, opacity)
+					$(`<td class="box_width">${ d[row][col] }</td>`)
+						.appendTo(tr)
+						.css('background-color', rgba)
+				}
+			}
+
+			if (this.numberShown < this.data.length) {
+				$(`<tr id="#${this.tableName}_button_row" class="heatmap_botton_row"></tr>`)
+					.appendTo(table)
+					.css('height', boxSize)
+					.append(`
+							<td class="heatmap_button_cell" colspan="8" onclick="heatmaps[${this.index}].showMore()">
+								<button >See More</button>
+							</td>
+						`)
+						}
+			
+		}
+		
+		sort(i) {
+			$('.heatmap button').removeClass('selected')
+			$(`#${this.tableName}_filter_${i}`).addClass('selected')
+
+			//sorts data by the value of whatever's in the i index
+			console.log(this)
+			console.log('sorting')
+			var d = this.data
+			d.sort((a, b) => {return b[i] - a[i]})
+			this.draw()
+		}
+
+		filter(query) {
+			this.data = this.allData.filter(function(d) {return d[0].toLowerCase().includes(query.toLowerCase())})
+			this.draw()
+		}
+		
+		showMore() {
+			console.log(this.numberShown)
+			this.numberShown += 10
+			this.draw()
+		}
+
+	}
+</script>

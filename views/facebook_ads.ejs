@@ -1,0 +1,91 @@
+<div id="fb-root"></div>
+<script type="text/javascript">
+	function truncate(str, n) {
+		if (str.length > n) {
+			str = str.substring(0, n) + '...'
+		}
+		return str
+	}
+	function convertHex(hex, opacity) {
+		hex = hex.replace('#','');
+		r = parseInt(hex.substring(0,2), 16);
+		g = parseInt(hex.substring(2,4), 16);
+		b = parseInt(hex.substring(4,6), 16);
+
+		result = `rgba( ${r},  ${g}, ${b}, ${opacity})`
+		return result;
+	}
+	const isMobile = window.matchMedia("(max-width: 767px)").matches
+	function truncateNumber(n) {
+		if (n > 999999) {
+			s = (Math.trunc(n/100000)/10).toString() + 'M'
+		} else {
+			if (n > 999) {
+				s = (Math.trunc(n/100)/10).toString() + 'K'
+			} else {
+				s = Math.trunc(n).toString()
+			}
+		}
+
+		return s
+	}
+
+	const country = <%- JSON.stringify(country) %>
+
+	d3.select('header')
+		.append('input')
+		.attr('type', 'text')
+		.attr('id', 'country')
+
+	$('#country').countrySelect({
+		onlyCountries: <%- JSON.stringify(validCountries) %>,
+		responsiveDropdown: true,
+		preferredCountries: [],		
+		defaultCountry: country
+	})
+	
+	$('#country').change(c => {
+		window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
+	})
+	
+</script>
+
+
+<div class="toggle-header">
+</div>
+
+
+<div class="row">
+	<div class="col-sm-6">
+		<% if (fs.existsSync("views/partials/lang/" + country + "_top_funders.ejs")) { %>
+			<%- include("partials/lang/" + country + "_top_funders"); %>
+		<% } else { %>
+			<%- include('partials/top_funders') %>
+		<% } %>
+	</div>
+	<div class="col-sm-6">
+		<% if (fs.existsSync("views/partials/lang/" + country + "_summary.ejs")) { %>
+			<%- include("partials/lang/" + country + "_summary"); %>
+		<% } else { %>
+			<%- include('partials/summary') %>
+		<% } %>
+
+		<% if (fs.existsSync("views/partials/footnotes/" + country + ".ejs")) { %>
+			<%- include("partials/footnotes/" + country); %>
+		<% } %>
+	</div>
+	<%- include('partials/heatmap') %>
+</div>
+
+<script>
+	$('document').ready(() => {
+		var today = new Date()
+		const oneDay = 60*60*24*1000
+		const urlParams = new URLSearchParams(window.location.search)
+		var lastDate = new Date(today - endDay*oneDay)
+		var firstDate = new Date( today - numberOfDays*oneDay)
+		var dateFormat = d3.timeFormat("%b %d")
+		const dateString = dateFormat(firstDate) + ' - ' + dateFormat(lastDate)
+		$('.time_replace').html(dateString)
+	})
+</script>
