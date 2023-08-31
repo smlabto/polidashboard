@@ -11,7 +11,6 @@ to_dt = lambda text: datetime.strptime(
 db = pymongo.MongoClient()['polidashboard']
 
 def update_ad(ad, country):
-
     doc = {
         '_id': ad['id'],
         'creation_time': to_dt(ad['ad_creation_time'])
@@ -48,6 +47,15 @@ def update_ad(ad, country):
         'latest_collected': datetime.now()
     }
 
+    # delivery_by_region won't always exist within the document, so we need to check for it
+    delivery_by_region = {}
+    if 'delivery_by_region' in ad:
+        for reg in ad['delivery_by_region']:
+            delivery_by_region[reg['region']] = float(reg['percentage'])
+        doc['delivery_by_region'] = delivery_by_region
+    else:
+        doc['delivery_by_region'] = None
+        
     db['facebook_ads_' + country].update_one({
         '_id': doc['_id']
     }, {
@@ -122,10 +130,10 @@ if __name__=="__main__":
     
     collector = FbAdsLibraryTraversal(
         "[FACEBOOK_API_ADsLibrary_KEY_HERE]",
-        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend",
+        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations",
         ".",
         country,
-        api_version="v13.0"
+        api_version="v14.0" # Current version as of August 2023
     )
 
     n = 0

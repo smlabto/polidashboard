@@ -184,6 +184,11 @@ a:hover {
 	margin-top: 15px;
 }
 
+.widget-content {
+	display: flex;
+	justify-content: center;
+}
+
 .toggle-header a {
 	color: #fff;
 	text-decoration: underline;
@@ -346,6 +351,56 @@ footer a {
 	.tip-in-middle {
 		margin-right: 15px;
 	}
+}
+
+/* Topojson map elements */
+
+.maptip {
+	right: 0;
+	visibility: hidden;
+	position: absolute;
+	width: 200px;
+	background-color: #212121;
+	color: white;
+	text-align: center;
+	padding: 10px;
+	right: 0;
+	top: 325px;
+	padding-bottom: 18px;
+	z-index: 10000;
+	font-size: 13px;
+	overflow-x: visible;
+	border-radius: 2px;
+}
+
+.maptip img {
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+
+
+.maptip-title {
+	font-weight: bold;
+	margin-bottom: 5px; /* Add some space below the title */
+}
+
+.maptip-content {
+	text-align: center;
+}
+
+.maptip-label {
+	color: lightgray; /* Make labels gray */
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: -10px; /* Adjust this value to position the triangle properly */
+    right: 10px; /* Adjust this value to position the triangle properly */
+    border-left: 10px solid transparent; /* Half the width of the triangle */
+    border-bottom: 10px solid white; /* Height of the triangle */
+    border-right: 10px solid transparent; /* Half the width of the triangle */
 }
 
 /* Replacements */

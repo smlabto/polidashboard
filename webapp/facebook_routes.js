@@ -4,6 +4,7 @@ var mongoose = require('mongoose')
 const fs = require('fs');
 var _ = require('underscore');
 var countries = require('./countries.json');
+var countryStates = require('./country_states.js');
 
 
 var db = mongoose.connection.db
@@ -142,6 +143,15 @@ router.post('/facebook_ads_v2/funder_timeline', (req, res) => {
     generateFunderTimeline(start, end, funder, country, res)
 });
 
+router.post('/facebook_ads_v2/funder_map', (req, res) => {
+    var start = parseInt(req.body.startDay)
+    var end = parseInt(req.body.endDay)
+    var funder = req.body.funder
+    var country = req.body.country
+    if (funder == '') funder = null;
+    generateFunderMap(start, end, funder, country, res)
+});
+
 module.exports = router
 
 var heatmapData = {};
@@ -203,6 +213,7 @@ function generateHeatmap(start, end, country, res=null) {
         db.collection('facebook_ads_' + country)
             .aggregate(query)
             .toArray((err, data) => {
+                console.log(country)
                 heatmapData[heatmapCode] = {
                     data: data,
                     timestamp: Date.now()
@@ -258,6 +269,7 @@ function quickDateFilter(start, end) {
 }
 
 function generateFunderPages(start, end, funder, country, res=null) {
+    console.log("Generating funder pages: " + country);
     var query = [
         {
           '$match': quickDateFilter(start, end)
@@ -327,6 +339,7 @@ function generateFunderPages(start, end, funder, country, res=null) {
 }
 
 function generateFunderDemographics(start, end, funder, country, res=null) {
+    console.log("Generating funder demographics: " + country);
     var query = [
         {
             '$match': quickDateFilter(start, end)
@@ -366,11 +379,12 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
             .toArray((err, data) => {
                 if (res !== null) {
                     res.send(data)
-                }
+                }       
             })
 }
 
 function generateFunderTimeline(start, end, funder, country, res) {
+    console.log("Generating funder timeline: " + country);
     var query = [
         {
             '$match': quickDateFilter(start, end)
@@ -388,7 +402,6 @@ function generateFunderTimeline(start, end, funder, country, res) {
         }
     ]
 
-    console.log(query)
     var cursor = db.collection('facebook_ads_' + country)
             .aggregate(query, {allowDiskUse: true})
     cursor.toArray((err, data) => {
@@ -396,6 +409,81 @@ function generateFunderTimeline(start, end, funder, country, res) {
                     res.send(data)
                 }
             })
+}
+
+async function generateFunderMap(start, end, funder, country, res) {
+    console.log("Generating funder map: " + country);
+    const query = [
+        {
+            '$match': {
+                ...quickDateFilter(start, end),
+                'funding_entity': funder
+            }
+        },
+        {
+            '$project': {
+                'spend': 1,
+                'delivery_by_region': 1
+            }
+        }
+    ];
+
+    // Eventually don't hardcode this, once more countries are setup
+    const stateCodeDictionary = countryStates['us'];
+    
+    const cursor = db.collection('facebook_ads_' + country)
+        .aggregate(query, { allowDiskUse: true });
+
+    const stateTotals = new Map();
+    let totalCount = 0;
+
+    const documents = await cursor.toArray();
+
+    for (const stateName of stateCodeDictionary.keys()) {
+        // Initialize the stateTotal for the current stateName
+        stateTotals.set(stateName, 0);
+    }
+
+    documents.forEach(doc => {
+        const deliveryByRegion = doc.delivery_by_region;
+
+        if (deliveryByRegion !== null) {
+            totalCount++;
+            for (const state in deliveryByRegion) {
+                // console.log(state);
+                const stateName = state;
+                const deliveryAmount = deliveryByRegion[state];
+
+                if (stateName) {
+                    if (stateTotals.has(stateName)) {
+                        stateTotals.set(stateName, stateTotals.get(stateName) + deliveryAmount);
+                    } else {
+                        stateTotals.set(stateName, deliveryAmount);
+                    }
+                } else {
+                    // If state is not in stateCodeDictionary, place it as "Outside of Country"
+                    const unknownStateId = "Outside of Country";
+                    if (stateTotals.has(unknownStateId)) {
+                        stateTotals.set(unknownStateId, stateTotals.get(unknownStateId) + deliveryAmount);
+                    } else {
+                        stateTotals.set(unknownStateId, deliveryAmount);
+                    }
+                }
+            }
+        }
+    });
+
+    stateTotals.forEach((value, stateName) => {
+        stateTotals.set(stateName, value / totalCount);
+    });
+
+    if (res !== null) {
+        const stateTotalsArray = Array.from(stateTotals, ([name, value]) => ({ name, value }));
+        const stateTotalsArrayWithNames = stateTotalsArray.map(obj => ({ ...obj,
+            stateId: stateCodeDictionary.get(obj['name'])
+        }));
+        res.json(stateTotalsArrayWithNames);
+    }
 }
 
 function heatmapKey(start, end, country) {

@@ -1,4 +1,5 @@
 <div class="widget-container boxed">
+
 	<div class="inner" id="summary">
 		<div class="facebook_nav_light p-tip">
 			<span class="facebook_date">
@@ -20,7 +21,7 @@
 			</p>
 		</div>
 		<div id="summary-focus">
-			
+			<!-- ### Start of Pages Funded Widget -->
 			<h3 class="widget-title">
 				Facebook Pages Funded by
 				<div class="tip">
@@ -30,7 +31,6 @@
 					</div>
 				</div>
 			</h3>
-			
 			<div class="navigation-instructions" id="right-navigation-instructions">
 				<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
 				<strong>Navigation Instructions</strong>
@@ -39,7 +39,9 @@
 					<li>Hover over any dots in the line chart to see the total number of active ads by a funder (or a page that they control) on a specific date in the selected timeframe.</li>
 				</ul>
 			</div>
+			
 			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+			<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
 			<div class="loader red" id="funder_pages_loader">
 				<div class="lds-grid">
 					<div></div>
@@ -53,10 +55,46 @@
 					<div></div>
 				</div>
 			</div>
-			
 			<div id="funder_pages"></div>
+			
+			<!-- ### Start of Map Widget ### -->
+			<% if (country === 'us') { %>
+				<h3 class="widget-title" id="page-scroll">
+					Where These Ads Were Shown
+					<div class="tip">
+						<img src="/images/info.png">
+						<div class="tiptext">
+							This module shows the distribution of this funder's viewed ads across different States.
+							<br><br>
+							Hover over any State to see what percentage of this funder's ads were shown there.
+							<br><br>
+							Ads for which no regional data is available are omitted.
+						</div>
+					</div>
+				</h3>
+					<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
+				<!-- Map loader icon -->
+				<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+				<div class="loader red" id="map_loader">
+					<div class="lds-grid">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
+				<div class="widget-content" id="chart-container">
+					<div id="map-tooltip"></div>
+				</div>
+			<% } %>
 
 			
+			<!-- ### Start of Ads Per Day Widget ### -->
 			<h3 class="widget-title" id="page-scroll">
 				Total Number of Active Ads Per Day
 				<div class="tip">
@@ -66,7 +104,7 @@
 					</div>
 				</div>
 			</h3>
-			
+
 			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
 			<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
 			<div class="loader red" id="timeline_loader">
@@ -85,6 +123,7 @@
 			<div id="timeline">
 			</div>
 
+			<!-- ### Start of Demographic Widget ### -->
 			<h3 class="widget-title">
 				Who Was Shown These Ads
 				<div class="tip">
@@ -99,7 +138,7 @@
 
 			<h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4>
 			<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
-			
+
 			<div class="navigation-instructions" id="right-navigation-instructions">
 				<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
 				<strong>Navigation Instructions</strong>
@@ -134,13 +173,14 @@
 
 			</div>
 
-			<% if (country != 'us') { %>	
+			<!-- ### Start of Location Graph Widget ### -->
+			<% if (country != 'us') { %>
 				<h3 class="widget-title">
 					Where These Ads Were Shown
 					<div class="tip">
 						<img src="/images/info.png">
 						<div class="tiptext">
-								This module shows the regions where people who saw ads by this funder are located - each point represents one ad.  
+								This module shows the regions where people who saw ads by this funder are located - each point represents one ad.
 								<br><br>
 								Hover over a dot to see that ad's distribution across all regions, and click to see that ad's summary (ad will open in a new tab).
 								<br><br>
@@ -165,7 +205,7 @@
 				</div>
 				<div id="regions">
 				</div>
-			<% } %>			
+			<% } %>
 
 		</div>
 	</div>
@@ -175,7 +215,7 @@
 	const ALL = '.*?'
 	const desktopMapWidth = 1
 	let initial = true
-	
+
 	showAbout()
 	function showAbout() {
 		// Switch to 'about' view
@@ -189,6 +229,55 @@
 	var demographicsData;
 	var chosenPage = null;
 
+	let activeDemographicsRequest = null;
+	let activFunderPagesRequest = null;
+	let activeRequests = [];
+
+	function performRequest(url, requestData, successCallback) {
+		activeRequests.filter(req => req.url === url).forEach(req => req.request.abort());
+
+		const request = $.post(url, requestData)
+			.done(data => successCallback(data))
+			.always(() => { activeRequests = activeRequests.filter(req => req !== request) });
+		activeRequests.push({ url, request });
+	}
+
+	function performFunderRequests(funder) {
+		const commonData = {
+			startDay: fbStartDay,
+			endDay: fbEndDay,
+			funder,
+			country
+		};
+
+		performRequest('/facebook_ads_v2/funder_demographics', commonData, demographicsData => {
+			const filteredDemographics = pageFilter(demographicsData);
+			drawDemographics(filteredDemographics);
+			if (country !== 'us') {
+				drawRegions(filteredDemographics);
+			}
+		});
+
+		// Get the funder's pages
+		performRequest('/facebook_ads_v2/funder_pages', commonData, pagesData => {
+			d3.select('#funder_pages_loader').style('display', 'none');
+			drawPages(pagesData, '#funder_pages');
+		});
+
+		// Get the funder's timeline
+		performRequest('/facebook_ads_v2/funder_timeline', commonData, data => {
+			timelineData = data;
+			drawTimeline(data)
+		});
+
+		if (country === 'us') {
+			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
+				// console.log(data);
+				drawMap(data);
+			});
+		}
+	}
+	
 	function showFunder(funder) {
 		// Show statistics on a funding entity
 
@@ -197,6 +286,7 @@
 			.style('display', 'none')
 			.html('')
 
+		d3.select("#chart-container").style("visibility", "hidden")
 		d3.select('#summary-home').style('display', 'none')
 		d3.select('#summary-focus').style('display', 'block')
 		d3.select('#summary-navigation-instructions').style('display', 'inline-block')
@@ -208,6 +298,7 @@
 		d3.select('#funder_pages_loader').style('display', 'block')
 		d3.select('#demographics_loader').style('display', 'block')
 		d3.select('#timeline_loader').style('display', 'block')
+		d3.select('#map_loader').style('display', 'block')
 		if (country != 'us') d3.select('#regions_loader').style('display', 'block')
 		d3.select('#funder_pages').html('')
 		d3.select('#funder_note').remove()
@@ -234,51 +325,7 @@
 			funder = null;
 		}
 
-		// Get the funder's pages
-		$.post(
-			'/facebook_ads_v2/funder_pages',
-			{
-				startDay: fbStartDay,
-				endDay: fbEndDay,
-				funder: funder,
-				country: country
-			},
-            data => {
-				d3.select('#funder_pages_loader').style('display', 'none')
-				drawPages(data, '#funder_pages')
-			}
-		)
-
-		// Get the funder's targetted demographics
-		$.post(
-			'/facebook_ads_v2/funder_demographics',
-			{
-				startDay: fbStartDay,
-				endDay: fbEndDay,
-				funder: funder,
-				country: country
-			},
-            data => {
-				demographicsData = data;
-				drawDemographics(pageFilter(data))
-				if (country != 'us') drawRegions(pageFilter(data))
-			}
-		)
-		
-		// Get the funder's timeline
-		$.post(
-			'/facebook_ads_v2/funder_timeline',
-			{
-				startDay: fbStartDay,
-				endDay: fbEndDay,
-				funder: funder,
-				country: country
-			},
-            data => {
-				timelineData = data;
-				drawTimeline(data)
-			}
-		)
+		performFunderRequests(funder);
 	}
 
 	function showPage(p) {
@@ -287,6 +334,7 @@
 		d3.select('#demographics_loader').style('display', 'block')
 		d3.select('#demographics').html('')
 		d3.select('#timeline_loader').style('display', 'block')
+		d3.select('#map_loader').style('display', 'block')
 		d3.select('#timeline').html('')
 		if (country != 'us') {
 			d3.select('#regions_loader').style('display', 'block')
@@ -426,11 +474,11 @@
 				.on('click', d => {
 					showPage(d)
 				})
-		
+
 		// Create the right column with all the data
 		var pageRights = pageContainers.append('div')
 			.attr('class', 'page-right')
-		
+
 		// Create the page's name and link
 		pageRights.append('p')
 			.text(function (d) {
@@ -441,7 +489,7 @@
 			.attr('href', function(d) {return (`https://www.facebook.com/${d.page_id}`)})
 			.attr('target', '_blank')
 			.text(function(d) {return d.page_name})
-	
+
 		// Create the number of ads
 		pageRights.append('p')
 			.text(function(d){return `${d.total_ads} Unique Ads `})
@@ -449,7 +497,7 @@
 				.attr('href', function(d) {return `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&view_all_page_id=${d.page_id}&sort_data[direction]=desc&sort_data[mode]=relevancy_monthly_grouped&search_type=keyword_unordered&media_type=all`})
 				.attr('target', '_blank')
 				.html('<ion-icon name="search"></ion-icon>')
-		
+
 		// Create the spend range and tooltip explanation
 		pageRights.append('p')
 			.text(function(d){return spendToText(d.spend)})
@@ -457,7 +505,7 @@
 			.append('div')
 				.attr('class', 'tiptext')
 				.html('Facebook reports ad spending as a range with a maximum and minimum. These values are the sum of these maxima and minima for all ads by the page.')
-		
+
 		// Create the number of impressions range and tooltip explanation
 		pageRights.append('p')
 			.text(function(d) {return impressionsToText(d.impressions)})
@@ -509,8 +557,6 @@
 		}
 
 		// Fill rows based on data
-		console.log("timeline data")
-		console.log(data)
 		data.forEach(ad => {
 			var row = rows.map(el => el[0]).indexOf(rangeToLabel(ad.spend))
 			for (var c = 1; c < rows[0].length; c++) {
@@ -582,7 +628,7 @@
 			.append("g")
 				.attr("transform",
 					"translate(" + margin.left + "," + margin.top + ")");
-		
+
 		// Create x axis
 		var x = d3.scaleLinear()
 			.domain([0, 1])
@@ -595,7 +641,7 @@
 			);
 
 
-		
+
 		var yDomain = ['M 13-17', 'W 13-17', 'M 18-24', 'W 18-24', 'M 25-34', 'W 25-34', 'M 35-44', 'W 35-44', 'M 45-54', 'W 45-54', 'M 55-64', 'W 55-64', 'M 65+', 'W 65+', '? 18-65+', '']
 
 		// Used to determine the color of the dots
@@ -604,10 +650,10 @@
 			if (d.demographic[0] == 'W') return colorSchemes.green
 			return '#F0A202'
 		}
-		
+
 		// Clean the data for use in the chart
 		var cleanedData = [] // The cleaned data will be a list of objects corresponding to each dot
-		var foundUnderage = false // Most of the time we only show engagement for users 18+, 
+		var foundUnderage = false // Most of the time we only show engagement for users 18+,
 		// but sometimes there is underage engagement that needs to be shown.
 		for (var i = 0; i < data.length; i++) {
 			var foundDemos = []
@@ -626,7 +672,7 @@
 					})
 
 					foundDemos.push(demo)
-					
+
 					if (demo.includes('13')) {
 						foundUnderage = true
 					}
@@ -695,7 +741,7 @@
 			window.open(d.url, '_blank')
 		}
 
-		console.log(cleanedData)
+		// console.log(cleanedData)
 		if (data.length < 1000) {
 			// Draw and style each of the dots
 			svg.append('g')
@@ -721,7 +767,7 @@
 				.domain([0, 1])
 				.thresholds(x.ticks(160))
 				.value(d => d)
-			
+
 			// Create the nested statistics
 			var numstat = d3.nest()
 				.key(function(d) { return d.demographic;})
@@ -738,7 +784,7 @@
 					})
 				})
 				.entries(cleanedData)
-			
+
 			// Draw the violins
 			svg
 				.selectAll("myViolin")
@@ -777,7 +823,7 @@
 				return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
 			})
 			.entries(cleanedData)
-		
+
 		// Draw the horizontal lines ("whiskers")
 		svg.selectAll('horizLines')
 			.data(sumstat)
@@ -788,7 +834,7 @@
 				.attr("x1", function(d){return x(d.value.min)})
 				.attr("x1", function(d){return x(d.value.max)})
 				.attr('stroke', 'black')
-		
+
 		// Draw the boxes
 		svg.selectAll('boxes')
 			.data(sumstat)
@@ -801,7 +847,7 @@
 				.attr('stroke', 'black')
 				.attr('fill', 'transparent')
 				.style('pointer-events', 'none')
-		
+
 		// Draw the media lines
 		svg.selectAll('medianLines')
 			.data(sumstat)
@@ -819,7 +865,7 @@
 	}
 
 	function drawRegions(data) {
-		
+
 		// Remove loading indicator
 		d3.select('#regions_loader').style('display', 'none')
 
@@ -859,7 +905,7 @@
 		var color = function(d) {
 			return colorSchemes.red
 		}
-		
+
 		// Create a list of objects (one corresponding to each dot)
 		var cleanedData = []
 		for (var i = 0; i < data.length; i++) {
@@ -894,7 +940,7 @@
 				}
 			}
 		}
-		
+
 		// Get quartiles and media for box plots
 		var sumstat = d3.nest()
 			.key(function(d) {return d.region})
@@ -959,7 +1005,7 @@
 			window.open(d.url, '_blank')
 		}
 
-		
+
 		if (data.length < 1000) {
 			// Draw the dots
 			svg.append('g')
@@ -985,7 +1031,7 @@
 				.domain([0, 1])
 				.thresholds(x.ticks(160))
 				.value(d => d)
-			
+
 			// Calculate statistics for each bin on the histogram
 			var numstat = d3.nest()
 				.key(function(d) { return d.region;})
@@ -1008,7 +1054,7 @@
 				.data(numstat)
 				.enter()
 				.append("g")
-				.attr("transform", function(d){ return("translate(0, " + y(d.key) +")") } ) 
+				.attr("transform", function(d){ return("translate(0, " + y(d.key) +")") } )
 				.append("path")
 					.style("fill", color)
 					.datum(function(d){ return(d.value)})
@@ -1032,7 +1078,7 @@
 				.attr("x1", function(d){return x(d.value.max)})
 				.attr('stroke', 'black')
 				.style('pointer-events', 'none')
-		
+
 		// Draw the rectangles of the boxplots
 		svg.selectAll('boxes')
 			.data(sumstat)
@@ -1045,7 +1091,7 @@
 				.attr('stroke', 'black')
 				.attr('fill', 'transparent')
 				.style('pointer-events', 'none')
-		
+
 		// Draw the media lines of the box plot
 		svg.selectAll('medianLines')
 			.data(sumstat)
@@ -1059,4 +1105,151 @@
 				.style('pointer-events', 'none')
 
 	}
+
+	async function fetchTopoData() {
+		try {
+			const mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
+			return mapDataset;
+		} catch (error) {
+			console.error("Error fetching map data:", error);
+			throw error;
+		}
+	}
+
+	function drawMap(data) {
+		const width = 970;
+		const height = 610;
+		const outlineColor = "#CCCCCC";
+
+		const customColorInterpolator = t => {
+			const r = Math.round(255 * t); // Gradually increase red channel
+			const g = 0; // No green component
+			const b = 0; // No blue component
+			return `rgb(${r}, ${g}, ${b})`;
+		};
+		
+		const domain = [0.0, 1.0];
+		const colorScale = d3.scaleLinear()
+			.domain(domain)
+			.interpolate(d3.interpolateRgb)
+			.range(['white', '#FF2222'])
+
+
+		let svg = d3.select("#chart-container svg");
+		if (svg.empty()) {
+			svg = d3.select("#chart-container")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.attr("viewBox", [0, 0, width, height])
+				.attr("style", "max-width: 90%; height: 90%;");
+		} else {
+			svg.selectAll("g").remove(); // Remove existing map elements
+		}
+
+		const path = d3.geoPath();
+		const g = svg.append("g");
+		
+		var tooltip = d3.select("#chart-container").select("#map-tooltip")
+			.attr("class", "maptip")
+			.attr("state", "None")
+			.attr("percent", "None")
+			.style("position", "absolute")
+			.style("visibility", "hidden")
+
+		const maptipOffset = 5;
+		function moveMapTooltip() {
+			var coords = d3.mouse(document.getElementById("summary"));
+			var xPos = coords[0] - tooltip.node().getBoundingClientRect().width - maptipOffset;
+			var yPos = coords[1] + maptipOffset;
+			tooltip
+				.style("left", xPos + "px")
+				.style("top", yPos + "px")
+				.style("visibility", "hidden");
+		}
+
+		let highlightedPath = null;
+		let currentStateData = null;
+
+		fetchTopoData().then(mapDataset => {
+			d3.select('#map_loader').style('display', 'none')
+			const states = g.append("g")
+				.attr("cursor", "pointer")
+				.selectAll("path")
+				.data(topojson.feature(mapDataset, mapDataset.objects.states).features)
+				.enter().append("path")
+				.attr("d", path)
+				.attr("class", "county")
+				.attr("data-fips", d => { return d.id })
+				.attr("fill", d => {
+					const stateData = data.find(item => item.stateId === d.id);
+					return colorScale(stateData ? Number(stateData.value).toFixed(20) : 0);
+				})
+				.on("mouseover", function(e,d) {
+					const hoveredData = d3.select(this).data()[0]; // Get the data associated with the hovered element
+					tooltip.style("visibility", "visible");
+
+					// Highlight the state/country
+					highlightedPath = g.append("path")
+						.attr("fill", "none")
+						.attr("stroke", "black")
+						.attr("stroke-width", 2)
+						.attr("stroke-linejoin", "round")
+						.attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => a.id === hoveredData.id || b.id === hoveredData.id)));
+				})
+				.on("mousemove", function(e,d) {
+					if (currentStateData === null) {
+						const hoveredData = d3.select(this).data()[0];
+						currentStateData = data.find(item => item.stateId === hoveredData.id);
+					}
+					tooltip.html(
+						"<span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>" + // Unicode character for ◥
+						"<div class='maptip-title'>Ad Distribution</div>" +
+						"<hr style='margin-top: 0; margin-bottom: 10px'>" +
+						"<div class='maptip-content'>" +
+						"<p style='margin-bottom: 0'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
+						"<p style='margin-bottom: 0; color: yellow;'><span class='maptip-label'>Ads Shown:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
+						"</div>"
+					);
+
+					// Update tooltip position
+					moveMapTooltip();
+					tooltip
+						.style("visibility", "visible");
+				})
+				.on("mouseout", function() {
+					tooltip.style("visibility", "hidden");
+					currentStateData = null;
+					if (highlightedPath) {
+						highlightedPath.remove();
+						highlightedPath = null; // Reset the reference
+					}
+				});
+
+			g.append("path")
+				.attr("fill", "none")
+				.attr("stroke", outlineColor)
+				.attr("stroke-width", 1.5)
+				.attr("stroke-linejoin", "round")
+				.attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => true)));
+			
+			// Make tooltip smoother (tooltip won't freeze if the user hovers over it)
+			tooltip
+				.on("mouseover", function() {
+					moveMapTooltip();
+					tooltip
+						.style("visibility", "hidden");
+				})
+				.on("mousemove", function() {
+					moveMapTooltip();
+					tooltip
+						.style("visibility", "hidden");
+				})
+
+			d3.select("#chart-container")
+				.style("visibility", "visible")
+		});
+	}
+
 </script>
+
