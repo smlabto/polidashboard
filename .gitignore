@@ -1,3 +1,4 @@
 webapp/node_modules/*
 collector/__pycache__/*
 webapp/package-lock.json
+collector/fb_ads_library_api.py
