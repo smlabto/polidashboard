@@ -26,7 +26,7 @@ def fetch_ads(db, country, page_id, start_time, end_time):
     return ads
 
 
-def merge_page_name_to_ads(ads, page_name):
+def merge_page_name_with_associated_ads(ads, page_name):
     for ad in ads:
         ad["page_name"] = page_name
 
@@ -58,6 +58,6 @@ if __name__ == '__main__':
     page_name = fetch_page(db, country, page_id)
     ads = fetch_ads(db, country, page_id, start_time, end_time)
 
-    ads = merge_page_name_to_ads(ads, page_name)
+    ads = merge_page_name_with_associated_ads(ads, page_name)
 
     close_connection(client)

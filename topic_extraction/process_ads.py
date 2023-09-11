@@ -209,8 +209,6 @@ def main():
     # Add this function call in the main() function to see the results:
     print([ad["creative_bodies"] for ad in republican_ads])
     keywords = extract_keywords([ad["creative_bodies"] for ad in republican_ads], top_n=100)
-    for word, importance in keywords:
-        print(f"{word}: {importance}")
 
     generate_wordcloud.generate_phrase_wordcloud(top_topics)
     generate_wordcloud.generate_keyword_wordcloud(keywords)

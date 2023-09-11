@@ -4,3 +4,7 @@ webapp/package-lock.json
 collector/fb_ads_library_api.py
 
 .idea/
+
+topic_extraction/__pycache__/
+
+topic_extraction/republican_ads.json
