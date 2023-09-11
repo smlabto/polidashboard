@@ -27,7 +27,7 @@ async def main(page_id: str,
     else:
         raise HTTPException(status_code=404, detail="No page found for the given params")
     ads = fetch_db_data.fetch_ads(db, country, page_id, start_time, end_time)
-    ads = fetch_db_data.merge_page_name_to_ads(ads, page_name)
+    ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:

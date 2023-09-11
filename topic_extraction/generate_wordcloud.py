@@ -79,7 +79,7 @@ def generate_keyword_wordcloud(keyword_freq, output_filename='keyword_cloud'):
     # Convert the BytesIO object to a base64 encoded string
     base64_encoded = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
 
-    # plt.show()
+    plt.show()
 
     return base64_encoded
 
