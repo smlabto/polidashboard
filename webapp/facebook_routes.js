@@ -85,10 +85,7 @@ router.post('/status/country', function(req, res) {
         }, {
             '$limit': 1
         }
-    ]).toArray((err, data) => {
-
-        console.log (data)
-        
+    ]).toArray((err, data) => {        
         try {
             var timestamp = data[0].latest_collected
 
@@ -102,8 +99,6 @@ router.post('/status/country', function(req, res) {
             console.log(e);
             // [Error: Uh oh!]
         }
-
-
     })
 })
 
@@ -148,8 +143,10 @@ router.post('/facebook_ads_v2/funder_map', (req, res) => {
     var end = parseInt(req.body.endDay)
     var funder = req.body.funder
     var country = req.body.country
+    var page_id = req.body.page_id
+    if (page_id == '') page_id = null;
     if (funder == '') funder = null;
-    generateFunderMap(start, end, funder, country, res)
+    generateFunderMap(start, end, funder, country, page_id, res)
 });
 
 module.exports = router
@@ -340,43 +337,65 @@ function generateFunderPages(start, end, funder, country, res=null) {
 
 function generateFunderDemographics(start, end, funder, country, res=null) {
     console.log("Generating funder demographics: " + country);
-    var query = [
+    const query = [
         {
-            '$match': quickDateFilter(start, end)
-        }, {
             '$match': {
-                'funding_entity': funder
+                '$and': [
+                    quickDateFilter(start, end),
+                    { 'funding_entity': funder }
+                ]
             }
-        }, {
+        },
+        {
             '$lookup': {
                 'from': 'facebook_audiences_' + country,
                 'localField': '_id',
                 'foreignField': '_id.ad',
                 'as': 'demographics'
             }
-        }, {
-          '$lookup': {
-            'from': 'facebook_regions_' + country, 
-            'localField': '_id', 
-            'foreignField': '_id.ad', 
-            'as': 'regions'
-          }
-        }, {
-            '$project': {
-                'spend': '$spend', 
-                'impressions': '$impressions', 
-                'demographics': 1, 
-                'regions': 1, 
-                'snapshot_url': '$snapshot_url', 
-                'titles': '$creative_link_titles',
-                'page_id': '$page_id'
-            }
         }
     ]
-
+    if (country != 'us') {
+        query.push(
+            {
+                '$lookup': {
+                    'from': 'facebook_regions_' + country,
+                    'localField': '_id',
+                    'foreignField': '_id.ad',
+                    'as': 'regions'
+                }
+            },
+            {
+                '$project': {
+                    'spend': 1,
+                    'impressions': 1,
+                    'demographics': 1,
+                    'regions': 1,
+                    'snapshot_url': 1,
+                    'titles': '$creative_link_titles',
+                    'page_id': 1
+                }
+            }
+        )
+    } else {
+        query.push(
+            {
+                '$project': {
+                    'spend': 1,
+                    'impressions': 1,
+                    'demographics': 1,
+                    'snapshot_url': 1,
+                    'titles': '$creative_link_titles',
+                    'page_id': 1
+                }
+            }
+        )
+    }
+    
     db.collection('facebook_ads_' + country)
             .aggregate(query)
             .toArray((err, data) => {
+                // console.log(data);
                 if (res !== null) {
                     res.send(data)
                 }       
@@ -411,9 +430,12 @@ function generateFunderTimeline(start, end, funder, country, res) {
             })
 }
 
-async function generateFunderMap(start, end, funder, country, res) {
+async function generateFunderMap(start, end, funder, country, page_id, res) {
     console.log("Generating funder map: " + country);
-    const query = [
+    if (funder === "No funding entity given") {
+        funder = null;
+    }
+    var query = [
         {
             '$match': {
                 ...quickDateFilter(start, end),
@@ -428,6 +450,24 @@ async function generateFunderMap(start, end, funder, country, res) {
         }
     ];
 
+    if (page_id != null) {
+        query = [
+            {
+                '$match': {
+                    ...quickDateFilter(start, end),
+                    'funding_entity': funder,
+                    'page_id': page_id
+                }
+            },
+            {
+                '$project': {
+                    'spend': 1,
+                    'delivery_by_region': 1
+                }
+            }
+        ];
+    }
+
     // Eventually don't hardcode this, once more countries are setup
     const stateCodeDictionary = countryStates['us'];
     
@@ -435,6 +475,8 @@ async function generateFunderMap(start, end, funder, country, res) {
         .aggregate(query, { allowDiskUse: true });
 
     const stateTotals = new Map();
+    const minSpend = new Map();
+    const maxSpend = new Map();
     let totalCount = 0;
 
     const documents = await cursor.toArray();
@@ -442,24 +484,36 @@ async function generateFunderMap(start, end, funder, country, res) {
     for (const stateName of stateCodeDictionary.keys()) {
         // Initialize the stateTotal for the current stateName
         stateTotals.set(stateName, 0);
+        minSpend.set(stateName, 0);
+        maxSpend.set(stateName, 0);
     }
 
     documents.forEach(doc => {
+        console.log(doc.spend);
         const deliveryByRegion = doc.delivery_by_region;
+        const spendingByAd = doc.spend;
+        const spendLowerBound = spendingByAd.lower_bound;
+        const spendUpperBound = spendingByAd.upper_bound;
 
         if (deliveryByRegion !== null) {
             totalCount++;
             for (const state in deliveryByRegion) {
-                // console.log(state);
                 const stateName = state;
                 const deliveryAmount = deliveryByRegion[state];
 
                 if (stateName) {
+                    
                     if (stateTotals.has(stateName)) {
                         stateTotals.set(stateName, stateTotals.get(stateName) + deliveryAmount);
                     } else {
                         stateTotals.set(stateName, deliveryAmount);
                     }
+                    if (spendLowerBound > 0) { // it's possible for this to be 0
+                        let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
+                        minSpend.set(stateName, minSpend.get(stateName) + adLowerBoundFactoredByState);
+                    }
+                    let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
+                    maxSpend.set(stateName, maxSpend.get(stateName) + adUpperBoundFactoredByState)
                 } else {
                     // If state is not in stateCodeDictionary, place it as "Outside of Country"
                     const unknownStateId = "Outside of Country";
@@ -479,9 +533,20 @@ async function generateFunderMap(start, end, funder, country, res) {
 
     if (res !== null) {
         const stateTotalsArray = Array.from(stateTotals, ([name, value]) => ({ name, value }));
-        const stateTotalsArrayWithNames = stateTotalsArray.map(obj => ({ ...obj,
-            stateId: stateCodeDictionary.get(obj['name'])
-        }));
+        const stateTotalsArrayWithNames = stateTotalsArray.map(obj => {
+            const stateId = stateCodeDictionary.get(obj['name']);
+            const minSpendValue = minSpend.get(obj['name']);
+            const maxSpendValue = maxSpend.get(obj['name']);
+            
+            return {
+                name: obj['name'],
+                stateId: stateId,
+                value: obj['value'],
+                minSpend: minSpendValue,
+                maxSpend: maxSpendValue
+            };
+        });
+        console.log(stateTotalsArrayWithNames);
         res.json(stateTotalsArrayWithNames);
     }
 }

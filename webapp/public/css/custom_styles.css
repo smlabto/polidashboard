@@ -366,11 +366,14 @@ footer a {
 	padding: 10px;
 	right: 0;
 	top: 325px;
-	padding-bottom: 18px;
 	z-index: 10000;
 	font-size: 13px;
 	overflow-x: visible;
 	border-radius: 2px;
+}
+
+.maptip-text {
+	margin-bottom: 0px;
 }
 
 .maptip img {
@@ -932,4 +935,81 @@ h3.widget-title, h4.summary_subtitle {
 #log p {
 	font-weight: 400;
 	margin: 0;
+}
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: block;
+}
+
+/* Dropdown button */
+.dropdown-btn {
+    background-color: #cf3d3d;
+    color: white;
+	width: 100%;
+    padding: 10px;
+	/* margin-top: 20px; */
+    border: none;
+	text-align: left;
+    cursor: pointer;
+}
+
+/* Dropdown content */
+.dropdown-content {
+    display: block;
+    background-color: #f1f1f1;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 0; /* Set a lower z-index than the button */
+    padding: 10px;
+    transform-origin: top;
+    animation: slideDown 0.5s ease forwards; /* Use CSS animation */
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Keyframes for the slide-down animation */
+@keyframes slideDown {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: scaleY(1);
+    }
+    to {
+        transform: scaleY(0);
+    }
+}
+
+hr {
+	/* border-top: 2px solid #000; */
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.arrow {
+	display: inline-block;
+	transition: transform 0.3s;
+	transform: rotate(0deg);
+}
+
+.dropdown-btn span {
+	transition: all 0.4s ease;
+}
+  
+.dropdown-btn:hover span {
+	transform: rotateZ(90deg);
+}
+  
+.page_name {
+	margin-bottom: 2px;
 }
