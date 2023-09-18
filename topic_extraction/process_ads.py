@@ -26,14 +26,15 @@ stop_words = stop_words.union(en.Defaults.stop_words).union(get_stop_words('engl
 
 
 # This function returns a list of phrases extracted from the text
-def extract_phrase(text, top_n=10, max_length=5):
+def extract_phrase(text, top_n=10, max_length=3, min_length=1):
     # The Language is English, a deduplication threshold is set to 0.9, and ngram size is 1 up to 3.
     kw_extractor = yake.KeywordExtractor(lan="en", dedupLim=0.9, windowsSize=1, top=top_n, features=None, n=max_length)
     key_phrase = kw_extractor.extract_keywords(text)
 
-    # remove all the key phrases that contain only a single word and return the list of multiple phrase key_phrase
     keyword_list = [kw[0] for kw in key_phrase]
-    return [kw for kw in keyword_list if len(kw.split()) > 1]
+    if min_length != 0:
+        keyword_list = [kw for kw in keyword_list if len(kw.split()) > min_length]
+    return key_phrase
 
 
 def extract_top_key_phrase(ads, top_n=20, share_word_threshold=0.49):
