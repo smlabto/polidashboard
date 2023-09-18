@@ -45,12 +45,12 @@ async def main(page_id: str,
         return json.dumps(result_dict)
 
     else:
-        top_topics = process_ads.extract_top_topics(ads,
-                                                    top_n=top_n_topics,
-                                                    share_word_threshold=topic_share_word_threshold)
-        img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_topics)
-        # make a result dict with the image base64 string and the top keywords
-        result_dict = {"img": img_base64, "result": top_topics}
+        key_phrases = process_ads.extract_top_key_phrase(ads,
+                                                         top_n=top_n_topics,
+                                                         share_word_threshold=topic_share_word_threshold)
+        img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases)
+        # make a result dict with the image base64 string and the top keywords topics
+        result_dict = {"img": img_base64, "result": key_phrases}
         return json.dumps(result_dict)
 
 
