@@ -16,9 +16,9 @@ async def main(page_id: str,
                start_time: datetime,
                end_time: datetime,
                is_wordcloud: bool = False,
-               top_n_topics: int = 40,
+               top_n_key_phrases: int = 40,
                top_n_keywords: int = 100,
-               topic_share_word_threshold: float = 0.49,
+               key_phrase_share_word_threshold: float = 0.49,
                keyword_share_word_threshold: float = 0.49,
                is_politically_relevant_threshold: float = 0.75):
     page = fetch_db_data.fetch_page(db, country, page_id)
@@ -46,10 +46,10 @@ async def main(page_id: str,
 
     else:
         key_phrases = process_ads.extract_top_key_phrase(ads,
-                                                         top_n=top_n_topics,
-                                                         share_word_threshold=topic_share_word_threshold)
+                                                         top_n=top_n_key_phrases,
+                                                         share_word_threshold=key_phrase_share_word_threshold)
         img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases)
-        # make a result dict with the image base64 string and the top keywords topics
+        # make a result dict with the image base64 string and the top key phrases
         result_dict = {"img": img_base64, "result": key_phrases}
         return json.dumps(result_dict)
 

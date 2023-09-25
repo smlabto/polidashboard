@@ -5,11 +5,11 @@ import numpy as np
 import base64
 from io import BytesIO
 
-mask = np.array(Image.open("thought_bubble_2.png"))
+mask = np.array(Image.open("thought_bubble_1.png"))
 
 
 # generate a "phrase" wordcloud from the top topics dict list
-def generate_phrase_wordcloud(topic_freq, output_filename='phrase_cloud'):
+def generate_phrase_wordcloud(topic_freq, output_filename='phrase_cloud', debug=False):
     # create a dictionary with topic as a key and frequency as value
 
     # wordcloud = WordCloud(width=1500, height=500, scale=8, font_step=0.01,
@@ -44,13 +44,14 @@ def generate_phrase_wordcloud(topic_freq, output_filename='phrase_cloud'):
     # Convert the BytesIO object to a base64 encoded string
     base64_encoded = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
 
-    # plt.show()
+    if debug:
+        plt.show()
 
     return base64_encoded
 
 
 # generate a wordcloud from the keywords dict
-def generate_keyword_wordcloud(keyword_freq, output_filename='keyword_cloud'):
+def generate_keyword_wordcloud(keyword_freq, output_filename='keyword_cloud', debug=False):
     # wordcloud = WordCloud(width=1500, height=500, scale=8, font_step=0.01,
     #                       max_words=200, stopwords=None, background_color='whitesmoke', max_font_size=None,
     #                       mode='RGB', prefer_horizontal=0.5, relative_scaling=0.3,
@@ -79,7 +80,8 @@ def generate_keyword_wordcloud(keyword_freq, output_filename='keyword_cloud'):
     # Convert the BytesIO object to a base64 encoded string
     base64_encoded = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
 
-    plt.show()
+    if debug:
+        plt.show()
 
     return base64_encoded
 

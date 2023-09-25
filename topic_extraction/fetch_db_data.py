@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import pandas as pd
-import json
+import generate_wordcloud
+import process_ads
 
 
 def return_client_and_db(mongo_uri='mongodb://localhost:27017'):
@@ -57,7 +58,31 @@ if __name__ == '__main__':
 
     page_name = fetch_page(db, country, page_id)
     ads = fetch_ads(db, country, page_id, start_time, end_time)
-
     ads = merge_page_name_with_associated_ads(ads, page_name)
+
+    is_wordcloud = False
+    top_n_keywords = 100
+    keyword_share_word_threshold = 0.49
+    is_politically_relevant_threshold = 0.75
+    top_n_key_phrases = 40
+    key_phrase_share_word_threshold = 0.49
+
+    # if ads is an empty list, raise an exception
+    if len(ads) == 0:
+        raise "No ads found for the given params"
+
+    if is_wordcloud:
+        top_keywords = process_ads.extract_keywords([ad["creative_bodies"] for ad in ads],
+                                                    top_n=top_n_keywords,
+                                                    similarity_threshold=keyword_share_word_threshold,
+                                                    is_politically_relevant_threshold=is_politically_relevant_threshold)
+        img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, debug=True)
+
+
+    else:
+        key_phrases = process_ads.extract_top_key_phrase(ads,
+                                                         top_n=top_n_key_phrases,
+                                                         share_word_threshold=key_phrase_share_word_threshold)
+        img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases, debug=True)
 
     close_connection(client)

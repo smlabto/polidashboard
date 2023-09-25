@@ -108,7 +108,7 @@ def get_page_names_plus_ads_dict_list(combined_ads):
     return page_names_plus_ads_dict_list
 
 
-def extract_keywords(texts, top_n=10, is_politically_relevant_threshold=0.75, similarity_threshold=0.5):
+def extract_keywords(texts, top_n=10, is_politically_relevant_threshold=0.75, similarity_threshold=0.5, if_only_politically_relevant=True):
     # Use Tfidf Vectorizer to get important words based on TF-IDF scores
     vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=10000)
     tfidf_matrix = vectorizer.fit_transform(texts)
@@ -116,20 +116,13 @@ def extract_keywords(texts, top_n=10, is_politically_relevant_threshold=0.75, si
     tfidf_scores = tfidf_matrix.sum(axis=0).A1
     tfidf_ranking = [(feature_names[i], tfidf_scores[i]) for i in tfidf_scores.argsort()[::-1]]
 
-    # # Filter out non-legit words and stopwords
-    # tfidf_ranking = [(word, score) for word,
-    # score in tfidf_ranking if word in english_words and word not in stop_words]
-    # tfidf_ranking = [
-    #     (word, score) for word, score in tfidf_ranking
-    #     if word in english_words and word not in stop_words and is_politically_relevant(word)
-    # ]
-
-    tfidf_ranking = [
-        (word, score) for word, score in tfidf_ranking
-        if word in english_words and is_politically_relevant(word,
-                                                             is_politically_relevant_threshold=is_politically_relevant_threshold)
-    ]
-    tfidf_ranking = remove_duplicate_keywords(tfidf_ranking, similarity_threshold=similarity_threshold)
+    if if_only_politically_relevant:
+        tfidf_ranking = [
+            (word, score) for word, score in tfidf_ranking
+            if word in english_words and is_politically_relevant(word,
+                                                                 is_politically_relevant_threshold=is_politically_relevant_threshold)
+        ]
+        tfidf_ranking = remove_duplicate_keywords(tfidf_ranking, similarity_threshold=similarity_threshold)
 
     keyword_freq = {}
     for keyword in tfidf_ranking[:top_n]:
@@ -137,15 +130,15 @@ def extract_keywords(texts, top_n=10, is_politically_relevant_threshold=0.75, si
     return keyword_freq
 
 
-# remove the deplicate words, rule: if two words share more than 50% of the same word, then remove the one with
-# fewer characters
+# remove the deplicate words, rule: if two words share more than similarity_threshold% of the same word, then remove
+# the one with fewer characters
 def remove_duplicate_keywords(tfidf_ranking, similarity_threshold=0.5):
     # create a set of words
     words_set = set()
     unique_keywords = []
     for keyword in tfidf_ranking:
-        # if the current word is not 50% similar of any word in the set, add it to the set and append it to the
-        # list of unique keywords
+        # if the current word is not similarity_threshold% similar of any word in the set, add it to the set and append
+        # it to the list of unique keywords
         is_similar = False
         for word in words_set:
             # calculate the similarity between the current word and the word in the set by counting the number of shared
@@ -201,12 +194,8 @@ def main():
     for i in top_key_phrases:
         print(i)
 
-    # Add this function call in the main() function to see the results:
-    print([ad["creative_bodies"] for ad in republican_ads])
-    keywords = extract_keywords([ad["creative_bodies"] for ad in republican_ads], top_n=100)
-
-    generate_wordcloud.generate_phrase_wordcloud(top_key_phrases)
-    generate_wordcloud.generate_keyword_wordcloud(keywords)
+    # print([ad["creative_bodies"] for ad in republican_ads])
+    # keywords = extract_keywords([ad["creative_bodies"] for ad in republican_ads], top_n=100)
 
 
 if __name__ == '__main__':
