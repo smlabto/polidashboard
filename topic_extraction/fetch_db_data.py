@@ -40,6 +40,27 @@ def merge_page_name_with_associated_ads(ads, page_name):
     return ads
 
 
+def create_ads_summary_table(ads):
+    # create a list of dictionaries of unique creative_bodies
+    ads_summary_table = []
+    for ad in ads:
+        # search for the ad dictionary in the ads_summary_table that has the same creative_bodies as the current ad
+        found_previous_ad = False
+        for unique_ad in ads_summary_table:
+            found_previous_ad = True
+            if ad["creative_bodies"] == unique_ad["creative_bodies"]:
+                unique_ad["freq"] += 1
+                unique_ad["ad_ids"].append(ad["_id"])
+        # if the ad is not found in the ads_summary_table, add it to the ads_summary_table
+        if not found_previous_ad:
+            ads_summary_table.append({"creative_bodies": ad["creative_bodies"],
+                                      "freq": 1,
+                                      "ad_ids": [ad["_id"]],
+                                      "page_name": ad["page_name"],
+                                      "snapshot_url": ad["snapshot_url"]})
+
+    return ads_summary_table
+
 def close_connection(client):
     client.close()
 
@@ -58,9 +79,11 @@ if __name__ == '__main__':
 
     page_name = fetch_page(db, country, page_id)
     ads = fetch_ads(db, country, page_id, start_time, end_time)
-    ads = merge_page_name_with_associated_ads(ads, page_name)
 
-    is_wordcloud = False
+    ads = merge_page_name_with_associated_ads(ads, page_name)
+    ads_summary = create_ads_summary_table(ads)
+
+    is_wordcloud = True
     top_n_keywords = 100
     keyword_share_word_threshold = 0.49
     is_politically_relevant_threshold = 0.75
@@ -82,7 +105,9 @@ if __name__ == '__main__':
     else:
         key_phrases = process_ads.extract_top_key_phrase(ads,
                                                          top_n=top_n_key_phrases,
-                                                         share_word_threshold=key_phrase_share_word_threshold)
+                                                         share_word_threshold=key_phrase_share_word_threshold,
+                                                         min_length=2,
+                                                         max_length=3)
         img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases, debug=True)
 
     close_connection(client)

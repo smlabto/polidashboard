@@ -34,15 +34,15 @@ def extract_phrase(text, top_n=10, max_length=3, min_length=1):
     keyword_list = [kw[0] for kw in key_phrase]
     if min_length != 0:
         keyword_list = [kw for kw in keyword_list if len(kw.split()) > min_length]
-    return key_phrase
+    return keyword_list
 
 
-def extract_top_key_phrase(ads, top_n=20, share_word_threshold=0.49):
+def extract_top_key_phrase(ads, top_n=200, share_word_threshold=0.49, min_length=1, max_length=3):
     key_phrase_freq = defaultdict(int)
 
     for ad in ads:
         ad_text = ad["creative_bodies"]
-        key_phrases = extract_phrase(ad_text)
+        key_phrases = extract_phrase(ad_text, min_length=min_length, max_length=max_length)
         for phrase in key_phrases:
             key_phrase_freq[phrase] += 1
 
@@ -108,7 +108,7 @@ def get_page_names_plus_ads_dict_list(combined_ads):
     return page_names_plus_ads_dict_list
 
 
-def extract_keywords(texts, top_n=10, is_politically_relevant_threshold=0.75, similarity_threshold=0.5, if_only_politically_relevant=True):
+def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5, if_only_politically_relevant=True):
     # Use Tfidf Vectorizer to get important words based on TF-IDF scores
     vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=10000)
     tfidf_matrix = vectorizer.fit_transform(texts)
