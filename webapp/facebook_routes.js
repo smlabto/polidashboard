@@ -5,7 +5,7 @@ const fs = require('fs');
 var _ = require('underscore');
 var countries = require('./countries.json');
 var countryStates = require('./country_states.js');
-
+const https = require("http") //https
 
 var db = mongoose.connection.db
 
@@ -147,6 +147,17 @@ router.post('/facebook_ads_v2/funder_map', (req, res) => {
     if (page_id == '') page_id = null;
     if (funder == '') funder = null;
     generateFunderMap(start, end, funder, country, page_id, res)
+});
+
+router.post('/facebook_ads_v2/funder_word', (req, res) => {
+    var start = parseInt(req.body.startDay)
+    var end = parseInt(req.body.endDay)
+    var funder = req.body.funder
+    var country = req.body.country
+    var page_id = req.body.page_id
+    if (page_id == '') page_id = null;
+    if (funder == '') funder = null;
+    generateWordMap(start, end, funder, country, page_id, res)
 });
 
 module.exports = router
@@ -489,42 +500,54 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
     }
 
     documents.forEach(doc => {
-        console.log(doc.spend);
         const deliveryByRegion = doc.delivery_by_region;
         const spendingByAd = doc.spend;
         const spendLowerBound = spendingByAd.lower_bound;
         const spendUpperBound = spendingByAd.upper_bound;
 
+        let stateId = "Unknown"
+        let deliveryAmount = 1.0;
+
         if (deliveryByRegion !== null) {
             totalCount++;
             for (const state in deliveryByRegion) {
                 const stateName = state;
-                const deliveryAmount = deliveryByRegion[state];
+                deliveryAmount = deliveryByRegion[state];
 
+                stateId = stateName;
                 if (stateName) {
-                    
-                    if (stateTotals.has(stateName)) {
-                        stateTotals.set(stateName, stateTotals.get(stateName) + deliveryAmount);
-                    } else {
-                        stateTotals.set(stateName, deliveryAmount);
-                    }
-                    if (spendLowerBound > 0) { // it's possible for this to be 0
-                        let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
-                        minSpend.set(stateName, minSpend.get(stateName) + adLowerBoundFactoredByState);
-                    }
-                    let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
-                    maxSpend.set(stateName, maxSpend.get(stateName) + adUpperBoundFactoredByState)
+                    stateId = stateName;
                 } else {
-                    // If state is not in stateCodeDictionary, place it as "Outside of Country"
-                    const unknownStateId = "Outside of Country";
-                    if (stateTotals.has(unknownStateId)) {
-                        stateTotals.set(unknownStateId, stateTotals.get(unknownStateId) + deliveryAmount);
-                    } else {
-                        stateTotals.set(unknownStateId, deliveryAmount);
-                    }
+                    stateId = "Unknown";
                 }
+
+                if (stateTotals.has(stateId)) {
+                    stateTotals.set(stateId, stateTotals.get(stateId) + deliveryAmount);
+                } else {
+                    stateTotals.set(stateId, deliveryAmount);
+                }
+                if (spendLowerBound > 0) { // it's possible for this to be 0
+                    let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
+                    minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
+                }
+                let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
+                maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
             }
+        } else {
+            totalCount++;
+            if (stateTotals.has(stateId)) {
+                stateTotals.set(stateId, stateTotals.get(stateId) + deliveryAmount);
+            } else {
+                stateTotals.set(stateId, deliveryAmount);
+            }
+            if (spendLowerBound > 0) { // it's possible for this to be 0
+                let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
+                minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
+            }
+            let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
+            maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
         }
+
     });
 
     stateTotals.forEach((value, stateName) => {
@@ -546,8 +569,100 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 maxSpend: maxSpendValue
             };
         });
-        console.log(stateTotalsArrayWithNames);
+        // console.log(stateTotalsArrayWithNames);
         res.json(stateTotalsArrayWithNames);
+    }
+}
+
+async function generateWordMap(start, end, funder, country, page_id = null, res) {
+    const apiUrl = "http://192.168.1.128:8089";
+
+    // Replace with the appropriate query parameters
+    // Currently using temporary parameters
+    const _page_id = "107661474402498";
+    const _country = "us";
+    const start_time = new Date("1970-08-23T11:31:07.676+00:00");
+    const end_time = new Date("2023-09-14T11:31:07.676+00:00");
+    // const is_wordcloud = true; // or false
+    // const top_n_topics = 40;
+    // const top_n_keywords = 100;
+    // const topic_share_word_threshold = 0.49;
+    // const keyword_share_word_threshold = 0.49;
+    // const is_politically_relevant_threshold = 0.75;
+
+    // Construct the URL with query parameters
+    // const queryParams = new URLSearchParams({
+    //     _page_id,
+    //     _country,
+    //     start_time,
+    //     end_time,
+    //     // is_wordcloud,
+    //     // top_n_topics,
+    //     // top_n_keywords,
+    //     // topic_share_word_threshold,
+    //     // keyword_share_word_threshold,
+    //     // is_politically_relevant_threshold,
+    // });
+
+    // const fullUrl = apiUrl + "?" + queryParams.toString();
+    const queryParams = new URLSearchParams();
+    queryParams.append("page_id", _page_id);
+    queryParams.append("country", _country);
+    queryParams.append("start_time", start_time.toISOString());
+    queryParams.append("end_time", end_time.toISOString());
+    
+    const fullUrl = apiUrl + "?" + queryParams.toString();
+    try {
+        // Parse the URL
+        const url = new URL(fullUrl);
+
+        // Create an HTTP request options object
+        const options = {
+            method: 'GET',
+            hostname: url.hostname,
+            port: url.port,
+            path: url.pathname + url.search,
+        };
+
+        // Make the HTTP GET request
+        const request = https.request(options, (response) => {
+            let data = '';
+
+            // Listen for data events and accumulate the response data
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                if (response.statusCode !== 200) {
+                    // Check for a 422 status code and handle the response body
+                    if (response.statusCode === 422) {
+                        try {
+                            const responseData = JSON.parse(data);
+                            console.error("Validation error:", responseData);
+                        } catch (error) {
+                            console.error("Error parsing response body:", error);
+                        }
+                    } else {
+                        console.error(`HTTP error! Status: ${response.statusCode}`);
+                    }
+                } else {
+                    const responseData = JSON.parse(JSON.parse(data));
+                    console.log(typeof responseData)
+                    res.json(responseData);
+                }
+            });
+        });
+
+        // Handle any errors that occur during the request
+        request.on('error', (error) => {
+            console.error("Request error:", error);
+        });
+
+        // Send the request
+        request.end();
+    } catch (error) {
+        console.error("URL parsing error:", error);
     }
 }
 

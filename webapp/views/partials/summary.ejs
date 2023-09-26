@@ -11,7 +11,7 @@
 		<hr>
 		<div id="summary-home">
 			<h3 class="widget-title" id="top_10_title">
-				About the Module
+				About PoliDashboard
 			</h3>
 			<p>
 				<a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is a data visualization tool designed to help voters, journalists, and campaign staffers to monitor the health of political discussions online and learn about the political and social issue ads that are being shown to users on Facebook and its various other products including Instagram. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
@@ -22,31 +22,30 @@
 			</p>
 		</div>
 		<div id="summary-focus">
-			<h3 id="pages_subtitle" class="advertiser_name"></h3>
+			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
 			<div class="dropdown" style="z-index: 50;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Facebook Pages Funded by</button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<!-- ### Start of Pages Funded Widget -->
-					<div class="navigation-instructions" id="right-navigation-instructions">
+					<!-- <div class="navigation-instructions" id="right-navigation-instructions">
 						<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
 						<strong>Navigation Instructions</strong>
 						<ul>
 							<li>Click on <i class="fas fa-chart-bar"></i> to see a chart of the total number of active ads per day posted by a page controlled by a funder.</li>
 							<li>Hover over any dots in the line chart to see the total number of active ads by a funder (or a page that they control) on a specific date in the selected timeframe.</li>
 						</ul>
-					</div>
+					</div> -->
 					
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"> -->
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Facebook Pages Funded by -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div class="tiptext">
-								This module shows Facebook Pages controlled by a funding entity. Funding entities on Facebook can set up and control multiple Facebook pages. Having a Facebook page is a prerequisite for running Custom Audiences and Lookalike Audiences advertisements on Facebook.
-							</div>
+							<div id="tiptext-pages" class="tiptext"></div>
 						</div>
 					</h3></h4>
-					<h4 id="pages_subtitle" class="summary_subtitle page_name"> Filter by a page</h4>
+					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+					<h5 id="funder_pages_subtitle" class="summary_subtitle page_name"> Filter by a page</h5>
 					<div class="loader red" id="funder_pages_loader">
 						<div class="lds-grid">
 							<div></div>
@@ -65,20 +64,59 @@
 			</div>
 		
 			<hr>
+
+			<!-- ### Start of Ads Per Day Widget ### -->
+			<div class="dropdown" style="z-index: 30;">
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Total Number of Active Ads Per Day Funded by: <span class="sub_advertiser_name">___</span></button>
+				<div class="dropdown-content">
+					<h3 class="widget-title" id="page-scroll">
+						<!-- Total Number of Active Ads Per Day -->
+						<div class="tip">
+							<img src="/images/info.png">
+							<div class="tiptext">
+								This chart shows the total number of ads that were active for each day of the selected timeframe.
+							</div>
+						</div>
+					</h3>
+
+					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
+					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
+					<br>
+					<div class="loader red" id="timeline_loader">
+						<div class="lds-grid">
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+						</div>
+					</div>
+					<div id="timeline"></div>
+				</div>
+			</div>	
+
+			<hr>
 			
 			<!-- ### Start of Map Widget ### -->
 			<% if (country === 'us') { %>
 				<div class="dropdown" style="z-index: 40;">
-					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where These Ads Were Shown</button>
+					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where Facebook Ads Funded by: <span class="sub_advertiser_name">___</span> Were Shown</button>
 					<div class="dropdown-content">
 						<h3 class="widget-title" id="page-scroll">
 							<!-- Where These Ads Were Shown -->
 							<div class="tip">
 								<img src="/images/info.png">
-								<div class="tiptext">
-									This module shows the distribution of this funder's viewed ads across different States.
+								<div id="map-textip" class="tiptext">
+									This module shows where Meta ads by this funder/page were shown.
 									<br><br>
-									Hover over any State to see what percentage of this funder's ads were shown there.
+									Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
+									<!-- This module shows the distribution of this funder's viewed ads across different States.
+									Hover over any State to see what percentage of this funder's ads were shown there. -->
 									<br><br>
 									Ads for which no regional data is available are omitted.
 								</div>
@@ -86,7 +124,9 @@
 						</h3>
 						<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
 						<!-- Map loader icon -->
-						<h4 id="pages_subtitle" class="summary_subtitle page_name">&nbsp;</h4>
+						
+						<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+						<h5 id="pages_subtitle" class="summary_subtitle page_name">&nbsp;</h5>
 						<div class="loader red" id="map_loader">
 							<div class="lds-grid">
 								<div></div>
@@ -107,47 +147,10 @@
 				</div>
 				<hr>
 			<% } %>
-			
-			
-			<!-- ### Start of Ads Per Day Widget ### -->
-			<div class="dropdown" style="z-index: 30;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Total Number of Active Ads Per Day</button>
-				<div class="dropdown-content">
-					<h3 class="widget-title" id="page-scroll">
-						<!-- Total Number of Active Ads Per Day -->
-						<div class="tip">
-							<img src="/images/info.png">
-							<div class="tiptext">
-								This chart shows the total number of ads that were active for each day of the selected timeframe.
-							</div>
-						</div>
-					</h3>
-
-					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
-					<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
-					<br>
-					<div class="loader red" id="timeline_loader">
-						<div class="lds-grid">
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-						</div>
-					</div>
-					<div id="timeline"></div>
-				</div>
-			</div>	
-
-			<hr>
 
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Who Was Shown These Ads</button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demogrpahic of Who Was Shown These Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<div class="navigation-instructions" id="right-navigation-instructions">
 						<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
@@ -166,15 +169,20 @@
 						<div class="tip">
 							<img src="/images/info.png">
 							<div class="tiptext">
-								This module shows the age and gender breakdowns of people who saw ads by this funding entity - each dot represents one ad.
+								<!-- This module shows the age and gender breakdowns of people who saw ads by this funding entity - each dot represents one ad.
 								<br><br>
-								Hover over a dot to see that ad's distribution across all demographics, and click to see that ad's summary (ad will open in a new tab).
+								Hover over a dot to see that ad's distribution across all demographics, and click to see that ad's summary (ad will open in a new tab). -->
+								This module shows the age and gender of users who these ads (by this funding entity) were shown to - each dot represents one ad.
+								<br><br>
+								Hover over a dot to see that ad's distribution across all demographics, and click on a dot to see summary stats about the ad (ad will open in a new tab).
 							</div>
 						</div>
 					</h3>
 
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
-					<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+					
+					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
 
 					<br>
 					<div id="demographics_legend">
@@ -205,7 +213,7 @@
 			<% if (country != 'us') { %>
 				<hr>
 				<div class="dropdown" style="z-index: 10;">
-					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where These Ads Were Shown</button>
+					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where These Ads Were Shown by: <span class="sub_advertiser_name">___</span></button>
 					<div class="dropdown-content">
 
 						<h3 class="widget-title">
@@ -222,7 +230,9 @@
 							</div>
 						</h3>
 						
-						<h4 id="pages_subtitle" class="summary_subtitle page_name"></h4>
+						
+						<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+						<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
 						<div class="loader red" id="regions_loader">
 							<div class="lds-grid">
 								<div></div>
@@ -241,7 +251,7 @@
 					</div>
 				</div>
 			<% } %>
-
+			<img id="imageElement" src="" alt="Image">
 		</div>
 	</div>
 </div>
@@ -339,6 +349,15 @@
 			timelineData = data;
 		});
 
+		// performRequest('/facebook_ads_v2/funder_word', commonData, data => {
+		// 	// TO DO: Implement word cloud
+		// 	console.log("Funder Word")
+		// 	console.log(data);
+		// 	const imageElement = document.getElementById("imageElement");
+		// 	// Set the src attribute of the image element to the base64-encoded image data.
+		// 	imageElement.src = "data:image/png;base64," + data.img;
+		// });
+
 		if (country === 'us') {
 			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 				drawMap(data);
@@ -385,9 +404,13 @@
 		if (country != 'us') d3.select('#regions_loader').style('display', 'block')
 		d3.select('#funder_pages').html('')
 		d3.select('#funder_note').remove()
-		// d3.select('.page_name')
-		// 	// .style('display', 'none')
-		// 	.html('&nbsp;')
+
+		d3.selectAll('.sub_advertiser_name')
+			.text(funder)
+			.style('text-decoration', 'underline')
+		
+		d3.select('#tiptext-pages')
+			.html('This module shows all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span><br><br>Funding entities can set up and control multiple Facebook Pages from which they can then use to run custom advertising campaigns on both Facebook and Instagram.')
 
 		// Scroll to the funder, if mobile
 		if (isMobile) {
@@ -427,7 +450,7 @@
 		}
 		// Scroll to show data if on mobile
 		$([document.documentElement, document.body]).animate({
-			scrollTop: $("#page-scroll").offset().top
+			scrollTop: $("#page-scroll").offset().top - 30
 		}, 500);
 
 		chosenPage = p.page_id
@@ -435,11 +458,11 @@
 			// Add the "Posted by" subtitles
 			d3.selectAll('.page_name')
 				.style('display', 'block')
-				.style('color', "#CC4444")
-				.html(`<i class="fas fa-filter"></i>&nbsp;Posted by: "${p.page_name}" Page`)
+				.style('color', "#000000")
+				.html(`<i class="fas fa-filter"></i>&nbsp;Ads Posted by: "${p.page_name}" Page`)
 				.append('button')
 				.attr('class', 'page_exit_button')
-				.html('<i class="fas fa-times-circle"></i>')
+				.html('<i class="fas fa-times-circle fa-lg" style="color: #CC4444;" title="Remove page filter"></i>')
 				.on('click', revertPage)
 
 			// Draw the three charts
@@ -476,7 +499,6 @@
 				// This one HAS to call a request right away, as page_id needs to be defined
 				if (country === 'us') {
 					commonData.page_id = p.page_id;
-					console.log(commonData)
 					performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 						drawMap(data);
 					});	
@@ -623,7 +645,7 @@
 
 	function drawPages(data, anchor) {
 		// Draw the list of a funder's pages
-		console.log(data.length);
+		// console.log(data.length);
 		// Create the container for the page widget
 		var pageContainers = d3.select(anchor)
 			.html("")
@@ -636,8 +658,11 @@
 		// Create the left column (with the filter button)
 		var pageLefts = pageContainers.append('div')
 			.attr('class', 'page-left')
+			.style('max-wdith', '90px')
 			.append('button')
-				.html('<i class="fas fa-chart-bar"></i>')
+				.style('margin', '5px')
+				.style('padding', '4px')
+				.html('<p>Filter by</p><i class="fas fa-filter fa-lg"></i>')
 				.attr('class', 'page-filter-button')
 				.on('click', d => {
 					showPage(d)
@@ -672,7 +697,7 @@
 			.attr('class', 'p-tip')
 			.append('div')
 				.attr('class', 'tiptext')
-				.html('Facebook reports ad spending as a range with a maximum and minimum. These values are the sum of these maxima and minima for all ads by the page.')
+				.html('Meta reports ads spending as a range with a maximum and minimum. The values shown are the sum of these maxima and minima for all ads ran by this Facebook Page.')
 
 		// Create the number of impressions range and tooltip explanation
 		pageRights.append('p')
@@ -680,7 +705,7 @@
 			.attr('class', 'p-tip')
 			.append('div')
 			.attr('class', 'tiptext')
-			.html('Facebook reports ad impressions as a range with a maximum and minimum. This value is the minimum possible number of impressions based on this data for all ads by the page.')
+			.html('Meta reports ad impressions as a range with a maximum and minimum. The value shown is the  minimum number of impressions for all ads ran by this Facebook Page.')
 	}
 
 	updateFacebookTimestamps()
@@ -692,7 +717,7 @@
 		format = d3.timeFormat('%b %d')
 
 		d3.selectAll('.facebook_date')
-			.html(`Time Frame: ${format(startDay)} - ${format(end)}`)
+			.html(`Select/Adjust Time Frame: ${format(startDay)} - ${format(end)}`)
 		d3.selectAll('.facebook_timestamp_no_calendar')
 			.html(`${format(startDay)} - ${format(end)}`)
 	}
@@ -718,7 +743,7 @@
 
 		// Create empty rows
 		for (var day = new Date(start.getTime()); day <= end; day.setDate(day.getDate() + 1)) {
-			rows[0].push(new Date(day.getTime()))
+			rows[0].push(day.getTime())
 			for (var r = 1; r < rows.length; r++) {
 				rows[r].push(0)
 			}
@@ -1290,29 +1315,28 @@
 		const height = 610;
 		const outlineColor = "#888888";
 
+		var _interpolateColor = function(color1, color2, factor) {
+			if (arguments.length < 3) { factor = 0.5; }
+			var result = color1.slice();
+			for (var i=0;i<3;i++) {
+				result[i] = Math.round(result[i] + factor*(color2[i]-color1[i]));
+			}
+			return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+		};
+
 		const customColorInterpolator = t => {
 			t = Math.min(1, Math.max(0, t));
-			const r = 255;
-			let g, b;
 			if (t === 0) {
-				g = 255;
-				b = 255;
-			} else {
-				// Use a logarithmic scale to map t to the range [0, 1]
-				const logT = Math.log10(70 * t + 1);
-				g = Math.round(255 - logT * 100);
-				b = Math.round(255 - logT * 100);
+				return `rgb(255, 255, 255)`;
 			}
-
-			return `rgb(${r}, ${g}, ${b})`;
+			// return _interpolateColor(h2r("#FFFFFF", h2r("#006EBD"), t));
+			const firstColor = [255, 255, 255];
+			const secondColor = [0, 110, 189];
+			const logT = Math.log10(90 * t + 10) - 1;
+			return _interpolateColor(firstColor, secondColor, logT)
 		};
 
 		const domain = [0.0, 1.0];
-		// const colorScale = customColorInterpolator();
-		const colorScale = d3.scaleLog()
-			.domain(domain)
-			.interpolate(d3.interpolateRgb)
-			.range(['white', '#FF2222']);
 
 		let svg = d3.select("#chart-container svg");
 		if (svg.empty()) {
@@ -1336,12 +1360,13 @@
 			.style("position", "absolute")
 			.style("visibility", "hidden")
 			.style("z-index", 100)
+			.style("text-align", "left");
 
 		const maptipOffset = 5;
 		function moveMapTooltip() {
 			var coords = d3.mouse(document.getElementById("chart-container"));
-			var xPos = coords[0] - 190;// - tooltip.node().getBoundingClientRect().width - maptipOffset;
-			var yPos = coords[1] + maptipOffset + 60;
+			var xPos = coords[0] - 200;// - tooltip.node().getBoundingClientRect().width - maptipOffset;
+			var yPos = coords[1] + maptipOffset + 90;
 			tooltip
 				.style("left", xPos + "px")
 				.style("top", yPos + "px")
@@ -1380,11 +1405,16 @@
 					// This isn't super necessary, make it a bit smoother visually the first time you hover
 					tooltip.html(
 						"<span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>" + // Unicode character for ◥
-						"<div class='maptip-title'>Audience Reach Distribution</div>" +
+						// "<div class='maptip-title'>Audience Reach Distribution</div>" +
+						// "<hr style='margin-top: 0; margin-bottom: 10px'>" +
+						// "<div class='maptip-content'>" +
+						// "<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
+						// "<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
+						// "<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
+						"<div class='maptip-title'>% of Funder's Ads Shown to Users From:</div>" +
 						"<hr style='margin-top: 0; margin-bottom: 10px'>" +
 						"<div class='maptip-content'>" +
-						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
-						"<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
+						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "<span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;" + (currentStateData.value * 100).toFixed(4) + "%</span>" +"</p>" +
 						"<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
 						"</div>"
 					);
@@ -1410,11 +1440,16 @@
 					}
 					tooltip.html(
 						"<span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>" + // Unicode character for ◥
-						"<div class='maptip-title'>Audience Reach Distribution</div>" +
+						// "<div class='maptip-title'>Audience Reach Distribution</div>" +
+						// "<hr style='margin-top: 0; margin-bottom: 10px'>" +
+						// "<div class='maptip-content'>" +
+						// "<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
+						// "<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
+						// "<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
+						"<div class='maptip-title'>% of Funder's Ads Shown to Users From:</div>" +
 						"<hr style='margin-top: 0; margin-bottom: 10px'>" +
 						"<div class='maptip-content'>" +
-						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
-						"<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
+						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "<span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;" + (currentStateData.value * 100).toFixed(4) + "%</span>" +"</p>" +
 						"<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
 						"</div>"
 					);
@@ -1422,7 +1457,7 @@
 					// Update tooltip position
 					moveMapTooltip();
 					tooltip
-						.style("visibility", "visible");
+						.style("visibility", "visible")
 				})
 				.on("mouseout", function() {
 					tooltip.style("visibility", "hidden");
@@ -1432,6 +1467,21 @@
 						highlightedPath = null; // Reset the reference
 					}
 				});
+				
+			var mapTextTip = $("#map-textip");
+			let unknownStateData = data.find(item => item.name === "Unknown");
+			mapTextTip
+				.html(`
+					This module shows where Facebook ads by this funder/page were shown.
+					<br><br>
+					Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
+					<br><br>
+				` +
+				(unknownStateData ? `<span style="color: yellow;">NOTE: ${(unknownStateData.value * 100).toFixed(2)}% of this funder's ads were shown to users from unknown regions. 
+					The estimated total ad spend for this funder during the selected timeframe is between ${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.</span>
+					</span>` : "" )
+				
+				);
 
 			g.append("path")
 				.attr("fill", "none")
@@ -1462,64 +1512,99 @@
 		// Generate the legend, as a gradient scale
 		const margin = 40;
 		const yOffset = 300;
+		const xOffset = 40;
 
 		const gradientScale = d3.scaleLinear()
-			.domain([0, 1])
-			.range([0, 1]);
+		.domain([0, 1])
+		.range([0, 1]);
 
 		const grad = svg.append('defs')
-			.append('linearGradient')
-			.attr('id', 'grad')
-			.attr('x1', '0%')
-			.attr('x2', '0%')
-			.attr('y1', '0%')
-			.attr('y2', '100%');
+		.append('linearGradient')
+		.attr('id', 'grad')
+		.attr('x1', '0%')
+		.attr('x2', '0%')
+		.attr('y1', '0%')
+		.attr('y2', '100%');
 
 		grad.selectAll('stop')
-			.data([0, 1])
-			.enter()
-			.append('stop')
-			.attr('offset', d => 100 * gradientScale(d) + '%')
-			.style('stop-color', d => customColorInterpolator(1 - d));
+		.data([0, 0.1, 0.25, 1]) // Add 0.1 and 0.25 to the data array
+		.enter()
+		.append('stop')
+		.attr('offset', d => 100 * gradientScale(d) + '%')
+		.style('stop-color', d => customColorInterpolator(1 - d));
 
 		// Checking if the rect element exists, and either append it or change its visibility
 		let rect = svg.select('rect');
 		if (rect.empty()) {
-			rect = svg.append('rect')
-				.attr('x', width)
-				.attr('y', margin + yOffset)
-				.attr('width', widthOffset - 10)
-				.attr('height', height / 2 - 2 * margin)
-				.style('outline-style', 'solid')
-				.style('outline-color', 'black')
-				.style('outline-width', '2px')
-				.style('fill', 'url(#grad)');
+		rect = svg.append('rect')
+			.attr('x', width - xOffset)
+			.attr('y', margin + yOffset)
+			.attr('width', widthOffset - 10)
+			.attr('height', height / 2 - 2 * margin)
+			.style('outline-style', 'solid')
+			.style('outline-color', 'black')
+			.style('outline-width', '2px')
+			.style('fill', 'url(#grad)');
 		} 
 
 		// Checking if the text elements exist, and either append them or change their visibility
 		let text0 = svg.select('.text0');
+		let text10 = svg.select('.text10'); // Added text10
+		let text25 = svg.select('.text25'); // Added text25
 		let text100 = svg.select('.text100');
+		let legendTitle = svg.select('.legendTitle');
 
 		if (text0.empty()) {
 			text0 = svg.append('text')
-				.attr('x', width + 2)
+				.attr('x', width + 2 - xOffset)
 				.attr('y', height / 2 - margin + 20 + yOffset)
 				.text('0%')
 				.style('font-size', '20px')
 				.attr('text-anchor', 'start')
 				.attr('class', 'text0');
-		} 
+		}
+
+		if (text10.empty()) {
+			text10 = svg.append('text')
+				.attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+				.attr('y', height / 2 + yOffset / 2)
+				.text('10% -')
+				.style('font-size', '20px')
+				.attr('text-anchor', 'middle') // Center align the text
+				.attr('class', 'text10');
+		}
+
+		if (text25.empty()) {
+			text25 = svg.append('text')
+				.attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+				.attr('y', height / 2 + yOffset / 3)
+				.text('25% -')
+				.style('font-size', '20px')
+				.attr('text-anchor', 'middle') // Center align the text
+				.attr('class', 'text25');
+		}
 
 		if (text100.empty()) {
 			text100 = svg.append('text')
-				.attr('x', width - 8)
+				.attr('x', width - 8 - xOffset)
 				.attr('y', margin - 5 + yOffset)
 				.text('100%')
 				.attr('text-anchor', 'start')
 				.style('font-size', '20px')
 				.attr('class', 'text100');
-		} 
+		}
 
+		if (legendTitle.empty()) {
+			legendTitle = svg.append('text')
+				.attr("transform", "rotate(90)")
+				.attr('x', margin + yOffset + 40)
+				.attr('y', -width + xOffset - 45)
+				.text('Log Scale')
+				.attr('text-anchor', 'start')
+				.style('font-size', '25px')
+				.attr('class', 'legendTitle')
+		}
+		
 	}
 
 

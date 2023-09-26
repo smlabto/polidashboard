@@ -359,10 +359,11 @@ footer a {
 	right: 0;
 	visibility: hidden;
 	position: absolute;
-	width: 200px;
+	width: 230px;
 	background-color: #212121;
 	color: white;
-	text-align: center;
+	/* text-align: center; */
+	text-align: left;
 	padding: 10px;
 	right: 0;
 	top: 325px;
@@ -388,7 +389,8 @@ footer a {
 }
 
 .maptip-content {
-	text-align: center;
+	/* text-align: center; */
+	text-align: left;
 }
 
 .maptip-label {
@@ -752,7 +754,7 @@ input[type=text] {
 }
 
 .page-left {
-	max-width: 45px;
+	max-width: 90px;
 }
 
 .widget_container {

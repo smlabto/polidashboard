@@ -126,7 +126,8 @@
 				// Organize the list of spend ranges into the 2D matrix for the heatmap
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].funding_entity == null) {
-						data[i].funding_entity = 'No funding entity given'
+						continue;
+						// data[i].funding_entity = 'No funding entity given'
 					}
 					var row = [data[i].funding_entity, 0, 0, 0, 0, 0, 0]
 					for (var j = 0; j < data[i].spends.length; j++) {
