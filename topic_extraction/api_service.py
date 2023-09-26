@@ -16,9 +16,9 @@ async def main(page_id: str,
                start_time: datetime,
                end_time: datetime,
                is_wordcloud: bool = False,
-               top_n_topics: int = 40,
+               top_n_key_phrases: int = 40,
                top_n_keywords: int = 100,
-               topic_share_word_threshold: float = 0.49,
+               key_phrase_share_word_threshold: float = 0.49,
                keyword_share_word_threshold: float = 0.49,
                is_politically_relevant_threshold: float = 0.75):
     page = fetch_db_data.fetch_page(db, country, page_id)
@@ -28,6 +28,7 @@ async def main(page_id: str,
         raise HTTPException(status_code=404, detail="No page found for the given params")
     ads = fetch_db_data.fetch_ads(db, country, page_id, start_time, end_time)
     ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
+    ads_summary = fetch_db_data.create_ads_summary_table(ads)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
@@ -41,16 +42,16 @@ async def main(page_id: str,
         img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords)
 
         # make a result dict with the image base64 string and the top keywords
-        result_dict = {"img": img_base64, "result": top_keywords}
+        result_dict = {"img": img_base64, "result": top_keywords, "summary_table": ads_summary}
         return json.dumps(result_dict)
 
     else:
-        top_topics = process_ads.extract_top_topics(ads,
-                                                    top_n=top_n_topics,
-                                                    share_word_threshold=topic_share_word_threshold)
-        img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_topics)
-        # make a result dict with the image base64 string and the top keywords
-        result_dict = {"img": img_base64, "result": top_topics}
+        key_phrases = process_ads.extract_top_key_phrase(ads,
+                                                         top_n=top_n_key_phrases,
+                                                         share_word_threshold=key_phrase_share_word_threshold)
+        img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases)
+        # make a result dict with the image base64 string and the top key phrases
+        result_dict = {"img": img_base64, "result": key_phrases, "summary_table": ads_summary}
         return json.dumps(result_dict)
 
 
@@ -58,3 +59,8 @@ async def main(page_id: str,
 async def app_shutdown():
     print("Closing connection to database.....")
     client.close()
+
+if __name__ == '__main__':
+    # to run the server, run the following command in the terminal:
+    # uvicorn api_service:app --reload
+    pass
