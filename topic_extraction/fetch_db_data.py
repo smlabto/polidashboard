@@ -40,7 +40,7 @@ def merge_page_name_with_associated_ads(ads, page_name):
     return ads
 
 
-def create_ads_summary_table(ads):
+def create_ads_summary_table(ads, max_table_length=100):
     # create a list of dictionaries of unique creative_bodies
     ads_summary_table = []
     for ad in ads:
@@ -59,7 +59,14 @@ def create_ads_summary_table(ads):
                                       "page_name": ad["page_name"],
                                       "snapshot_url": ad["snapshot_url"]})
 
+    # sort the ads_summary_table by frequency
+    ads_summary_table = sorted(ads_summary_table, key=lambda x: x["freq"], reverse=True)
+    # if the length of the ads_summary_table is greater than max_table_length, then only keep the top max_table_length
+    if len(ads_summary_table) > max_table_length:
+        ads_summary_table = ads_summary_table[:max_table_length]
+
     return ads_summary_table
+
 
 def close_connection(client):
     client.close()
@@ -68,7 +75,7 @@ def close_connection(client):
 if __name__ == '__main__':
     client, db = return_client_and_db()
     country = "us"
-    page_id = "107661474402498"
+    page_id = "174057765941"
     start_time = "1970-08-23T11:31:07.676+00:00"
     # convert start_time to datetime object
     start_time = pd.to_datetime(start_time)
@@ -82,6 +89,10 @@ if __name__ == '__main__':
 
     ads = merge_page_name_with_associated_ads(ads, page_name)
     ads_summary = create_ads_summary_table(ads)
+
+    # display the ads summary table as a Markdown table
+    ads_summary_df = pd.DataFrame(ads_summary)
+    print(ads_summary_df.to_markdown())
 
     is_wordcloud = True
     top_n_keywords = 100
@@ -107,7 +118,7 @@ if __name__ == '__main__':
                                                          top_n=top_n_key_phrases,
                                                          share_word_threshold=key_phrase_share_word_threshold,
                                                          min_length=2,
-                                                         max_length=3)
+                                                         max_length=4)
         img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases, debug=True)
 
     close_connection(client)

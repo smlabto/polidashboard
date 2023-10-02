@@ -20,7 +20,8 @@ async def main(page_id: str,
                top_n_keywords: int = 100,
                key_phrase_share_word_threshold: float = 0.49,
                keyword_share_word_threshold: float = 0.49,
-               is_politically_relevant_threshold: float = 0.75):
+               is_politically_relevant_threshold: float = 0.75,
+               max_table_length: int = 100):
     page = fetch_db_data.fetch_page(db, country, page_id)
     if page is not None:
         page_name = page["name"]
@@ -28,7 +29,7 @@ async def main(page_id: str,
         raise HTTPException(status_code=404, detail="No page found for the given params")
     ads = fetch_db_data.fetch_ads(db, country, page_id, start_time, end_time)
     ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
-    ads_summary = fetch_db_data.create_ads_summary_table(ads)
+    ads_summary = fetch_db_data.create_ads_summary_table(ads, max_table_length)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
