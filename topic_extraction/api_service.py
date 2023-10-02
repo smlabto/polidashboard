@@ -11,10 +11,11 @@ app = FastAPI()
 
 
 @app.get("/")
-async def main(page_id: str,
-               country: str,
+async def main(country: str,
                start_time: datetime,
                end_time: datetime,
+               funding_entity: str = None,
+               page_id: str = None,
                is_wordcloud: bool = False,
                top_n_key_phrases: int = 40,
                top_n_keywords: int = 100,
@@ -22,13 +23,22 @@ async def main(page_id: str,
                keyword_share_word_threshold: float = 0.49,
                is_politically_relevant_threshold: float = 0.75,
                max_table_length: int = 100):
-    page = fetch_db_data.fetch_page(db, country, page_id)
-    if page is not None:
-        page_name = page["name"]
-    else:
-        raise HTTPException(status_code=404, detail="No page found for the given params")
-    ads = fetch_db_data.fetch_ads(db, country, page_id, start_time, end_time)
-    ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
+    # if both funding_entity and page_id are not None, raise an exception
+    if funding_entity is not None and page_id is not None:
+        raise HTTPException(status_code=400, detail="Both funding_entity and page_id cannot be specified")
+
+    # only adding the page name to the ads if page_id is provided
+    if page_id is not None:
+        page = fetch_db_data.fetch_page(db, country, page_id)
+        if page is not None:
+            page_name = page["name"]
+        else:
+            raise HTTPException(status_code=404, detail="No page found for the given params")
+
+    ads = fetch_db_data.fetch_ads(db, country, funding_entity, page_id, start_time, end_time)
+    if page_id is not None:
+        ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
+
     ads_summary = fetch_db_data.create_ads_summary_table(ads, max_table_length)
 
     # if ads is an empty list, raise an exception

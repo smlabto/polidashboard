@@ -17,20 +17,29 @@ def fetch_page(db, country, page_id):
     return page
 
 
-def fetch_ads(db, country, page_id, start_time, end_time):
+def fetch_ads(db, country, funding_entity, page_id, start_time, end_time):
     ads_collection = db[f"facebook_ads_{country}"]
-    ads = ads_collection.find({"page_id": page_id,
-                               "first_collected": {"$gte": start_time},
-                               "latest_collected": {"$lte": end_time}})
+    if page_id is not None and funding_entity is None:
+        ads = ads_collection.find({"page_id": page_id,
+                                   "first_collected": {"$gte": start_time},
+                                   "latest_collected": {"$lte": end_time}})
+    if page_id is None and funding_entity is not None:
+        ads = ads_collection.find({"funding_entity": funding_entity,
+                                   "first_collected": {"$gte": start_time},
+                                   "latest_collected": {"$lte": end_time}})
     # convert to a list of dictionaries
     ads = list(ads)
+    # merge multiple creative_bodies into one
+    ads = merge_multiple_creative_bodies(ads)
     return ads
 
 
 def merge_page_name_with_associated_ads(ads, page_name):
     for ad in ads:
         ad["page_name"] = page_name
+    return ads
 
+def merge_multiple_creative_bodies(ads):
     # convert creative_bodies to str
     for ad in ads:
         creative_bodies_combined = ""
@@ -56,7 +65,7 @@ def create_ads_summary_table(ads, max_table_length=100):
             ads_summary_table.append({"creative_bodies": ad["creative_bodies"],
                                       "freq": 1,
                                       "ad_ids": [ad["_id"]],
-                                      "page_name": ad["page_name"],
+                                      "funding_entity": ad["funding_entity"],
                                       "snapshot_url": ad["snapshot_url"]})
 
     # sort the ads_summary_table by frequency
@@ -75,7 +84,9 @@ def close_connection(client):
 if __name__ == '__main__':
     client, db = return_client_and_db()
     country = "us"
-    page_id = "174057765941"
+    # page_id = "174057765941"
+    page_id = None
+    funding_entity = "United Patriot"
     start_time = "1970-08-23T11:31:07.676+00:00"
     # convert start_time to datetime object
     start_time = pd.to_datetime(start_time)
@@ -84,17 +95,27 @@ if __name__ == '__main__':
     # convert end_time to datetime object
     end_time = pd.to_datetime(end_time)
 
-    page_name = fetch_page(db, country, page_id)
-    ads = fetch_ads(db, country, page_id, start_time, end_time)
 
-    ads = merge_page_name_with_associated_ads(ads, page_name)
-    ads_summary = create_ads_summary_table(ads)
+    # only adding the page name to the ads if page_id is provided
+    if page_id is not None:
+        page = fetch_page(db, country, page_id)
+        if page is not None:
+            page_name = page["name"]
+        else:
+            raise "No page found for the given params"
 
-    # display the ads summary table as a Markdown table
-    ads_summary_df = pd.DataFrame(ads_summary)
-    print(ads_summary_df.to_markdown())
+    ads = fetch_ads(db, country, funding_entity, page_id, start_time, end_time)
 
-    is_wordcloud = True
+    if page_id is not None:
+        ads = merge_page_name_with_associated_ads(ads, page_name)
+
+    ads_summary = create_ads_summary_table(ads, max_table_length = 100)
+
+    # if ads is an empty list, raise an exception
+    if len(ads) == 0:
+        raise HTTPException(status_code=404, detail="No ads found for the given params")
+
+    is_wordcloud = False
     top_n_keywords = 100
     keyword_share_word_threshold = 0.49
     is_politically_relevant_threshold = 0.75
