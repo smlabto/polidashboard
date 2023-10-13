@@ -1,5 +1,4 @@
 <div class="widget-container boxed">
-
 	<div class="inner" id="summary">
 		<div class="facebook_nav_light p-tip">
 			<span class="facebook_date">
@@ -150,7 +149,7 @@
 
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demogrpahic of Who Was Shown These Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demographic of Who Was Shown Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<div class="navigation-instructions" id="right-navigation-instructions">
 						<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
@@ -172,7 +171,8 @@
 								<!-- This module shows the age and gender breakdowns of people who saw ads by this funding entity - each dot represents one ad.
 								<br><br>
 								Hover over a dot to see that ad's distribution across all demographics, and click to see that ad's summary (ad will open in a new tab). -->
-								This module shows the age and gender of users who these ads (by this funding entity) were shown to - each dot represents one ad.
+								<!-- This module shows the age and gender of users who these ads (by this funding entity) were shown to - each dot represents one ad. -->
+								This module shows the age and gender of users who were shown ads from this funder/FB page for the selected timeframe - each dot represents one ad.
 								<br><br>
 								Hover over a dot to see that ad's distribution across all demographics, and click on a dot to see summary stats about the ad (ad will open in a new tab).
 							</div>
@@ -251,7 +251,78 @@
 					</div>
 				</div>
 			<% } %>
-			<img id="imageElement" src="" alt="Image">
+			<hr>
+			<div class="dropdown" style="z-index: 15;">
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; What Was Said in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				
+				<div class="dropdown-content">
+					<h3 class="widget-title">
+						<!-- Where These Ads Were Shown -->
+						<div class="tip">
+							<img src="/images/info.png">
+							<div class="tiptext">
+								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
+								<br><br>
+								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
+								<br><br>
+								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
+							</div>
+						</div>
+					</h3>
+					<h5 style="color :#AAAAAA"><del><i class="fas fa-filter"></i></del>&nbsp;Not compatible with filter</h5>
+					
+					<!-- Selection between wordcloud and phrase cloud -->
+					<br/>
+					<div style="text-align: -webkit-center;" class="btn-group-container">
+						<div class="btn-group btn-group-justified" style="width: 80%; height: 40px;" role="group" aria-label="...">
+							<div id="wordcloudBtn" type="button" style="border-radius: 5px; border-bottom-right-radius: 0px; border-top-right-radius: 0px; padding: 5px" class="btn btn-default">Wordcloud</div>
+							<div id="phrasecloudBtn" type="button" style="border-radius: 5px; border-bottom-left-radius: 0px; border-top-left-radius: 0px; padding: 5px" class="btn btn-default">Phrasecloud</div>
+						</div>
+					</div>
+
+					<br/>
+
+					<div class="loader red" style="text-align: center;" id="wordmap_loader">
+						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating...</p>
+						<div class="lds-grid">
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+						</div>
+					</div>
+
+					<div id="wordmap-explain" style="padding-top: 20px; padding-bottom: 20px">
+						<h3 style="text-align: center;">Please select an option above to generate a Word / Phrase cloud.</h3>
+					</div>
+
+					<div id="wordmap-error" style="display: none;" style="padding-top: 20px; padding-bottom: 20px">
+						<br/><h3 style="text-align: center;">There was an error generating the Word/Phrase cloud.</h3><br/>
+					</div>
+
+					<img style="border: 1px solid lightgrey;" id="imageElement" src="" alt="Image">
+
+					<div class="dropdown" style="z-index: 15; border: 1px solid lightgrey; box-shadow: none;">
+						<button style="background-color: #595959" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Exact counts for the top phrases/words:</span></button>
+						
+						<div class="dropdown-content">
+							<table class="table" id="infoTable">
+								<thead>
+									<tr>
+										<th>Category</th>
+										<th>Count</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>	
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -301,6 +372,7 @@
 	var timelineData;
 	var demographicsData;
 	var mapData;
+	var rawMap = null;
 	var chosenPage = null;
 	var mainFunder;
 
@@ -315,6 +387,15 @@
 			.done(data => successCallback(data))
 			.always(() => { activeRequests = activeRequests.filter(req => req !== request) });
 		activeRequests.push({ url, request });
+	}
+
+	function cancelRequest(url) {
+		// For manual cancellation
+		const requestToCancel = activeRequests.find(req => req.url === url);
+		if (requestToCancel) {
+			requestToCancel.request.abort();
+			activeRequests = activeRequests.filter(req => req !== requestToCancel);
+		}
 	}
 
 	function performFunderRequests(funder) {
@@ -356,22 +437,220 @@
 		// 	const imageElement = document.getElementById("imageElement");
 		// 	// Set the src attribute of the image element to the base64-encoded image data.
 		// 	imageElement.src = "data:image/png;base64," + data.img;
+		// 	d3.select('#wordmap_loader').style('display', 'none')
+		// 	d3.select("#imageElement").style("display", 'block');
 		// });
 
 		if (country === 'us') {
 			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 				drawMap(data);
 				mapData = data;
+				// rawMap = new Statemap(data, "chart-container"); // TO DO
+
 			});
 		}
 	}
 	
+	let cloudInProgress = false;
+	let wordcloudImage = null;
+	let phrasecloudImage = null;
+	let wordcloudData = null;
+	let phrasecloudData = null;
+
+	// Handle the buttons for the worldcloud:
+	const phrasecloudButton = document.getElementById("phrasecloudBtn");
+	const wordcloudButton = document.getElementById("wordcloudBtn");
+
+	// Function to toggle the classes for the buttons
+	function enableWordButtons() {
+		phrasecloudButton.disabled = false;
+		phrasecloudButton.style.opacity = 1.0;
+		wordcloudButton.disabled = false;
+		wordcloudButton.style.opacity = 1.0;
+	}
+
+	function disableWordButtons() {
+		phrasecloudButton.disabled = true;
+		phrasecloudButton.style.opacity = 0.5;
+		wordcloudButton.disabled = true;
+		wordcloudButton.style.opacity = 0.5;
+	}
+
+	function resetWordButtons() {
+		wordcloudButton.classList.remove("btn-danger");
+		phrasecloudButton.classList.remove("btn-danger");
+		wordcloudButton.classList.add("btn-default");
+		phrasecloudButton.classList.add("btn-default");
+	}
+
+	function toggleButtonClasses(selectedButton, deselectedButton) {
+		selectedButton.classList.add("btn-danger");
+		selectedButton.classList.remove("btn-default");
+
+		deselectedButton.classList.add("btn-default");
+		deselectedButton.classList.remove("btn-danger");
+	}
+
+	// Add click event listeners to the buttons
+	phrasecloudButton.addEventListener("click", () => {
+		if (cloudInProgress) {
+			return null;
+		}
+		toggleButtonClasses(phrasecloudButton, wordcloudButton);
+		const imageElement = document.getElementById("imageElement");
+		if (phrasecloudImage != null) {
+			d3.select('#wordmap_loader').style('display', 'none')
+			d3.select("#imageElement").style("display", 'block');
+			imageElement.src = "data:image/png;base64," + phrasecloudImage;
+			const table = document.getElementById("infoTable");
+			while (table.rows.length > 1) { // Clear the table first
+				table.deleteRow(1);
+			}
+			for (const key in phrasecloudData) {
+				const row = table.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = phrasecloudData[key];
+			}
+			return null;
+		}
+		disableWordButtons();
+		d3.select('#wordmap_loader').style('display', 'block');
+		d3.select('#wordmap-explain').style('display', 'none');
+		d3.select('#wordmap-error').style('display', 'none');
+		d3.select("#imageElement").style("display", 'none');
+		// Run a check here to see if a filter has been selected
+		const phrasecloudInput = {
+			startDay: fbStartDay,
+			endDay: fbEndDay,
+			funder: mainFunder,
+			country,
+			is_wordcloud: false,
+		};
+		cloudInProgress = true;
+		const table = document.getElementById("infoTable");
+		while (table.rows.length > 1) { // Clear the table first
+			table.deleteRow(1);
+		}
+		performRequest('/facebook_ads_v2/funder_word', phrasecloudInput, data => {
+			// Store the image incase the user wants to flip between the two
+			if (data.error) {
+				cloudInProgress = false;
+				d3.select('#wordmap-error').style('display', 'block');
+				d3.select('#wordmap_loader').style('display', 'none');
+				enableWordButtons();
+				resetWordButtons();
+				return null;
+			}
+			phrasecloudImage = data.img;
+			phrasecloudData = data.result;
+			// console.log(data);
+			d3.select('#wordmap_loader').style('display', 'none')
+			d3.select("#imageElement").style("display", 'block');
+			imageElement.src = "data:image/png;base64," + phrasecloudImage;
+			enableWordButtons();
+			cloudInProgress = false;
+			for (const key in phrasecloudData) {
+				const row = table.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = phrasecloudData[key];
+			}
+		}, error => {
+			// Handle the error here
+			console.error("An error occurred:", error);
+			// You can add code here to display an error message to the user or take other appropriate actions.
+		});
+	});
+
+	wordcloudButton.addEventListener("click", () => {
+		if (cloudInProgress) {
+			return null;
+		}
+		toggleButtonClasses(wordcloudButton, phrasecloudButton);
+		const imageElement = document.getElementById("imageElement");
+		if (wordcloudImage != null) {
+			d3.select('#wordmap_loader').style('display', 'none')
+			d3.select("#imageElement").style("display", 'block');
+			imageElement.src = "data:image/png;base64," + wordcloudImage;
+			const table = document.getElementById("infoTable");
+			while (table.rows.length > 1) { // Clear the table first
+				table.deleteRow(1);
+			}
+			for (const key in wordcloudData) {
+				const row = table.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = wordcloudData[key];
+			}
+			return null;
+		}
+		disableWordButtons();
+		d3.select('#wordmap_loader').style('display', 'block');
+		d3.select('#wordmap-explain').style('display', 'none');
+		d3.select('#wordmap-error').style('display', 'none');
+		d3.select("#imageElement").style("display", 'none');
+		const wordcloudInput = {
+			startDay: fbStartDay,
+			endDay: fbEndDay,
+			funder: mainFunder,
+			country,
+			is_wordcloud: true,
+		};
+		
+		cloudInProgress = true;
+		const table = document.getElementById("infoTable");
+		while (table.rows.length > 1) { // Clear the table first
+			table.deleteRow(1);
+		}
+		performRequest('/facebook_ads_v2/funder_word', wordcloudInput, data => {
+			// Store the image incase the user wants to flip between the two
+			// console.log(data);
+			if (data.error) {
+				cloudInProgress = false;
+				d3.select('#wordmap-error').style('display', 'block')
+				d3.select('#wordmap_loader').style('display', 'none');
+				enableWordButtons();
+				resetWordButtons();
+				return null;
+			}
+			wordcloudImage = data.img;
+			wordcloudData = data.result;
+			d3.select('#wordmap_loader').style('display', 'none')
+			d3.select("#imageElement").style("display", 'block');
+			imageElement.src = "data:image/png;base64," + wordcloudImage;
+			enableWordButtons();
+			cloudInProgress = false;
+			for (const key in wordcloudData) {
+				const row = table.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = wordcloudData[key];
+			}
+		});
+	});
+
 	function showFunder(funder) {
 		// Show statistics on a funding entity
 		mainFunder = funder;
 		timelineData = null;
 		demographicsData = null;
 		mapData = null;
+		cloudInProgress = false;
+		wordcloudImage = null;
+		phrasecloudImage = null;
+		enableWordButtons();
+		resetWordButtons();
+		cancelRequest('/facebook_ads_v2/funder_word');
+		d3.select('#wordmap-error').style('display', 'none');
+		const table = document.getElementById("infoTable");
+		while (table.rows.length > 1) { // Clear the table first
+			table.deleteRow(1);
+		}
 
 		var dropdowns = document.querySelectorAll(".dropdown");
 		// Loop through each dropdown
@@ -388,22 +667,25 @@
 			.style('color', "#AAAAAA")
 			.html('<i class="fas fa-filter"></i>&nbsp;No page filter selected')
 
-		d3.select("#chart-container").style("display", "flex")
-		d3.select('#summary-home').style('display', 'none')
-		d3.select('#summary-focus').style('display', 'block')
-		d3.select('#summary-navigation-instructions').style('display', 'inline-block')
-		d3.select('#demographics').html('')
-		d3.select('#regions').html('')
-		d3.select('#timeline').html('')
+		d3.select("#chart-container").style("display", "flex");
+		d3.select('#summary-home').style('display', 'none');
+		d3.select('#summary-focus').style('display', 'block');
+		d3.select('#summary-navigation-instructions').style('display', 'inline-block');
+		d3.select('#demographics').html('');
+		d3.select('#regions').html('');
+		d3.select('#timeline').html('');
 		d3.selectAll('.advertiser_name')
-			.text('Funded by: ' + funder)
-		d3.select('#funder_pages_loader').style('display', 'block')
-		d3.select('#demographics_loader').style('display', 'block')
-		d3.select('#timeline_loader').style('display', 'block')
-		d3.select('#map_loader').style('display', 'block')
-		if (country != 'us') d3.select('#regions_loader').style('display', 'block')
-		d3.select('#funder_pages').html('')
-		d3.select('#funder_note').remove()
+			.text('Funded by: ' + funder);
+		d3.select('#funder_pages_loader').style('display', 'block');
+		d3.select('#demographics_loader').style('display', 'block');
+		d3.select('#timeline_loader').style('display', 'block');
+		d3.select('#map_loader').style('display', 'block');
+		if (country != 'us') d3.select('#regions_loader').style('display', 'block');
+		d3.select('#wordmap_loader').style('display', 'none'); // User has to select an option before the loader becomes visible
+		d3.select('#wordmap-explain').style('display', 'block');
+		d3.select('#funder_pages').html('');
+		d3.select('#funder_note').remove();
+		d3.select("#imageElement").style("display", 'none');
 
 		d3.selectAll('.sub_advertiser_name')
 			.text(funder)
@@ -448,6 +730,7 @@
 		} else {
 			d3.select("#chart-container").style("display", "none")
 		}
+		// d3.select('#wordmap_loader').style('display', 'block')
 		// Scroll to show data if on mobile
 		$([document.documentElement, document.body]).animate({
 			scrollTop: $("#page-scroll").offset().top - 30
@@ -485,23 +768,24 @@
 					const filteredDemographics = pageFilter(data);
 					// demographicsData = data;
 					drawDemographics(filteredDemographics);
+					if (country != 'us')  drawRegions(filteredDemographics)
 				});
 			}
-			try {
-				if (country != 'us')  drawRegions(pageFilter(demographicsData))
-			} catch (err) {
-				performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
-					const filteredDemographics = pageFilter(data);
-					drawRegions(filteredDemographics);
-				});
-			}
+			// try {
+			// 	if (country != 'us')  drawRegions(pageFilter(demographicsData))
+			// } catch (err) {
+			// 	performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
+			// 		const filteredDemographics = pageFilter(data);
+			// 		drawRegions(filteredDemographics);
+			// 	});
+			// }
 			try {
 				// This one HAS to call a request right away, as page_id needs to be defined
 				if (country === 'us') {
 					commonData.page_id = p.page_id;
 					performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 						drawMap(data);
-					});	
+					});
 				}
 				//drawMap(pageFilter(mapData))
 			} catch (err) {
@@ -714,7 +998,7 @@
 		end.setDate(end.getDate() - fbEndDay)
 		startDay = new Date()
 		startDay.setDate(startDay.getDate() - fbStartDay)
-		format = d3.timeFormat('%b %d')
+		format = d3.timeFormat('%b %d, %Y')
 
 		d3.selectAll('.facebook_date')
 			.html(`Select/Adjust Time Frame: ${format(startDay)} - ${format(end)}`)
@@ -803,6 +1087,8 @@
 
 	function drawDemographics(data) {
 		// Create the targetted demographics chart
+		// console.log("DRAWING DEMOGRAPHICS")
+		// console.log(data)
 
 		// Clear existing chart if there is one
 		var container = d3.select("#demographics")
@@ -1105,6 +1391,7 @@
 			var foundRegions = []
 
 			for (var j = 0; j < data[i].regions.length; j++) {
+				console.log(data[i].regions)
 				var point = data[i].regions[j]
 				var region = getRegionLabel(point._id)
 
@@ -1405,13 +1692,7 @@
 					// This isn't super necessary, make it a bit smoother visually the first time you hover
 					tooltip.html(
 						"<span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>" + // Unicode character for ◥
-						// "<div class='maptip-title'>Audience Reach Distribution</div>" +
-						// "<hr style='margin-top: 0; margin-bottom: 10px'>" +
-						// "<div class='maptip-content'>" +
-						// "<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
-						// "<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
-						// "<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
-						"<div class='maptip-title'>% of Funder's Ads Shown to Users From:</div>" +
+						"<div class='maptip-title'>% of Audience For This Funder's Ads:</div>" +
 						"<hr style='margin-top: 0; margin-bottom: 10px'>" +
 						"<div class='maptip-content'>" +
 						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "<span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;" + (currentStateData.value * 100).toFixed(4) + "%</span>" +"</p>" +
@@ -1440,13 +1721,7 @@
 					}
 					tooltip.html(
 						"<span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>" + // Unicode character for ◥
-						// "<div class='maptip-title'>Audience Reach Distribution</div>" +
-						// "<hr style='margin-top: 0; margin-bottom: 10px'>" +
-						// "<div class='maptip-content'>" +
-						// "<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "</p>" +
-						// "<p class='maptip-text' style='color: yellow;'><span class='maptip-label'>Audience:</span> " + (currentStateData.value * 100).toFixed(4) + "%</p>" +
-						// "<p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>" + "<p class='maptip-text'>" + `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}` + "</p>" + 
-						"<div class='maptip-title'>% of Funder's Ads Shown to Users From:</div>" +
+						"<div class='maptip-title'>% of Audience For This Funder's Ads:</div>" +
 						"<hr style='margin-top: 0; margin-bottom: 10px'>" +
 						"<div class='maptip-content'>" +
 						"<p class='maptip-text'><span class='maptip-label'>State:</span> " + currentStateData.name + "<span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;" + (currentStateData.value * 100).toFixed(4) + "%</span>" +"</p>" +
@@ -1472,13 +1747,14 @@
 			let unknownStateData = data.find(item => item.name === "Unknown");
 			mapTextTip
 				.html(`
-					This module shows where Facebook ads by this funder/page were shown.
+					This module shows where in the country ads by this funder/FB page were shown for the selected timeframe.
 					<br><br>
-					Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
+					Hover over any part of the map to see what percentage of the ads' audience came from that state/region for the selected timeframe.
 					<br><br>
 				` +
-				(unknownStateData ? `<span style="color: yellow;">NOTE: ${(unknownStateData.value * 100).toFixed(2)}% of this funder's ads were shown to users from unknown regions. 
-					The estimated total ad spend for this funder during the selected timeframe is between ${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.</span>
+				(unknownStateData ? `<span style="color: yellow;">NOTE:<br>* Out of the audience exposed to this funder's ads, <u>${(unknownStateData.value * 100).toFixed(2)}%</u> came from regions that were either unidentified or located outside the selected country. This visualization takes into account the data from the unknown/outside regions.
+					<br>
+					* The estimated total ad spending by this funder (in regions outside the selected country or in unknown regions) during the specified timeframe is between: ${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.</span>
 					</span>` : "" )
 				
 				);

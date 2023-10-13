@@ -155,9 +155,10 @@ router.post('/facebook_ads_v2/funder_word', (req, res) => {
     var funder = req.body.funder
     var country = req.body.country
     var page_id = req.body.page_id
+    var is_wordcloud = req.body.is_wordcloud
     if (page_id == '') page_id = null;
     if (funder == '') funder = null;
-    generateWordMap(start, end, funder, country, page_id, res)
+    generateWordMap(start, end, funder, country, is_wordcloud, page_id, res);
 });
 
 module.exports = router
@@ -361,8 +362,15 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
             '$lookup': {
                 'from': 'facebook_audiences_' + country,
                 'localField': '_id',
-                'foreignField': '_id.ad',
+                'foreignField': '_id',
                 'as': 'demographics'
+            }
+        },
+        {
+            '$addFields': {
+              'demographics': {
+                '$arrayElemAt': [ "$demographics.audience", 0 ],
+              }
             }
         }
     ]
@@ -380,8 +388,8 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
                 '$project': {
                     'spend': 1,
                     'impressions': 1,
-                    'demographics': 1,
-                    'regions': 1,
+                    'demographics': { $ifNull: [ "$demographics", [] ] },
+                    'regions': 1, //{ $ifNull: [ "$delivery_by_region", [] ] },,
                     'snapshot_url': 1,
                     'titles': '$creative_link_titles',
                     'page_id': 1
@@ -394,7 +402,7 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
                 '$project': {
                     'spend': 1,
                     'impressions': 1,
-                    'demographics': 1,
+                    'demographics': { $ifNull: [ "$demographics", [] ] },
                     'snapshot_url': 1,
                     'titles': '$creative_link_titles',
                     'page_id': 1
@@ -574,16 +582,20 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
     }
 }
 
-async function generateWordMap(start, end, funder, country, page_id = null, res) {
+async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
     const apiUrl = "http://192.168.1.128:8089";
 
     // Replace with the appropriate query parameters
     // Currently using temporary parameters
-    const _page_id = "107661474402498";
-    const _country = "us";
-    const start_time = new Date("1970-08-23T11:31:07.676+00:00");
-    const end_time = new Date("2023-09-14T11:31:07.676+00:00");
-    // const is_wordcloud = true; // or false
+    const _page_id = funder;
+    const _country = country;
+    const start_time = new Date( new Date() - start*60*60*24*1000)
+    const end_time = new Date( new Date() - end*60*60*24*1000)
+    // const start_time = new Date(start)//new Date("1970-08-23T11:31:07.676+00:00");
+    // const end_time = new Date(end)//new Date("2023-09-14T11:31:07.676+00:00");
+    console.log(start_time);
+    console.log(end_time);
+    const _is_wordcloud = is_wordcloud; // default is false
     // const top_n_topics = 40;
     // const top_n_keywords = 100;
     // const topic_share_word_threshold = 0.49;
@@ -606,10 +618,13 @@ async function generateWordMap(start, end, funder, country, page_id = null, res)
 
     // const fullUrl = apiUrl + "?" + queryParams.toString();
     const queryParams = new URLSearchParams();
-    queryParams.append("page_id", _page_id);
+    queryParams.append("funding_entity", funder);
     queryParams.append("country", _country);
     queryParams.append("start_time", start_time.toISOString());
     queryParams.append("end_time", end_time.toISOString());
+    if (is_wordcloud) {
+        queryParams.append("is_wordcloud", _is_wordcloud);
+    }
     
     const fullUrl = apiUrl + "?" + queryParams.toString();
     try {
@@ -640,15 +655,18 @@ async function generateWordMap(start, end, funder, country, page_id = null, res)
                         try {
                             const responseData = JSON.parse(data);
                             console.error("Validation error:", responseData);
+                            // return { error: "An error occurred", data: null };
                         } catch (error) {
                             console.error("Error parsing response body:", error);
+                            // return { error: "An error occurred", data: null };
                         }
                     } else {
                         console.error(`HTTP error! Status: ${response.statusCode}`);
+                        // return { error: "An error occurred", data: null };
                     }
                 } else {
                     const responseData = JSON.parse(JSON.parse(data));
-                    console.log(typeof responseData)
+                    // console.log(typeof responseData)
                     res.json(responseData);
                 }
             });
@@ -657,12 +675,14 @@ async function generateWordMap(start, end, funder, country, page_id = null, res)
         // Handle any errors that occur during the request
         request.on('error', (error) => {
             console.error("Request error:", error);
+            res.json({ 'error': "An error occurred" });
         });
 
         // Send the request
         request.end();
     } catch (error) {
         console.error("URL parsing error:", error);
+        res.json({ 'error': "An error occurred" });
     }
 }
 
