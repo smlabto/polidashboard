@@ -372,6 +372,7 @@
 	var timelineData;
 	var demographicsData;
 	var mapData;
+	var prevRawMap = null;
 	var rawMap = null;
 	var chosenPage = null;
 	var mainFunder;
@@ -446,7 +447,7 @@
 				// drawMap(data);
 				mapData = data;
 				rawMap = new Statemap(data, "chart-container"); // TO DO
-
+				prevRawMap = rawMap;
 			});
 		}
 	}
@@ -784,7 +785,7 @@
 				if (country === 'us') {
 					commonData.page_id = p.page_id;
 					performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-						drawMap(data);
+						rawMap = new Statemap(data, "chart-container");
 					});
 				}
 				//drawMap(pageFilter(mapData))
@@ -838,12 +839,26 @@
 			});
 		}
 		try {
-			if (country === 'us') drawMap(mapData)
+			if (country === 'us') {
+				// drawMap(mapData)
+				if (prevRawMap) {
+					rawMap = prevRawMap
+					rawMap.draw();
+				} else {
+					rawMap = new Statemap(data, "chart-container");
+				}
+			}
 		} catch (err) {
 			if (country === 'us') {
 				commonData.page_id = p.page_id;
 				performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-					drawMap(data);
+					if (prevRawMap) {
+						rawMap = prevRawMap
+						rawMap.draw();
+					} else {
+						rawMap = new Statemap(data, "chart-container");
+						prevRawMap = rawMap;
+					}
 				});	
 			}
 		}
