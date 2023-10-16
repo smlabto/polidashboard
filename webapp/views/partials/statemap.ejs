@@ -1,0 +1,319 @@
+<script type="text/javascript">
+	// const boxSize = 45
+    const width = 970;
+    const widthOffset = 45;
+    const height = 610;
+    const outlineColor = "#888888";
+
+    const tooltipContentTemplate = `
+        <span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>
+        <div class='maptip-title'>Avg. % of Audience for this Region (shown ads by this funder):</div>
+        <hr style='margin-top: 0; margin-bottom: 10px'>
+        <div class='maptip-content'>
+            <p class='maptip-text'><span class='maptip-label'>State:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
+            <p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>
+            <p class='maptip-text'>{costRange}</p>
+        </div>`;
+
+	class Statemap {
+		constructor(data, mapName, country='us') {
+            console.log("Hello from map constructor");
+            console.log(data);
+			this.data = data;
+			this.mapName = mapName;
+
+            // --- TODO: Process the country label name
+			console.log(data);
+			this.draw()
+		}
+
+        async fetchTopoData() {
+            try {
+                const mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
+                return mapDataset;
+            } catch (error) {
+                console.error("Error fetching map data:", error);
+                throw error;
+            }
+        }
+
+        draw() {  
+            console.log("Start of draw")
+            
+            let _d = this.data
+            
+            const customColorInterpolator = t => {
+                var _interpolateColor = function(color1, color2, factor) {
+                    if (arguments.length < 3) { factor = 0.5; }
+                    var result = color1.slice();
+                    for (var i=0;i<3;i++) {
+                        result[i] = Math.round(result[i] + factor*(color2[i]-color1[i]));
+                    }
+                    return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+                };
+
+                t = Math.min(1, Math.max(0, t));
+                if (t === 0) {
+                    return `rgb(255, 255, 255)`;
+                }
+                // return _interpolateColor(h2r("#FFFFFF", h2r("#006EBD"), t));
+                const firstColor = [255, 255, 255];
+                const secondColor = [0, 110, 189];
+                const logT = Math.log10(90 * t + 10) - 1;
+                return _interpolateColor(firstColor, secondColor, logT)
+            };
+
+            const domain = [0.0, 1.0];
+
+            let svg = d3.select(`#${this.mapName} svg`);
+            if (svg.empty()) {
+                svg = d3.select(`#${this.mapName}`)
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width + widthOffset, height])
+                    .attr("style", "max-width: 90%; height: 90%;");
+            } else {
+                svg.selectAll("g").remove(); // Remove existing map elements
+            }
+
+            const path = d3.geoPath();
+            const g = svg.append("g");
+            
+            var tooltip = d3.select(`#${this.mapName}`).select("#map-tooltip")
+                .attr("class", "maptip")
+                .attr("state", "None")
+                .attr("percent", "None")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("z-index", 100)
+                .style("text-align", "left");
+
+            const maptipOffset = 5;
+            function moveMapTooltip() {
+                var coords = d3.mouse(document.getElementById("chart-container"));
+                var xPos = coords[0] - 230;// - tooltip.node().getBoundingClientRect().width - maptipOffset;
+                var yPos = coords[1] + maptipOffset + 50;
+                tooltip
+                    .style("left", xPos + "px")
+                    .style("top", yPos + "px")
+                    .style("visibility", "hidden");
+            }
+
+            let highlightedPath = null;
+            let currentStateData = null;
+            let stateSpend = {};
+
+            function updateTooltipContent() {
+                tooltip.html(tooltipContentTemplate
+                    .replace("{stateName}", currentStateData.name)
+                    .replace("{statePercentage}", (currentStateData.value * 100).toFixed(4))
+                    .replace("{costRange}", `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}`)
+                );
+            }
+
+            this.fetchTopoData().then(mapDataset => {
+                d3.select('#map_loader').style('display', 'none');
+
+                const states = g.append("g")
+                    .attr("cursor", "pointer")
+                    .selectAll("path")
+                    .data(topojson.feature(mapDataset, mapDataset.objects.states).features)
+                    .enter().append("path")
+                    .attr("d", path)
+                    .attr("class", "county")
+                    .attr("data-fips", d => { return d.id })
+                    .attr("fill", d => {
+                        const stateData = _d.find(item => item.stateId === d.id);
+                        return customColorInterpolator(stateData ? Number(stateData.value).toFixed(20) : 0);
+                    })
+                    .on("mouseover", function(e,d) {
+                        const hoveredData = d3.select(this).data()[0]; // Get the data associated with the hovered element
+                        tooltip.style("visibility", "visible");
+                        if (currentStateData === null) {
+                            const hoveredData = d3.select(this).data()[0];
+                            currentStateData = _d.find(item => item.stateId === hoveredData.id);
+                            stateSpend = {
+                                lower_bound : currentStateData.minSpend,
+                                upper_bound : currentStateData.maxSpend
+                            }
+                        }
+                        // This isn't super necessary, make it a bit smoother visually the first time you hover
+                        updateTooltipContent();
+
+                        // Highlight the state/country
+                        highlightedPath = g.append("path")
+                            .attr("fill", "none")
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 2)
+                            .attr("stroke-linejoin", "round")
+                            .attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => a.id === hoveredData.id || b.id === hoveredData.id)));
+                        
+                        moveMapTooltip();
+                    })
+                    .on("mousemove", function(e,d) {
+                        if (currentStateData === null) {
+                            const hoveredData = d3.select(this).data()[0];
+                            currentStateData = _d.find(item => item.stateId === hoveredData.id);
+                            stateSpend = {
+                                lower_bound : currentStateData.minSpend,
+                                upper_bound : currentStateData.maxSpend
+                            }
+                        }
+                        updateTooltipContent();
+                        // Update tooltip position
+                        moveMapTooltip();
+                        tooltip
+                            .style("visibility", "visible")
+                    })
+                    .on("mouseout", function() {
+                        tooltip.style("visibility", "hidden");
+                        currentStateData = null;
+                        if (highlightedPath) {
+                            highlightedPath.remove();
+                            highlightedPath = null; // Reset the reference
+                        }
+                    });
+                    
+                var mapTextTip = $("#map-textip");
+                let unknownStateData = _d.find(item => item.name === "Unknown");
+                mapTextTip
+                    .html(`
+                        This module shows where in the country ads by this funder/FB page were shown for the selected timeframe.
+                        <br><br>
+                        Hover over any part of the map to see what percentage of the ads' audience came from that state/region for the selected timeframe.
+                        <br><br>
+                    ` +
+                    (unknownStateData ? `<span style="color: yellow;">NOTE:<br>* Out of the audience exposed to this funder's ads, an average of <u>${(unknownStateData.value * 100).toFixed(2)}%</u> came from regions that were either unidentified or located outside the selected country. This visualization takes into account the data from these unknown/outside regions.
+                        <br>
+                        * The estimated total ad spending by this funder (in regions outside the selected country or in unknown regions) during the specified timeframe is between: ${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.</span>
+                        </span>` : "" )
+                    
+                    );
+
+                g.append("path")
+                    .attr("fill", "none")
+                    .attr("stroke", outlineColor)
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => true)));
+                
+                // Make tooltip smoother (tooltip won't freeze if the user hovers over it)
+                tooltip
+                    .on("mouseover", function() {
+                        moveMapTooltip();
+                        tooltip
+                            .style("visibility", "hidden");
+                    })
+                    .on("mousemove", function() {
+                        moveMapTooltip();
+                        tooltip
+                            .style("visibility", "hidden");
+                    })
+
+                d3.select(`#${this.mapName}`)
+                    .style("visibility", "visible")
+                    .style("display", "flex");
+
+            });
+
+            // Generate the legend, as a gradient scale
+            const margin = 40;
+            const yOffset = 300;
+            const xOffset = 40;
+
+            const gradientScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, 1]);
+
+            const grad = svg.append('defs')
+            .append('linearGradient')
+            .attr('id', 'grad')
+            .attr('x1', '0%')
+            .attr('x2', '0%')
+            .attr('y1', '0%')
+            .attr('y2', '100%');
+
+            grad.selectAll('stop')
+            .data([0, 0.1, 0.25, 1]) // Add 0.1 and 0.25 to the data array
+            .enter()
+            .append('stop')
+            .attr('offset', d => 100 * gradientScale(d) + '%')
+            .style('stop-color', d => customColorInterpolator(1 - d));
+
+            // Checking if the rect element exists, and either append it or change its visibility
+            let rect = svg.select('rect');
+            if (rect.empty()) {
+            rect = svg.append('rect')
+                .attr('x', width - xOffset)
+                .attr('y', margin + yOffset)
+                .attr('width', widthOffset - 10)
+                .attr('height', height / 2 - 2 * margin)
+                .style('outline-style', 'solid')
+                .style('outline-color', 'black')
+                .style('outline-width', '2px')
+                .style('fill', 'url(#grad)');
+            } 
+
+            // Checking if the text elements exist, and either append them or change their visibility
+            let text0 = svg.select('.text0');
+            let text10 = svg.select('.text10'); // Added text10
+            let text25 = svg.select('.text25'); // Added text25
+            let text100 = svg.select('.text100');
+            let legendTitle = svg.select('.legendTitle');
+
+            if (text0.empty()) {
+                text0 = svg.append('text')
+                    .attr('x', width + 2 - xOffset)
+                    .attr('y', height / 2 - margin + 20 + yOffset)
+                    .text('0%')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'start')
+                    .attr('class', 'text0');
+            }
+
+            if (text10.empty()) {
+                text10 = svg.append('text')
+                    .attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+                    .attr('y', height / 2 + yOffset / 2)
+                    .text('10% -')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'middle') // Center align the text
+                    .attr('class', 'text10');
+            }
+
+            if (text25.empty()) {
+                text25 = svg.append('text')
+                    .attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+                    .attr('y', height / 2 + yOffset / 3)
+                    .text('25% -')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'middle') // Center align the text
+                    .attr('class', 'text25');
+            }
+
+            if (text100.empty()) {
+                text100 = svg.append('text')
+                    .attr('x', width - 8 - xOffset)
+                    .attr('y', margin - 5 + yOffset)
+                    .text('100%')
+                    .attr('text-anchor', 'start')
+                    .style('font-size', '20px')
+                    .attr('class', 'text100');
+            }
+
+            if (legendTitle.empty()) {
+                legendTitle = svg.append('text')
+                    .attr("transform", "rotate(90)")
+                    .attr('x', margin + yOffset + 40)
+                    .attr('y', -width + xOffset - 45)
+                    .text('Log Scale')
+                    .attr('text-anchor', 'start')
+                    .style('font-size', '25px')
+                    .attr('class', 'legendTitle')
+            }
+
+		}
+
+	}
+</script>

@@ -8,3 +8,4 @@ collector/fb_ads_library_api.py
 topic_extraction/__pycache__/
 
 topic_extraction/republican_ads.json
+*.pyc
