@@ -113,9 +113,9 @@ if __name__ == '__main__':
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
-        raise HTTPException(status_code=404, detail="No ads found for the given params")
+        raise "No ads found for the given params"
 
-    is_wordcloud = False
+    is_wordcloud = True
     top_n_keywords = 100
     keyword_share_word_threshold = 0.49
     is_politically_relevant_threshold = 0.75
@@ -127,12 +127,16 @@ if __name__ == '__main__':
         raise "No ads found for the given params"
 
     if is_wordcloud:
+        # time it
+        import time
+        start_time = time.time()
         top_keywords = process_ads.extract_keywords([ad["creative_bodies"] for ad in ads],
                                                     top_n=top_n_keywords,
                                                     similarity_threshold=keyword_share_word_threshold,
-                                                    is_politically_relevant_threshold=is_politically_relevant_threshold)
+                                                    is_politically_relevant_threshold=is_politically_relevant_threshold,
+                                                    if_only_politically_relevant=False,
+                                                    if_extended_stop_words=False)
         img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, debug=True)
-
 
     else:
         key_phrases = process_ads.extract_top_key_phrase(ads,

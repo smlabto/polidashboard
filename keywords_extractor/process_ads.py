@@ -3,16 +3,9 @@ from collections import defaultdict
 import yake
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords, words
-import spacy
 from stop_words import get_stop_words
-from transformers import BertTokenizer, BertModel
 import torch.nn.functional as F
 import torch
-import generate_wordcloud
-
-# Load BERT model and tokenizer
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased')
 
 # command used for downloading the nltk words
 # nltk.download('stopwords')
@@ -21,8 +14,49 @@ model = BertModel.from_pretrained('bert-base-uncased')
 # Load stopwords and English words
 stop_words = set(stopwords.words('english'))
 english_words = set(words.words())
-en = spacy.load('en_core_web_lg')
-stop_words = stop_words.union(en.Defaults.stop_words).union(get_stop_words('english'))
+
+tokenizer = None
+model = None
+
+
+def load_bert():
+    # hot load bert model, speeds up three sec
+    from transformers import BertTokenizer, BertModel
+    global tokenizer
+    global model
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    model = BertModel.from_pretrained('bert-base-uncased')
+
+
+# This function returns the embedding of a word using BERT
+def get_embedding(word):
+    tokens = tokenizer(word, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**tokens)
+    return outputs.last_hidden_state.mean(dim=1)
+
+
+def establish_political_context():
+    # Establish a political context
+    political_context = ["election", "democracy", "legislation", "parliament", "senate", "governance", "government",
+                         "vote",
+                         "tax", "extreme", "climate", "cost", "house", "senator", "congress"]
+    context_embeddings = [get_embedding(word) for word in political_context]
+    return context_embeddings
+
+
+def is_politically_relevant(word, political_context_embedding, is_politically_relevant_threshold=0.75):
+    word_embedding = get_embedding(word)
+    similarities = [F.cosine_similarity(word_embedding, context_emb).item() for context_emb in
+                    political_context_embedding]
+    avg_similarity = sum(similarities) / len(similarities)
+    return avg_similarity > is_politically_relevant_threshold
+
+def extend_stop_words(stop_words):
+    import spacy
+    en = spacy.load('en_core_web_lg')
+    stop_words = stop_words.union(en.Defaults.stop_words).union(get_stop_words('english'))
+    return stop_words
 
 
 # This function returns a list of phrases extracted from the text
@@ -108,21 +142,34 @@ def get_page_names_plus_ads_dict_list(combined_ads):
     return page_names_plus_ads_dict_list
 
 
-def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5, if_only_politically_relevant=True):
-    # Use Tfidf Vectorizer to get important words based on TF-IDF scores
-    vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=10000)
+def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5,
+                     if_only_politically_relevant=False, if_extended_stop_words=False):
+    if if_extended_stop_words:
+        extended_stop_words = extend_stop_words(stop_words)
+        # Use Tfidf Vectorizer to get important words based on TF-IDF scores
+        vectorizer = TfidfVectorizer(stop_words=list(extended_stop_words), max_features=200)
+    else:
+        # Use Tfidf Vectorizer to get important words based on TF-IDF scores
+        vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=200)
+
     tfidf_matrix = vectorizer.fit_transform(texts)
     feature_names = vectorizer.get_feature_names_out()
     tfidf_scores = tfidf_matrix.sum(axis=0).A1
     tfidf_ranking = [(feature_names[i], tfidf_scores[i]) for i in tfidf_scores.argsort()[::-1]]
 
     if if_only_politically_relevant:
+        load_bert()
+        political_context_embedding = establish_political_context()
+        tfidf_ranking = [(word, score) for word, score in tfidf_ranking if
+                         word in english_words and is_politically_relevant(word, political_context_embedding,
+                                                                           is_politically_relevant_threshold=is_politically_relevant_threshold)]
+    else:
         tfidf_ranking = [
             (word, score) for word, score in tfidf_ranking
-            if word in english_words and is_politically_relevant(word,
-                                                                 is_politically_relevant_threshold=is_politically_relevant_threshold)
+            if word in english_words
         ]
-        tfidf_ranking = remove_duplicate_keywords(tfidf_ranking, similarity_threshold=similarity_threshold)
+
+    tfidf_ranking = remove_duplicate_keywords(tfidf_ranking, similarity_threshold=similarity_threshold)
 
     keyword_freq = {}
     for keyword in tfidf_ranking[:top_n]:
@@ -155,27 +202,6 @@ def remove_duplicate_keywords(tfidf_ranking, similarity_threshold=0.5):
             unique_keywords.append(keyword)
 
     return unique_keywords
-
-
-# This function returns the embedding of a word using BERT
-def get_embedding(word):
-    tokens = tokenizer(word, return_tensors="pt")
-    with torch.no_grad():
-        outputs = model(**tokens)
-    return outputs.last_hidden_state.mean(dim=1)
-
-
-# Establish a political context
-political_context = ["election", "democracy", "legislation", "parliament", "senate", "governance", "government", "vote",
-                     "tax", "extreme", "climate", "cost", "house", "senator", "congress"]
-context_embeddings = [get_embedding(word) for word in political_context]
-
-
-def is_politically_relevant(word, is_politically_relevant_threshold=0.75):
-    word_embedding = get_embedding(word)
-    similarities = [F.cosine_similarity(word_embedding, context_emb).item() for context_emb in context_embeddings]
-    avg_similarity = sum(similarities) / len(similarities)
-    return avg_similarity > is_politically_relevant_threshold
 
 
 def main():
