@@ -1,6 +1,7 @@
 from fb_ads_library_api import FbAdsLibraryTraversal
 from datetime import date, datetime
 import pymongo
+from time import sleep
 import sys
 
 to_dt = lambda text: datetime.strptime(
@@ -77,15 +78,29 @@ def update_timestamp(ad, country):
 def update_audiences(ad, country):
     if 'demographic_distribution' in ad:
         for audience in ad['demographic_distribution']:
+            # db['facebook_audiences_' + country].update_one({
+            #     '_id': {
+            #         'age': audience['age'],
+            #         'gender': audience['gender'],
+            #         'ad': ad['id']
+            #     },
+            # }, {
+            #     '$set': {
+            #         'percentage': float(audience['percentage'])
+            #     }
+            # }, upsert=True) # Old query, this storage method had bad performance
             db['facebook_audiences_' + country].update_one({
-                '_id': {
-                    'age': audience['age'],
-                    'gender': audience['gender'],
-                    'ad': ad['id']
-                },
+                '_id': ad['id'],
             }, {
-                '$set': {
-                    'percentage': float(audience['percentage'])
+                '$push' : { 
+                    'audience' : {
+                        '_id': {
+                            'age': audience['age'],
+                            'gender': audience['gender'],
+                            'ad': ad['id']
+                        },
+                        'percentage': float(audience['percentage'])
+                    }
                 }
             }, upsert=True)
 
@@ -130,20 +145,22 @@ if __name__=="__main__":
     
     collector = FbAdsLibraryTraversal(
         "[FACEBOOK_API_ADsLibrary_KEY_HERE]",
-        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations",
+        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages",
         ".",
         country,
-        api_version="v14.0" # Current version as of August 2023
+        api_version="v18.0" # Current version as of August 2023
     )
 
     n = 0
     for ads in collector.generate_ad_archives():
         for ad in ads:
+            print(ad)
+            sleep(1)
             update_ad(ad, country)
             update_audiences(ad, country)
             update_page(ad, country)
             update_timestamp(ad, country)
-            update_regions(ad, country)
+            # update_regions(ad, country)
             n += 1
 
     print(f'Got {n} ads')
