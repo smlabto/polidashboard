@@ -41,11 +41,15 @@ def merge_page_name_with_associated_ads(ads, page_name):
 
 def merge_multiple_creative_bodies(ads):
     # convert creative_bodies to str
+    
     for ad in ads:
         creative_bodies_combined = ""
-        for creative_body in ad["creative_bodies"]:
-            creative_bodies_combined += " " + creative_body
-        ad["creative_bodies"] = creative_bodies_combined
+        try:
+            for creative_body in ad["creative_bodies"]:
+                creative_bodies_combined += " " + creative_body
+            ad["creative_bodies"] = creative_bodies_combined
+        except: 
+            ad["creative_bodies"] = ""
     return ads
 
 
