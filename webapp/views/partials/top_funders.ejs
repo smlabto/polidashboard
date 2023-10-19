@@ -17,22 +17,28 @@
 				</div>
 			</div>
 		</h3>
-		<div class="navigation-instructions" id="left-navigation-instructions">
-			<button class="exit-button" onclick="d3.select('#left-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
-			<strong>Navigation Instructions</strong>
-			<ul>
-				<li>Best viewed on a desktop browser like Chrome or Firefox.</li>
-				<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
-				<li>
-					Click on a funding entity in the list to see:
+		
+		<div class="dropdown" style="z-index: 15; margin-bottom: 10px;">
+			<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+			
+			<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+				<div class="navigation-instructions" id="right-navigation-instructions">
 					<ul>
-						<li>What Facebook pages they fund</li>
-						<li>The ads that they are running</li>
-						<li>Where their ads are being shown and to whom</li>
+						<li>Best viewed on a desktop browser like Chrome or Firefox.</li>
+						<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
+						<li>
+							Click on a funding entity in the list to see:
+							<ul>
+								<li>What Facebook pages they fund</li>
+								<li>The ads that they are running</li>
+								<li>Where their ads are being shown and to whom</li>
+							</ul>
+						</li>
 					</ul>
-				</li>
-			</ul>
-		</div>
+				</div>
+			</div>
+		</div>	
+
 		<div class="row p-0">
 			<div class="col-sm-6">
 			  <div class="row">

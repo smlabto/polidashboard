@@ -151,17 +151,22 @@
 			<div class="dropdown" style="z-index: 20;">
 				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demographic of Who Was Shown Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
-					<div class="navigation-instructions" id="right-navigation-instructions">
-						<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
-						<strong>Navigation Instructions</strong>
-						<ul>
-							<li>Hover and keep your mouse over a dot to see that ad's distribution across all demographic’s groups on Facebook.</li>
-							<li>If all other dots (other than the dot you hovered over) is at or close to the 0% mark on the x-axis, it suggests that ad was only (or mostly) targeted at that specific demographic group and no other.</li>
-							<li>Click on a dot see the ad and additional stats about the ad (ad will open in a new tab).</li>
-							<li>New to box plot? Here’s a <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer</a> on how to interpret a box plot chart.</li>
-							<li>Note: if more than 1000 ads are visible, they will be hidden and replaced with a violin plot to save resources. Select a shorter time frame or use the page filters to see individual ads.</li>
-						</ul>
-					</div>
+
+					<div class="dropdown" style="z-index: 15;">
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<ul>
+									<li>Hover and keep your mouse over a dot to see that ad's distribution across all demographic’s groups on Facebook.</li>
+									<li>If all other dots (other than the dot you hovered over) is at or close to the 0% mark on the x-axis, it suggests that ad was only (or mostly) targeted at that specific demographic group and no other.</li>
+									<li>Click on a dot see the ad and additional stats about the ad (ad will open in a new tab).</li>
+									<li>New to box plot? Here’s a <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer</a> on how to interpret a box plot chart.</li>
+									<li>Note: if more than 1000 ads are visible, they will be hidden and replaced with a violin plot to save resources. Select a shorter time frame or use the page filters to see individual ads.</li>
+								</ul>
+							</div>
+						</div>
+					</div>	
 
 					<h3 class="widget-title">
 						<!-- Who Was Shown These Ads -->
@@ -269,13 +274,16 @@
 							</div>
 						</div>
 					</h3>
-					<h5 style="color :#AAAAAA"><del><i class="fas fa-filter"></i></del>&nbsp;Not compatible with filter</h5>
+					<h5 style="color :#AAAAAA">&nbsp;This chart applies to all pages from this Funder</h5>
 					
 					<!-- Selection between wordcloud and phrase cloud -->
 					<br/>
+					<div>
+						<h3 style="text-align: center;">Please select an option below to view a Word / Phrase cloud.</h3>
+					</div>
 					<div style="text-align: -webkit-center;" class="btn-group-container">
 						<div class="btn-group btn-group-justified" style="width: 80%; height: 40px;" role="group" aria-label="...">
-							<div id="wordcloudBtn" type="button" style="border-radius: 5px; border-bottom-right-radius: 0px; border-top-right-radius: 0px; padding: 5px" class="btn btn-default">Wordcloud</div>
+							<div id="wordcloudBtn" type="button" style="border-radius: 5px; border-bottom-right-radius: 0px; border-top-right-radius: 0px; padding: 5px" class="btn btn-danger">Wordcloud</div>
 							<div id="phrasecloudBtn" type="button" style="border-radius: 5px; border-bottom-left-radius: 0px; border-top-left-radius: 0px; padding: 5px" class="btn btn-default">Phrasecloud</div>
 						</div>
 					</div>
@@ -283,7 +291,7 @@
 					<br/>
 
 					<div class="loader red" style="text-align: center;" id="wordmap_loader">
-						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating...</p>
+						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating, please wait 20-40 seconds...</p>
 						<div class="lds-grid">
 							<div></div>
 							<div></div>
@@ -297,10 +305,6 @@
 						</div>
 					</div>
 
-					<div id="wordmap-explain" style="padding-top: 20px; padding-bottom: 20px">
-						<h3 style="text-align: center;">Please select an option above to generate a Word / Phrase cloud.</h3>
-					</div>
-
 					<div id="wordmap-error" style="display: none;" style="padding-top: 20px; padding-bottom: 20px">
 						<br/><h3 style="text-align: center;">There was an error generating the Word/Phrase cloud.</h3><br/>
 					</div>
@@ -308,7 +312,7 @@
 					<img style="border: 1px solid lightgrey;" id="imageElement" src="" alt="Image">
 
 					<div class="dropdown" style="z-index: 15; border: 1px solid lightgrey; box-shadow: none;">
-						<button style="background-color: #595959" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Exact counts for the top phrases/words:</span></button>
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Exact counts for the top phrases/words:</span></button>
 						
 						<div class="dropdown-content">
 							<table class="table" id="infoTable">
@@ -337,21 +341,24 @@
 			var dropdownBtn = dropdown.querySelector(".dropdown-btn");
 			var dropdownContent = dropdown.querySelector(".dropdown-content");
 
-			dropdownContent.style.display = "block";
+			// console.log(dropdownContent.classList.contains("dropdown-content-navigation"))
+			if (!dropdownContent.classList.contains("dropdown-content-navigation")) {
+				dropdownContent.style.display = "block";
+			}
 
 			dropdownBtn.addEventListener("click", function () {
-			if (dropdownContent.style.display === "none" || dropdownContent.style.display === "") {
-				dropdownContent.style.display = "block";
-			} else {
-				// Add a class to trigger the slide-up animation
-				dropdownContent.classList.add("slide-up");
-				// After the animation, hide the content
-				setTimeout(function () {
-					dropdownContent.style.display = "none";
-					// Remove the slide-up class for future use
-					dropdownContent.classList.remove("slide-up");
-				}, 500); // Match the animation duration (0.5s)
-			}
+				if (dropdownContent.style.display === "none" || dropdownContent.style.display === "") {
+					dropdownContent.style.display = "block";
+				} else {
+					// Add a class to trigger the slide-up animation
+					dropdownContent.classList.add("slide-up");
+					// After the animation, hide the content
+					setTimeout(function () {
+						dropdownContent.style.display = "none";
+						// Remove the slide-up class for future use
+						dropdownContent.classList.remove("slide-up");
+					}, 500); // Match the animation duration (0.5s)
+				}
 			});
 		});
 	});
@@ -381,25 +388,51 @@
 	let activFunderPagesRequest = null;
 	let activeRequests = [];
 
-	function performRequest(url, requestData, successCallback) {
-		activeRequests.filter(req => req.url === url).forEach(req => req.request.abort());
+	// Word/Phrase cloud variables
+	let wordcloudImage = null;
+	let phrasecloudImage = null;
+	let wordcloudData = null;
+	let phrasecloudData = null;
+	let chosenCloud = 0; // 0 = wordcloud, 1 = phrasecloud
+	const cloudTable = document.getElementById("infoTable"); // Ref to cloud table
+	const cloudImageElement = document.getElementById("imageElement");
+	
+	let requestCount = 0; // Track the number of requests made
+	let timer = 0; // Initial timer value
+	let timerInterval;
+
+	function performRequest(url, requestData, successCallback, requestType='base') {
+		console.log("Request requested: " + url + " " + requestType);
+		activeRequests.filter(req => req.url === url && req.requestType === requestType).forEach(req => req.request.abort());
 
 		const request = $.post(url, requestData)
 			.done(data => successCallback(data))
 			.always(() => { activeRequests = activeRequests.filter(req => req !== request) });
-		activeRequests.push({ url, request });
-	}
-
-	function cancelRequest(url) {
-		// For manual cancellation
-		const requestToCancel = activeRequests.find(req => req.url === url);
-		if (requestToCancel) {
-			requestToCancel.request.abort();
-			activeRequests = activeRequests.filter(req => req !== requestToCancel);
-		}
+		activeRequests.push({ url, request, requestType });
 	}
 
 	function performFunderRequests(funder) {
+		if (timer > 40) { // Should help prevent spamming requests
+			alert("Please wait " + (timer - 40) + " seconds before making another request.");
+			return false;
+		}
+		// Decrement the timer every second
+		if (timerInterval) {
+			clearInterval(timerInterval); // Clear the existing interval
+		}
+		timerInterval = setInterval(() => {
+			timer--;
+			console.log(timer);
+			if (timer <= 0) {
+				clearInterval(timerInterval);
+				timer = 0;
+			}
+		}, 1000);
+		
+		// Add 30 to the timer, the shorted amount of time a request can go through is 30 seconds
+		timer = timer + 30;
+
+
 		d3.select("#chart-container").style("display", "none")
 		const commonData = {
 			startDay: fbStartDay,
@@ -431,17 +464,6 @@
 			timelineData = data;
 		});
 
-		// performRequest('/facebook_ads_v2/funder_word', commonData, data => {
-		// 	// TO DO: Implement word cloud
-		// 	console.log("Funder Word")
-		// 	console.log(data);
-		// 	const imageElement = document.getElementById("imageElement");
-		// 	// Set the src attribute of the image element to the base64-encoded image data.
-		// 	imageElement.src = "data:image/png;base64," + data.img;
-		// 	d3.select('#wordmap_loader').style('display', 'none')
-		// 	d3.select("#imageElement").style("display", 'block');
-		// });
-
 		if (country === 'us') {
 			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 				// drawMap(data);
@@ -450,203 +472,228 @@
 				prevRawMap = rawMap;
 			});
 		}
+
+		// --- Handle Phrase/Word cloud ---
+		while (cloudTable.rows.length > 1) {  // Clear the table first
+			cloudTable.deleteRow(1);
+		}
+
+		const cloudInput = {
+			startDay: fbStartDay,
+			endDay: fbEndDay,
+			funder,
+			country,
+			is_wordcloud: false,
+		};
+		
+		wordcloudImage = null; // Clear these vars
+		phrasecloudImage = null;
+		wordcloudData = null;
+		phrasecloudData = null;
+
+		// CALL PHRASECLOUD
+		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
+			if (data.error && chosenCloud === 1) {
+				console.log("error");
+				d3.select('#wordmap-error').style('display', 'block')
+				d3.select('#wordmap_loader').style('display', 'none');
+				d3.select("#imageElement").style("display", 'none');
+				phrasecloudData = "error";
+				return null;
+			}
+
+			phrasecloudImage = data.img; // Store wordcloud image
+			phrasecloudData = data.result; // Store wordcloud data
+			console.log("PHRASE DATA GOTTEN");
+			console.log(data);
+
+
+			if (chosenCloud === 1) { // Show it if it's the currently selected cloud
+				d3.select('#wordmap_loader').style('display', 'none')
+				d3.select("#imageElement").style("display", 'block');
+				cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
+			}
+
+			for (const key in phrasecloudData) {
+				const row = cloudTable.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = phrasecloudData[key];
+			}
+		}, 'phrasecloud', error => {
+			phrasecloudData = "error";
+			console.error("An error occurred:", error);
+		});
+
+		cloudInput['is_wordcloud'] = true;
+		// CALL WORDCLOUD
+		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
+			if (data.error && chosenCloud === 0) {
+				d3.select('#wordmap-error').style('display', 'block')
+				d3.select('#wordmap_loader').style('display', 'none');
+				d3.select("#imageElement").style("display", 'none');
+				wordcloudData = "error";
+				return null;
+			}
+
+			wordcloudImage = data.img; // Store wordcloud image
+			wordcloudData = data.result; // Store wordcloud data
+
+			if (chosenCloud === 0) { // Show it if it's the currently selected cloud
+				d3.select('#wordmap_loader').style('display', 'none')
+				d3.select("#imageElement").style("display", 'block');
+				cloudImageElement.src = "data:image/png;base64," + wordcloudImage;
+			}
+
+			for (const key in wordcloudData) {
+				const row = cloudTable.insertRow();
+				const cell1 = row.insertCell(0);
+				const cell2 = row.insertCell(1);
+				cell1.textContent = key;
+				cell2.textContent = wordcloudData[key];
+			}
+		}, 'wordcloud', error => {
+			wordcloudData = "error";
+			console.error("An error occurred:", error); 
+		});
+
+		return true;
 	}
 	
 	let cloudInProgress = false;
-	let wordcloudImage = null;
-	let phrasecloudImage = null;
-	let wordcloudData = null;
-	let phrasecloudData = null;
+	
 
 	// Handle the buttons for the worldcloud:
 	const phrasecloudButton = document.getElementById("phrasecloudBtn");
 	const wordcloudButton = document.getElementById("wordcloudBtn");
 
-	// Function to toggle the classes for the buttons
-	function enableWordButtons() {
-		phrasecloudButton.disabled = false;
-		phrasecloudButton.style.opacity = 1.0;
-		wordcloudButton.disabled = false;
-		wordcloudButton.style.opacity = 1.0;
-	}
-
-	function disableWordButtons() {
-		phrasecloudButton.disabled = true;
-		phrasecloudButton.style.opacity = 0.5;
-		wordcloudButton.disabled = true;
-		wordcloudButton.style.opacity = 0.5;
-	}
-
-	function resetWordButtons() {
-		wordcloudButton.classList.remove("btn-danger");
-		phrasecloudButton.classList.remove("btn-danger");
-		wordcloudButton.classList.add("btn-default");
-		phrasecloudButton.classList.add("btn-default");
-	}
-
 	function toggleButtonClasses(selectedButton, deselectedButton) {
 		selectedButton.classList.add("btn-danger");
 		selectedButton.classList.remove("btn-default");
-
 		deselectedButton.classList.add("btn-default");
 		deselectedButton.classList.remove("btn-danger");
 	}
 
+	
+	// while (cloudTable.rows.length > 1) { // Clear the table first
+	// 	cloudTable.deleteRow(1);
+	// }
+
 	// Add click event listeners to the buttons
 	phrasecloudButton.addEventListener("click", () => {
-		if (cloudInProgress) {
+		console.log(phrasecloudData);
+		console.log(phrasecloudImage);
+		chosenCloud = 1; // IMPORTANT!
+		toggleButtonClasses(phrasecloudButton, wordcloudButton); // Highlights the Phrasecloud button
+
+		while (cloudTable.rows.length > 1) { // Clear the table first
+			cloudTable.deleteRow(1);
+		}
+
+		if (phrasecloudData === "error") {
+			d3.select('#wordmap_loader').style('display', 'none');
+			// d3.select('#wordmap-explain').style('display', 'none');
+			d3.select('#wordmap-error').style('display', 'block');
+			d3.select("#imageElement").style("display", 'none');
 			return null;
 		}
-		toggleButtonClasses(phrasecloudButton, wordcloudButton);
-		const imageElement = document.getElementById("imageElement");
-		if (phrasecloudImage != null) {
-			d3.select('#wordmap_loader').style('display', 'none')
-			d3.select("#imageElement").style("display", 'block');
-			imageElement.src = "data:image/png;base64," + phrasecloudImage;
-			const table = document.getElementById("infoTable");
-			while (table.rows.length > 1) { // Clear the table first
-				table.deleteRow(1);
-			}
-			for (const key in phrasecloudData) {
-				const row = table.insertRow();
-				const cell1 = row.insertCell(0);
-				const cell2 = row.insertCell(1);
-				cell1.textContent = key;
-				cell2.textContent = phrasecloudData[key];
-			}
+
+		if (phrasecloudImage === null) { // Still generating
+			d3.select('#wordmap_loader').style('display', 'block');
+			// d3.select('#wordmap-explain').style('display', 'none');
+			d3.select('#wordmap-error').style('display', 'none');
+			d3.select("#imageElement").style("display", 'none');
 			return null;
 		}
-		disableWordButtons();
-		d3.select('#wordmap_loader').style('display', 'block');
-		d3.select('#wordmap-explain').style('display', 'none');
-		d3.select('#wordmap-error').style('display', 'none');
-		d3.select("#imageElement").style("display", 'none');
-		// Run a check here to see if a filter has been selected
-		const phrasecloudInput = {
-			startDay: fbStartDay,
-			endDay: fbEndDay,
-			funder: mainFunder,
-			country,
-			is_wordcloud: false,
-		};
-		cloudInProgress = true;
-		const table = document.getElementById("infoTable");
-		while (table.rows.length > 1) { // Clear the table first
-			table.deleteRow(1);
+
+		for (const key in phrasecloudData) { // Populate table with cloud data
+			const row = cloudTable.insertRow();
+			const cell1 = row.insertCell(0);
+			const cell2 = row.insertCell(1);
+			cell1.textContent = key;
+			cell2.textContent = phrasecloudData[key];
 		}
-		performRequest('/facebook_ads_v2/funder_word', phrasecloudInput, data => {
-			// Store the image incase the user wants to flip between the two
-			if (data.error) {
-				cloudInProgress = false;
-				d3.select('#wordmap-error').style('display', 'block');
-				d3.select('#wordmap_loader').style('display', 'none');
-				enableWordButtons();
-				resetWordButtons();
-				return null;
-			}
-			phrasecloudImage = data.img;
-			phrasecloudData = data.result;
-			// console.log(data);
-			d3.select('#wordmap_loader').style('display', 'none')
-			d3.select("#imageElement").style("display", 'block');
-			imageElement.src = "data:image/png;base64," + phrasecloudImage;
-			enableWordButtons();
-			cloudInProgress = false;
-			for (const key in phrasecloudData) {
-				const row = table.insertRow();
-				const cell1 = row.insertCell(0);
-				const cell2 = row.insertCell(1);
-				cell1.textContent = key;
-				cell2.textContent = phrasecloudData[key];
-			}
-		}, error => {
-			// Handle the error here
-			console.error("An error occurred:", error);
-			// You can add code here to display an error message to the user or take other appropriate actions.
-		});
+
+		d3.select('#wordmap_loader').style('display', 'none') // Show the Phrasecloud image
+		d3.select("#imageElement").style("display", 'block');
+		cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
+		console.log("phrasecloudData: ", phrasecloudData)
+		while (cloudTable.rows.length > 1) { // Clear the table first
+			cloudTable.deleteRow(1);
+		}
+		for (const key in phrasecloudData) {
+			const row = cloudTable.insertRow();
+			const cell1 = row.insertCell(0);
+			const cell2 = row.insertCell(1);
+			cell1.textContent = key;
+			cell2.textContent = phrasecloudData[key];
+		}
 	});
 
 	wordcloudButton.addEventListener("click", () => {
-		if (cloudInProgress) {
+		chosenCloud = 0; // IMPORTANT!
+		toggleButtonClasses(wordcloudButton, phrasecloudButton); // Highlights the Phrasecloud button
+
+		while (cloudTable.rows.length > 1) { // Clear the table first
+			cloudTable.deleteRow(1);
+		}
+
+		if (wordcloudData === "error") { // Show that an error has occured
+			d3.select('#wordmap_loader').style('display', 'none');
+			// d3.select('#wordmap-explain').style('display', 'none');
+			d3.select('#wordmap-error').style('display', 'block');
+			d3.select("#imageElement").style("display", 'none');
 			return null;
 		}
-		toggleButtonClasses(wordcloudButton, phrasecloudButton);
-		const imageElement = document.getElementById("imageElement");
-		if (wordcloudImage != null) {
-			d3.select('#wordmap_loader').style('display', 'none')
-			d3.select("#imageElement").style("display", 'block');
-			imageElement.src = "data:image/png;base64," + wordcloudImage;
-			const table = document.getElementById("infoTable");
-			while (table.rows.length > 1) { // Clear the table first
-				table.deleteRow(1);
-			}
-			for (const key in wordcloudData) {
-				const row = table.insertRow();
-				const cell1 = row.insertCell(0);
-				const cell2 = row.insertCell(1);
-				cell1.textContent = key;
-				cell2.textContent = wordcloudData[key];
-			}
+
+		if (wordcloudImage === null) { // Still generating
+			d3.select('#wordmap_loader').style('display', 'block');
+			// d3.select('#wordmap-explain').style('display', 'none');
+			d3.select('#wordmap-error').style('display', 'none');
+			d3.select("#imageElement").style("display", 'none');
 			return null;
 		}
-		disableWordButtons();
-		d3.select('#wordmap_loader').style('display', 'block');
-		d3.select('#wordmap-explain').style('display', 'none');
-		d3.select('#wordmap-error').style('display', 'none');
-		d3.select("#imageElement").style("display", 'none');
-		const wordcloudInput = {
-			startDay: fbStartDay,
-			endDay: fbEndDay,
-			funder: mainFunder,
-			country,
-			is_wordcloud: true,
-		};
-		
-		cloudInProgress = true;
-		const table = document.getElementById("infoTable");
-		while (table.rows.length > 1) { // Clear the table first
-			table.deleteRow(1);
+
+		for (const key in wordcloudData) { // Populate table with cloud data
+			const row = cloudTable.insertRow();
+			const cell1 = row.insertCell(0);
+			const cell2 = row.insertCell(1);
+			cell1.textContent = key;
+			cell2.textContent = wordcloudData[key];
 		}
-		performRequest('/facebook_ads_v2/funder_word', wordcloudInput, data => {
-			// Store the image incase the user wants to flip between the two
-			// console.log(data);
-			if (data.error) {
-				cloudInProgress = false;
-				d3.select('#wordmap-error').style('display', 'block')
-				d3.select('#wordmap_loader').style('display', 'none');
-				enableWordButtons();
-				resetWordButtons();
-				return null;
-			}
-			wordcloudImage = data.img;
-			wordcloudData = data.result;
-			d3.select('#wordmap_loader').style('display', 'none')
-			d3.select("#imageElement").style("display", 'block');
-			imageElement.src = "data:image/png;base64," + wordcloudImage;
-			enableWordButtons();
-			cloudInProgress = false;
-			for (const key in wordcloudData) {
-				const row = table.insertRow();
-				const cell1 = row.insertCell(0);
-				const cell2 = row.insertCell(1);
-				cell1.textContent = key;
-				cell2.textContent = wordcloudData[key];
-			}
-		});
+
+		d3.select('#wordmap_loader').style('display', 'none') // Show the Wordcloud image
+		d3.select("#imageElement").style("display", 'block');
+		cloudImageElement.src = "data:image/png;base64," + wordcloudImage;
+		while (cloudTable.rows.length > 1) { // Clear the table first
+			cloudTable.deleteRow(1);
+		}
+		for (const key in wordcloudData) {
+			const row = cloudTable.insertRow();
+			const cell1 = row.insertCell(0);
+			const cell2 = row.insertCell(1);
+			cell1.textContent = key;
+			cell2.textContent = wordcloudData[key];
+		}
 	});
 
 	function showFunder(funder) {
+		const funderSuccess = performFunderRequests(funder);
+		if (!funderSuccess) {
+			return;
+		}
 		// Show statistics on a funding entity
 		mainFunder = funder;
 		timelineData = null;
 		demographicsData = null;
 		mapData = null;
 		cloudInProgress = false;
-		wordcloudImage = null;
-		phrasecloudImage = null;
-		enableWordButtons();
-		resetWordButtons();
-		cancelRequest('/facebook_ads_v2/funder_word');
+		// wordcloudImage = null;
+		// phrasecloudImage = null;
+		// enableWordButtons();
+		// resetWordButtons();
+		// cancelRequest('/facebook_ads_v2/funder_word');
 		d3.select('#wordmap-error').style('display', 'none');
 		const table = document.getElementById("infoTable");
 		while (table.rows.length > 1) { // Clear the table first
@@ -657,7 +704,7 @@
 		// Loop through each dropdown
 		dropdowns.forEach(function (dropdown) {
 			var dropdownContent = dropdown.querySelector(".dropdown-content");
-			if (dropdownContent.style.display === "none" || dropdownContent.style.display === "") {
+			if ((dropdownContent.style.display === "none" || dropdownContent.style.display === "") && !dropdownContent.classList.contains("dropdown-content-navigation")) {
 				dropdownContent.style.display = "block";
 			}
 		});
@@ -680,13 +727,15 @@
 		d3.select('#funder_pages_loader').style('display', 'block');
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
-		d3.select('#map_loader').style('display', 'block');
+		d3.select('#map_loader').style('display', 'block');	
 		if (country != 'us') d3.select('#regions_loader').style('display', 'block');
 		d3.select('#wordmap_loader').style('display', 'none'); // User has to select an option before the loader becomes visible
-		d3.select('#wordmap-explain').style('display', 'block');
+		// d3.select('#wordmap-explain').style('display', 'block');
 		d3.select('#funder_pages').html('');
 		d3.select('#funder_note').remove();
-		d3.select("#imageElement").style("display", 'none');
+		
+		d3.select('#wordmap_loader').style('display', 'block'); // Show loader
+		d3.select("#imageElement").style("display", 'none'); // Don't show image right away
 
 		d3.selectAll('.sub_advertiser_name')
 			.text(funder)
@@ -713,8 +762,6 @@
 		if (funder == 'No funding entity given') {
 			funder = null;
 		}
-
-		performFunderRequests(funder);
 	}
 
 	function showPage(p) {
@@ -1016,7 +1063,7 @@
 		format = d3.timeFormat('%b %d, %Y')
 
 		d3.selectAll('.facebook_date')
-			.html(`Select/Adjust Time Frame: ${format(startDay)} - ${format(end)}`)
+			.html(`Time Frame: ${format(startDay)} - ${format(end)}`)
 		d3.selectAll('.facebook_timestamp_no_calendar')
 			.html(`${format(startDay)} - ${format(end)}`)
 	}

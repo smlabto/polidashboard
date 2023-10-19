@@ -677,7 +677,7 @@ input[type=text] {
 	background-color: #e2e3e5;
 	padding: 15px;
 	border: none;
-	margin-bottom: 15px;
+	/* margin-bottom: 15px; */
 	margin-left: 0;
 	line-height: 21px;
 }
@@ -947,7 +947,7 @@ h3.widget-title, h4.summary_subtitle {
 
 /* Dropdown button */
 .dropdown-btn {
-    background-color: #cf3d3d;
+    background-color: #006ebe;
     color: white;
 	width: 100%;
     padding: 10px;
@@ -967,6 +967,20 @@ h3.widget-title, h4.summary_subtitle {
     padding: 10px;
     transform-origin: top;
     animation: slideDown 0.5s ease forwards; /* Use CSS animation */
+}
+
+/* Dropdown content */
+.dropdown-content-navigation {  
+    display: block;
+    background-color: #f1f1f1;
+	border: 1px solid lightgrey;
+    min-width: 200px;
+	box-shadow: none;
+    z-index: 0; /* Set a lower z-index than the button */
+    /* padding: 10px; */
+	padding: 0px;
+    transform-origin: top;
+    animation: slideDown 0.5s ease forwards;  /*Use CSS animation*/
 }
 
 .slide-up {
@@ -1015,3 +1029,4 @@ hr {
 .page_name {
 	margin-bottom: 2px;
 }
+

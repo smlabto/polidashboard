@@ -596,25 +596,6 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
     console.log(start_time);
     console.log(end_time);
     const _is_wordcloud = is_wordcloud; // default is false
-    // const top_n_topics = 40;
-    // const top_n_keywords = 100;
-    // const topic_share_word_threshold = 0.49;
-    // const keyword_share_word_threshold = 0.49;
-    // const is_politically_relevant_threshold = 0.75;
-
-    // Construct the URL with query parameters
-    // const queryParams = new URLSearchParams({
-    //     _page_id,
-    //     _country,
-    //     start_time,
-    //     end_time,
-    //     // is_wordcloud,
-    //     // top_n_topics,
-    //     // top_n_keywords,
-    //     // topic_share_word_threshold,
-    //     // keyword_share_word_threshold,
-    //     // is_politically_relevant_threshold,
-    // });
 
     // const fullUrl = apiUrl + "?" + queryParams.toString();
     const queryParams = new URLSearchParams();
@@ -662,7 +643,7 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
                         }
                     } else {
                         console.error(`HTTP error! Status: ${response.statusCode}`);
-                        // return { error: "An error occurred", data: null };
+                        return { error: "An error occurred", data: null };
                     }
                 } else {
                     const responseData = JSON.parse(JSON.parse(data));
