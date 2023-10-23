@@ -60,10 +60,11 @@ def create_ads_summary_table(ads, max_table_length=100):
         # search for the ad dictionary in the ads_summary_table that has the same creative_bodies as the current ad
         found_previous_ad = False
         for unique_ad in ads_summary_table:
-            found_previous_ad = True
             if ad["creative_bodies"] == unique_ad["creative_bodies"]:
+                found_previous_ad = True
                 unique_ad["freq"] += 1
                 unique_ad["ad_ids"].append(ad["_id"])
+                break
         # if the ad is not found in the ads_summary_table, add it to the ads_summary_table
         if not found_previous_ad:
             ads_summary_table.append({"creative_bodies": ad["creative_bodies"],
@@ -79,6 +80,7 @@ def create_ads_summary_table(ads, max_table_length=100):
         ads_summary_table = ads_summary_table[:max_table_length]
 
     return ads_summary_table
+
 
 
 def close_connection(client):
