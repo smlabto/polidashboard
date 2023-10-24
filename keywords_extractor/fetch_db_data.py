@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import pandas as pd
 import generate_wordcloud
 import process_ads
+import urllib.parse
 
 
 def return_client_and_db(mongo_uri='mongodb://localhost:27017'):
@@ -53,7 +54,7 @@ def merge_multiple_creative_bodies(ads):
     return ads
 
 
-def create_ads_summary_table(ads, max_table_length=100):
+def create_ads_summary_table(ads, country, max_table_length=100):
     # create a list of dictionaries of unique creative_bodies
     ads_summary_table = []
     for ad in ads:
@@ -67,11 +68,16 @@ def create_ads_summary_table(ads, max_table_length=100):
                 break
         # if the ad is not found in the ads_summary_table, add it to the ads_summary_table
         if not found_previous_ad:
+            # URL-encode the creative_body string
+            creative_body_encoded = urllib.parse.quote(ad["creative_bodies"])
+            # construct the snapshot_url based on the country and creative_body_encoded
+            country = country.upper()
+            snapshot_url = f"https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country={country}&q={creative_body_encoded}&media_type=all"
             ads_summary_table.append({"creative_bodies": ad["creative_bodies"],
                                       "freq": 1,
                                       "ad_ids": [ad["_id"]],
                                       "funding_entity": ad["funding_entity"],
-                                      "snapshot_url": ad["snapshot_url"]})
+                                      "snapshot_url": snapshot_url})
 
     # sort the ads_summary_table by frequency
     ads_summary_table = sorted(ads_summary_table, key=lambda x: x["freq"], reverse=True)
@@ -80,6 +86,7 @@ def create_ads_summary_table(ads, max_table_length=100):
         ads_summary_table = ads_summary_table[:max_table_length]
 
     return ads_summary_table
+
 
 
 
@@ -115,7 +122,11 @@ if __name__ == '__main__':
     if page_id is not None:
         ads = merge_page_name_with_associated_ads(ads, page_name)
 
-    ads_summary = create_ads_summary_table(ads, max_table_length = 100)
+    ads_summary = create_ads_summary_table(ads, country, max_table_length = 100)
+    # convert it to markdown
+    ads_summary = pd.DataFrame(ads_summary)
+    # display as markdown
+    print(ads_summary.to_markdown())
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
