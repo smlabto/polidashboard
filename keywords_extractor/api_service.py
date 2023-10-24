@@ -42,7 +42,7 @@ async def main(country: str,
     if page_id is not None:
         ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
 
-    ads_summary = fetch_db_data.create_ads_summary_table(ads, max_table_length)
+    ads_summary = fetch_db_data.create_ads_summary_table(ads, country, max_table_length)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
