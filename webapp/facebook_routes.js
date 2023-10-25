@@ -149,6 +149,17 @@ router.post('/facebook_ads_v2/funder_map', (req, res) => {
     generateFunderMap(start, end, funder, country, page_id, res)
 });
 
+router.post('/facebook_ads_v2/frequency_table', (req, res) => {
+    var start = parseInt(req.body.startDay)
+    var end = parseInt(req.body.endDay)
+    var funder = req.body.funder
+    var country = req.body.country
+    var page_id = req.body.page_id
+    if (page_id == '') page_id = null;
+    if (funder == '') funder = null;
+    generateFreqTable(start, end, funder, country, page_id, res);
+});
+
 router.post('/facebook_ads_v2/funder_word', (req, res) => {
     var start = parseInt(req.body.startDay)
     var end = parseInt(req.body.endDay)
@@ -581,6 +592,225 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
         res.json(stateTotalsArrayWithNames);
     }
 }
+
+// --- Helper functions for frequency summary table ---
+// ####################################################
+async function fetchPage(db, country, page_id) {
+    const pagesCollection = db.collection(`facebook_pages_${country}`);
+    const page = pagesCollection.findOne({ _id: page_id });
+    return page;
+}
+
+async function fetchAds(db, country, funding_entity, page_id, start, end) {
+    const adsCollection = db.collection(`facebook_ads_${country}`);
+
+    let query = [
+        {
+            '$match': {
+                ...quickDateFilter(start, end),
+            }
+        }, {
+            '$match': {
+              'funding_entity': funding_entity
+            }
+        },
+    ];
+
+    if (funding_entity !== null) {
+        query[0].$match.funding_entity = funding_entity;
+    }
+
+    if (page_id !== null) {
+        query[0].$match.page_id = page_id;
+    }
+
+    const cursor = adsCollection.aggregate(query, { allowDiskUse: true });
+
+    const ads = await cursor.toArray();
+
+    // Convert to a list of dictionaries
+    const mergedAds = mergeMultipleCreativeBodies(ads);
+    return mergedAds;
+}
+
+function mergePageNameWithAssociatedAds(ads, pageName) {
+    for (const ad of ads) {
+        ad.page_name = pageName;
+    }
+    return ads;
+}
+
+async function mergeMultipleCreativeBodies(ads) {
+    for (const ad of ads) {
+        // console.log(ad)
+        let creativeBodiesCombined = "";
+
+        try {
+            for (const creativeBody of ad.creative_bodies) {
+                // if (creativeBodiesCombined === "") {
+                creativeBodiesCombined += " " + creativeBody;
+                // }
+            }
+            ad.creative_bodies = creativeBodiesCombined;
+        } catch (error) {
+            ad.creative_bodies = "";
+        }
+    }
+    return ads;
+}
+
+function createAdsSummaryTable(ads, country, maxTableLength = 100) {
+    const adsSummaryTable = [];
+    
+    for (const ad of ads) {
+        let foundPreviousAd = false;
+
+        for (const uniqueAd of adsSummaryTable) {
+            if (ad.creative_bodies === uniqueAd.creative_bodies) {
+                foundPreviousAd = true;
+                uniqueAd.freq += 1;
+                uniqueAd.ad_ids.push(ad._id);
+                break;
+            }
+        }
+
+        if (!foundPreviousAd) {
+            const creativeBodyEncoded = encodeURIComponent(ad.creative_bodies);
+            country = country.toUpperCase();
+            const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${creativeBodyEncoded}&media_type=all`;
+
+            adsSummaryTable.push({
+                creative_bodies: ad.creative_bodies,
+                freq: 1,
+                ad_ids: [ad._id],
+                funding_entity: ad.funding_entity,
+                snapshot_url: snapshotUrl,
+            });
+        }
+    }
+
+    adsSummaryTable.sort((a, b) => b.freq - a.freq);
+
+    if (adsSummaryTable.length > maxTableLength) {
+        adsSummaryTable.splice(maxTableLength);
+    }
+
+    return adsSummaryTable;
+}
+
+async function generateFreqTable(start, end, funder, country, page_id = null, res) {
+    if (funder !== null && page_id !== null) {
+        return { error: "An error occurred", data: null };
+    }
+
+    // Only add the page name to the ads if pageId is provided
+    let pageName = '';
+    if (page_id !== null) {
+        const page = await fetchPage(db, country, page_id);
+        if (page !== null) {
+            pageName = page.name;
+        } else {
+            return { error: "An error occurred", data: null };
+        }
+    }
+
+    let ads = await fetchAds(db, country, funder, page_id, start, end);
+
+    if (page_id !== null) {
+        ads = mergePageNameWithAssociatedAds(ads, pageName);
+    }
+
+    ads = await fetchAds(db, country, funder, page_id, start, end);
+
+    if (page_id !== null) {
+        ads = mergePageNameWithAssociatedAds(ads, pageName);
+    }
+    console.log("THIS IS COUNT")
+    console.log(country);
+    const adsSummary = createAdsSummaryTable(ads, country);
+    // console.log(adsSummary)
+    const resultDict = { summary_table: adsSummary };
+    return res.json(resultDict);
+
+    // --- Below is the code for making the API to keywords_extractor, functionally works the same as above ---
+    // ########################################################################################################
+    const apiUrl = "http://192.168.1.129:8089/ads_summary";
+
+    // const _page_id = funder;
+    const _country = country;
+    const start_time = new Date( new Date() - start*60*60*24*1000)
+    const end_time = new Date( new Date() - end*60*60*24*1000)
+    console.log(start_time);
+    console.log(end_time);
+
+    // const fullUrl = apiUrl + "?" + queryParams.toString();
+    const queryParams = new URLSearchParams();
+    queryParams.append("funding_entity", funder);
+    queryParams.append("country", _country);
+    queryParams.append("start_time", start_time.toISOString());
+    queryParams.append("end_time", end_time.toISOString());
+    
+    const fullUrl = apiUrl + "?" + queryParams.toString();
+    try {
+        // Parse the URL
+        const url = new URL(fullUrl);
+
+        // Create an HTTP request options object
+        const options = {
+            method: 'GET',
+            hostname: url.hostname,
+            port: url.port,
+            path: url.pathname + url.search,
+        };
+
+        // Make the HTTP GET request
+        const request = https.request(options, (response) => {
+            let data = '';
+
+            // Listen for data events and accumulate the response data
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                if (response.statusCode !== 200) {
+                    // Check for a 422 status code and handle the response body
+                    if (response.statusCode === 422) {
+                        try {
+                            const responseData = JSON.parse(data);
+                            console.error("Validation error:", responseData);
+                            // return { error: "An error occurred", data: null };
+                        } catch (error) {
+                            console.error("Error parsing response body:", error);
+                            // return { error: "An error occurred", data: null };
+                        }
+                    } else {
+                        console.error(`HTTP error! Status: ${response.statusCode}`);
+                        return { error: "An error occurred", data: null };
+                    }
+                } else {
+                    const responseData = JSON.parse(JSON.parse(data));
+                    // console.log(typeof responseData)
+                    res.json(responseData);
+                }
+            });
+        });
+
+        // Handle any errors that occur during the request
+        request.on('error', (error) => {
+            console.error("Request error:", error);
+            res.json({ 'error': "An error occurred" });
+        });
+
+        // Send the request
+        request.end();
+    } catch (error) {
+        console.error("URL parsing error:", error);
+        res.json({ 'error': "An error occurred" });
+    }
+}
+
+
 
 async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
     const apiUrl = "http://192.168.1.128:8089";
