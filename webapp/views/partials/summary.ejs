@@ -553,9 +553,14 @@
 			summaryTable = data.summary_table;
 			console.log(data.summary_table)
 			
+			cloudTable.clear().draw();
 			
 			for (const phraseObj of summaryTable) {
-				const linkIcon = `<i class="fas fa-link" style="cursor: pointer;" onclick="window.open('${phraseObj.snapshot_url}', '_blank')"></i>`;
+				if (phraseObj.creative_bodies === "") {
+					continue;
+				} 
+				const snapshotUrl = phraseObj.snapshot_url.replace(/'/g, "\\'");
+				const linkIcon = `<i class="fas fa-link" style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')"></i>`;
 				// Add data to the DataTable
 				cloudTable.row.add([
 					phraseObj.creative_bodies,
@@ -563,13 +568,6 @@
 					phraseObj.freq
 				]).draw(false);
 			}
-			
-			// $('#infoTable').dataTable( {
-			// 	"columns": [
-			// 		{ "width": "80%" },
-			// 		{ "width": "20%" },
-			// 	]
-			// } );
 			cloudTable.draw(true);
 
 		});
