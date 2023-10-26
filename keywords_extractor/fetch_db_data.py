@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 import pandas as pd
-import generate_wordcloud
 import process_ads
 import urllib.parse
 
@@ -20,6 +19,7 @@ def fetch_page(db, country, page_id):
 
 def fetch_ads(db, country, funding_entity, page_id, start_time, end_time):
     ads_collection = db[f"facebook_ads_{country}"]
+    ads = None
     if page_id is not None and funding_entity is None:
         ads = ads_collection.find({"page_id": page_id,
                                    "first_collected": {"$gte": start_time},
@@ -40,16 +40,17 @@ def merge_page_name_with_associated_ads(ads, page_name):
         ad["page_name"] = page_name
     return ads
 
+
 def merge_multiple_creative_bodies(ads):
     # convert creative_bodies to str
-    
+
     for ad in ads:
         creative_bodies_combined = ""
         try:
             for creative_body in ad["creative_bodies"]:
                 creative_bodies_combined += " " + creative_body
             ad["creative_bodies"] = creative_bodies_combined
-        except: 
+        except:
             ad["creative_bodies"] = ""
     return ads
 
@@ -88,6 +89,22 @@ def create_ads_summary_table(ads, country, max_table_length=100):
     return ads_summary_table
 
 
+def top_keyword_to_d3_dict_list(top_keywords):
+    d3_dict_list = []
+    for keyword in top_keywords:
+        size = top_keywords[keyword] * 10
+        # round up the size to the nearest int
+        size = int(size + 0.5)
+        d3_dict_list.append({"text": keyword, "size": size})
+    return d3_dict_list
+
+
+def top_keyphrase_to_d3_dict_list(top_key_phrases):
+    d3_dict_list = []
+    for key_phrase in top_key_phrases:
+        size = top_key_phrases[key_phrase]
+        d3_dict_list.append({"text": key_phrase, "size": size})
+    return d3_dict_list
 
 
 def close_connection(client):
@@ -108,7 +125,7 @@ if __name__ == '__main__':
     # convert end_time to datetime object
     end_time = pd.to_datetime(end_time)
 
-
+    page_name = None
     # only adding the page name to the ads if page_id is provided
     if page_id is not None:
         page = fetch_page(db, country, page_id)
@@ -122,11 +139,11 @@ if __name__ == '__main__':
     if page_id is not None:
         ads = merge_page_name_with_associated_ads(ads, page_name)
 
-    ads_summary = create_ads_summary_table(ads, country, max_table_length = 100)
-    # convert it to markdown
-    ads_summary = pd.DataFrame(ads_summary)
-    # display as markdown
-    print(ads_summary.to_markdown())
+    ads_summary = create_ads_summary_table(ads, country, max_table_length=100)
+    # # convert it to markdown
+    # ads_summary = pd.DataFrame(ads_summary)
+    # # display as markdown
+    # print(ads_summary.to_markdown())
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
@@ -146,6 +163,7 @@ if __name__ == '__main__':
     if is_wordcloud:
         # time it
         import time
+
         start_time = time.time()
         top_keywords = process_ads.extract_keywords([ad["creative_bodies"] for ad in ads],
                                                     top_n=top_n_keywords,
@@ -153,14 +171,16 @@ if __name__ == '__main__':
                                                     is_politically_relevant_threshold=is_politically_relevant_threshold,
                                                     if_only_politically_relevant=False,
                                                     if_extended_stop_words=False)
-        img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, debug=True)
+        print(top_keyword_to_d3_dict_list(top_keywords))
+        # img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, debug=True)
 
     else:
-        key_phrases = process_ads.extract_top_key_phrase(ads,
-                                                         top_n=top_n_key_phrases,
-                                                         share_word_threshold=key_phrase_share_word_threshold,
-                                                         min_length=2,
-                                                         max_length=4)
-        img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases, debug=True)
+        top_key_phrases = process_ads.extract_top_key_phrase(ads,
+                                                             top_n=top_n_key_phrases,
+                                                             share_word_threshold=key_phrase_share_word_threshold,
+                                                             min_length=2,
+                                                             max_length=4)
+        print(top_keyphrase_to_d3_dict_list(top_key_phrases))
+        # img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_key_phrases, debug=True)
 
     close_connection(client)
