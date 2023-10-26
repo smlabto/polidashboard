@@ -274,7 +274,7 @@
 							</div>
 						</div>
 					</h3>
-					<h5 style="color :#AAAAAA">&nbsp;This chart applies to all pages from this Funder</h5>
+					<h5 class="all_funders" style="color :#AAAAAA">&nbsp;This chart applies to all pages from this Funder</h5>
 					
 					<!-- Selection between wordcloud and phrase cloud -->
 					<!-- <br/> -->
@@ -346,7 +346,7 @@
 							</div>
 						</div>
 					</h3>
-					<h5 style="color :#AAAAAA">&nbsp;This table applies to all pages from this Funder</h5>
+					<h5 class="all_funders" style="color :#AAAAAA">&nbsp;This table applies to all pages from this Funder</h5>
 					
 					<!-- <br/> -->
 
@@ -377,8 +377,7 @@
 								<thead>
 									<tr>
 										<th>Creative Body</th>
-										<th>Link to Ads w/ Creative Body</th>
-										<th style="max-width: 5%">Frequency</th>
+										<th style="max-width: 5%">#Ads</th>
 									</tr>
 								</thead>
 								<tbdody>
@@ -457,7 +456,7 @@
 	let phrasecloudImage = null;
 	let summaryTable = null;
 	let phrasecloudData = null;
-	// const cloudTable = document.getElementById("infoTable"); // Ref to cloud table
+	
 	const cloudTable = new DataTable('#infoTable', {
 		lengthMenu: [
 			[5, 10, 15, 20, -1],
@@ -466,11 +465,8 @@
 		buttons: [
 			'pageLength',
 		],
-		// autowidth: false
-		// columnDefs: [
-		// 	{ width: '70%', targets: 0, },
-		// 	{ width: '30%', targets: 1, },
-		// ],
+		ordering: true,
+		order: [[ 1, "desc" ]]
 	});
 	const cloudImageElement = document.getElementById("imageElement");
 	
@@ -560,12 +556,11 @@
 					continue;
 				} 
 				const snapshotUrl = phraseObj.snapshot_url.replace(/'/g, "\\'");
-				const linkIcon = `<i class="fas fa-link" style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')"></i>`;
+				const freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')">~${phraseObj.freq} &nbsp;&nbsp;<i class="fas fa-link"></i></a>`;
 				// Add data to the DataTable
 				cloudTable.row.add([
 					phraseObj.creative_bodies,
-					linkIcon,
-					phraseObj.freq
+					freqObj
 				]).draw(false);
 			}
 			cloudTable.draw(true);
@@ -939,8 +934,8 @@
 	}
 
 	function drawPages(data, anchor) {
-		// Draw the list of a funder's pages
-		// console.log(data.length);
+		// --- Draw the list of a funder's pages ---
+		
 		// Create the container for the page widget
 		var pageContainers = d3.select(anchor)
 			.html("")
@@ -951,17 +946,28 @@
 				.attr('class', 'page-container')
 
 		// Create the left column (with the filter button)
-		var pageLefts = pageContainers.append('div')
-			.attr('class', 'page-left')
-			.style('max-wdith', '90px')
-			.append('button')
-				.style('margin', '5px')
-				.style('padding', '4px')
-				.html('<p>Filter by</p><i class="fas fa-filter fa-lg"></i>')
-				.attr('class', 'page-filter-button')
-				.on('click', d => {
-					showPage(d)
-				})
+		if (data.length > 1) {
+			var pageLefts = pageContainers.append('div')
+				.attr('class', 'page-left')
+				.style('max-wdith', '90px')
+				.append('button')
+					.style('margin', '5px')
+					.style('padding', '4px')
+					.html('<p>Filter by</p><i class="fas fa-filter fa-lg"></i>')
+					.attr('class', 'page-filter-button')
+					.on('click', d => {
+						showPage(d)
+					})
+		} else {
+			var pageLefts = pageContainers.append('div')
+				.style('width', '20px')
+			d3.selectAll('.page_name')
+				.style('color', "#AAAAAA")
+				.html('<div></div>')
+			d3.selectAll('.all_funders')
+				.style('color', "#AAAAAA")
+				.html('<div></div>')
+		}
 
 		// Create the right column with all the data
 		var pageRights = pageContainers.append('div')
