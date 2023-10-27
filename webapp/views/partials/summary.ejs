@@ -464,6 +464,12 @@
 
 		});
 
+		performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
+			const filteredDemographics = pageFilter(data);
+			drawDemographics(filteredDemographics);
+			demographicsData = data;
+		});
+
 
 		// --- Handle Phrasecloud ---
 		while (cloudTable.rows.length > 1) {  // Clear the table first
@@ -864,13 +870,10 @@
 			.html('Meta reports ad impressions as a range with a maximum and minimum. The value shown is the  minimum number of impressions for all ads ran by this Facebook Page.')
 	}
 
-	updateFacebookTimestamps()
+	updateFacebookTimestamps();
 	function updateFacebookTimestamps() {
 		end = new Date();
 		end.setDate(end.getDate() - fbEndDay);
-		
-		// Add 1 day to the end date
-		end.setDate(end.getDate() + 1);
 
 		startDay = new Date();
 		startDay.setDate(startDay.getDate() - fbStartDay);
