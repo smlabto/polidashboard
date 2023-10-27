@@ -17,19 +17,45 @@
 
 	class Statemap {
 		constructor(data, mapName, country='us') {
-            console.log("Hello from map constructor");
-            console.log(data);
 			this.data = data;
 			this.mapName = mapName;
+            this.country = country;
 
-            // --- TODO: Process the country label name
-			console.log(data);
-			this.draw()
+			this.draw();
 		}
 
         async fetchTopoData() {
             try {
-                const mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
+                let mapDataset = null;
+                if (country === 'us') {
+                    mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
+                } else if (country === 'de') {
+                    // mapDataset = await d3.json("https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json");
+                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/de/de-all.topo.json");
+                    mapDataset.transform.scale=[0.05, -0.063]
+                    mapDataset.transform.translate=[225, 620]
+                } else if (country === 'br') {
+                    // mapDataset = await d3.json("https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json");
+                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/br/br-all.topo.json");
+                    mapDataset.transform.scale=[0.062, -0.063]
+                    mapDataset.transform.translate=[165, 620]
+                } else if (country === 'au') {
+                    // mapDataset = await d3.json("https://raw.githubusercontent.com/alwaysblazing/Australia-State-TopoJson-MapChart/master/au-states-topo.json");
+                    // mapDataset = await d3.json("https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson");
+                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/au/au-all.topo.json");
+                    mapDataset.transform.scale=[0.08, -0.06]
+                    mapDataset.transform.translate=[63, 600]
+                } else if (country === "gb") {
+                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/gb/custom/gb-countries.topo.json");
+                    mapDataset.transform.scale=[0.041, -0.061]
+                    mapDataset.transform.translate=[280, 610]
+                } else {
+                    // mapDataset = await d3.json("https://gist.githubusercontent.com/Brideau/2391df60938462571ca9/raw/f5a1f3b47ff671eaf2fb7e7b798bacfc6962606a/canadaprov.json");
+                    // mapDataset = await d3.json("https://gist.githubusercontent.com/Brideau/2391df60938462571ca9/raw/f5a1f3b47ff671eaf2fb7e7b798bacfc6962606a/canadaprovtopo.json");
+                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/ca/ca-all.topo.json");
+                    mapDataset.transform.scale=[0.081, -0.061]
+                    mapDataset.transform.translate=[40, 610]
+                }
                 return mapDataset;
             } catch (error) {
                 console.error("Error fetching map data:", error);
@@ -38,8 +64,6 @@
         }
 
         draw() {  
-            console.log("Start of draw")
-            
             let _d = this.data
             
             const customColorInterpolator = t => {
@@ -72,7 +96,7 @@
                     .attr("width", width)
                     .attr("height", height)
                     .attr("viewBox", [0, 0, width + widthOffset, height])
-                    .attr("style", "max-width: 90%; height: 90%;");
+                    .attr("style", "max-width: 100%; height: 90%;");
             } else {
                 svg.selectAll("g").remove(); // Remove existing map elements
             }
@@ -114,11 +138,18 @@
 
             this.fetchTopoData().then(mapDataset => {
                 d3.select('#map_loader').style('display', 'none');
+                
+                var topo_data= null
+                if (this.country === 'us') { // Or old germany
+                    topo_data = mapDataset.objects.states;
+                } else {
+                    topo_data = mapDataset.objects.default;
+                }
 
                 const states = g.append("g")
                     .attr("cursor", "pointer")
                     .selectAll("path")
-                    .data(topojson.feature(mapDataset, mapDataset.objects.states).features)
+                    .data(topojson.feature(mapDataset, topo_data).features)
                     .enter().append("path")
                     .attr("d", path)
                     .attr("class", "county")
@@ -147,7 +178,7 @@
                             .attr("stroke", "black")
                             .attr("stroke-width", 2)
                             .attr("stroke-linejoin", "round")
-                            .attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => a.id === hoveredData.id || b.id === hoveredData.id)));
+                            .attr("d", path(topojson.mesh(mapDataset, topo_data, (a, b) => a.id === hoveredData.id || b.id === hoveredData.id)));
                         
                         moveMapTooltip();
                     })
@@ -174,7 +205,121 @@
                             highlightedPath = null; // Reset the reference
                         }
                     });
+                   
+                // Add a square box pointing to a territory that might be too difficult to highlight with the mouse
+                if (['ca', 'au', 'br'].includes(this.country)) { 
+                    let squareSize = 30; 
+                    // Init with canada values
+                    let squareXOffset = 100;
+                    let squareYOffset = 20;
+                    let lineXEnd = 80;
+                    let lineYEnd = 19;
+
+                    if (this.country === 'au') {
+                        squareXOffset = 160;
+                        squareYOffset = 65;
+                        lineXEnd = 80;
+                        lineYEnd = 49;
+                        squareSize = 40;
+                    } else if (this.country === 'br') {
+                        squareXOffset = 190;
+                        squareYOffset = 75;
+                        lineXEnd = 157;
+                        lineYEnd = 160;
+                        squareSize = 40;
+                    }
                     
+                    const squareX = width - squareSize - squareXOffset; // Position it at the top right
+                    const squareY = height - squareSize - squareYOffset;
+                    const lineData = [
+                        [squareX - lineXEnd, squareY - lineYEnd],
+                        [squareX, squareY]
+                    ];
+
+                    // Set the corresponding ID so the territory highlights when the box is hovered on
+                    let smallTerritoryID = "CA.PE"; // Default to PEI
+                    if (this.country === "au") {
+                        smallTerritoryID = "AU.ACT"
+                    } else if (this.country === "br") {
+                        smallTerritoryID = "BR.DF"
+                    }
+                    
+                    g.append("path")
+                        .attr("d", path({ type: "LineString", coordinates: lineData }))
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1);
+                        
+                    const territorySquare = g.append("rect")
+                        .attr("x", squareX)
+                        .attr("y", squareY)
+                        .attr("width", squareSize)
+                        .attr("height", squareSize)
+                        .attr("stroke", outlineColor)
+                        .attr("rx", 5) // Adjust the radius for rounded corners as needed
+                        .attr("ry", 5) // Adjust the radius for rounded corners as needed
+                        .attr("data-fips", d => { return smallTerritoryID })
+                        .attr("fill", d => {
+                            const stateData = _d.find((item) => item.stateId === smallTerritoryID);
+                            return customColorInterpolator(stateData ? Number(stateData.value).toFixed(20) : 0);
+                        }); // Set the square's fill color
+                    
+                    territorySquare
+                        .on("mouseover", function(e,d) {
+                            const hoveredData = d3.select(this).data()[0]; // Get the data associated with the hovered element
+                            tooltip.style("visibility", "visible");
+                            if (currentStateData === null) {
+                                currentStateData = _d.find(item => item.stateId === smallTerritoryID);
+                                stateSpend = {
+                                    lower_bound : currentStateData.minSpend,
+                                    upper_bound : currentStateData.maxSpend
+                                }
+                            }
+                            // This isn't super necessary, make it a bit smoother visually the first time you hover
+                            updateTooltipContent();
+
+                            // Highlight the state/country
+                            highlightedPath = g.append("path")
+                                .attr("fill", "none")
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 2)
+                                .attr("stroke-linejoin", "round")
+                                .attr("d", path(topojson.mesh(mapDataset, topo_data, (a, b) => a.id === smallTerritoryID || b.id === smallTerritoryID)));
+                            
+                            territorySquare.attr("stroke", "black").attr("stroke-width", 2);
+                            moveMapTooltip();
+                        })
+                        .on("mousemove", function(e,d) {
+                            if (currentStateData === null) {
+                                currentStateData = _d.find(item => item.stateId === smallTerritoryID);
+                                stateSpend = {
+                                    lower_bound : currentStateData.minSpend,
+                                    upper_bound : currentStateData.maxSpend
+                                }
+                            }
+                            updateTooltipContent();
+                            // Update tooltip position
+                            moveMapTooltip();
+                            tooltip
+                                .style("visibility", "visible")
+                        })
+                        .on("mouseout", function() {
+                            tooltip.style("visibility", "hidden");
+                            currentStateData = null;
+                            if (highlightedPath) {
+                                highlightedPath.remove();
+                                highlightedPath = null; // Reset the reference
+                            }
+                            territorySquare.attr("stroke", outlineColor);
+                        });
+                    
+                    // Add the territory label so user will know what territory the box is pointing to
+                    g.append("text")
+                        .attr("x", squareX + squareSize / 2)
+                        .attr("y", squareY + squareSize + 15) // Adjust the vertical position as needed
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "14px")
+                        .text(smallTerritoryID.split(".")[1]);
+                }
                 var mapTextTip = $("#map-textip");
                 let unknownStateData = _d.find(item => item.name === "Unknown");
                 mapTextTip
@@ -196,7 +341,7 @@
                     .attr("stroke", outlineColor)
                     .attr("stroke-width", 1.5)
                     .attr("stroke-linejoin", "round")
-                    .attr("d", path(topojson.mesh(mapDataset, mapDataset.objects.states, (a, b) => true)));
+                    .attr("d", path(topojson.mesh(mapDataset, topo_data, (a, b) => true)));
                 
                 // Make tooltip smoother (tooltip won't freeze if the user hovers over it)
                 tooltip
@@ -220,7 +365,7 @@
             // Generate the legend, as a gradient scale
             const margin = 40;
             const yOffset = 300;
-            const xOffset = 40;
+            const xOffset = 30;
 
             const gradientScale = d3.scaleLinear()
             .domain([0, 1])

@@ -102,50 +102,48 @@
 			<hr>
 			
 			<!-- ### Start of Map Widget ### -->
-			<% if (country === 'us') { %>
-				<div class="dropdown" style="z-index: 40;">
-					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where Facebook Ads Funded by: <span class="sub_advertiser_name">___</span> Were Shown</button>
-					<div class="dropdown-content">
-						<h3 class="widget-title" id="page-scroll">
-							<!-- Where These Ads Were Shown -->
-							<div class="tip">
-								<img src="/images/info.png">
-								<div id="map-textip" class="tiptext">
-									This module shows where Meta ads by this funder/page were shown.
-									<br><br>
-									Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
-									<!-- This module shows the distribution of this funder's viewed ads across different States.
-									Hover over any State to see what percentage of this funder's ads were shown there. -->
-									<br><br>
-									Ads for which no regional data is available are omitted.
-								</div>
-							</div>
-						</h3>
-						<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
-						<!-- Map loader icon -->
-						
-						<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
-						<h5 id="pages_subtitle" class="summary_subtitle page_name">&nbsp;</h5>
-						<div class="loader red" id="map_loader">
-							<div class="lds-grid">
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
+			<div class="dropdown" style="z-index: 40;">
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where Facebook Ads Funded by: <span class="sub_advertiser_name">___</span> Were Shown</button>
+				<div class="dropdown-content">
+					<h3 class="widget-title" id="page-scroll">
+						<!-- Where These Ads Were Shown -->
+						<div class="tip">
+							<img src="/images/info.png">
+							<div id="map-textip" class="tiptext">
+								This module shows where Meta ads by this funder/page were shown.
+								<br><br>
+								Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
+								<!-- This module shows the distribution of this funder's viewed ads across different States.
+								Hover over any State to see what percentage of this funder's ads were shown there. -->
+								<br><br>
+								Ads for which no regional data is available are omitted.
 							</div>
 						</div>
-						<div class="widget-content" id="chart-container">
-							<div id="map-tooltip"></div>
+					</h3>
+					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
+					<!-- Map loader icon -->
+					
+					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
+					<h5 id="pages_subtitle" class="summary_subtitle page_name">&nbsp;</h5>
+					<div class="loader red" id="map_loader">
+						<div class="lds-grid">
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
 						</div>
 					</div>
+					<div class="widget-content" id="chart-container">
+						<div id="map-tooltip"></div>
+					</div>
 				</div>
-				<hr>
-			<% } %>
+			</div>
+			<hr>
 
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
@@ -213,49 +211,7 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- ### Start of Location Graph Widget ### -->
-			<% if (country != 'us') { %>
-				<hr>
-				<div class="dropdown" style="z-index: 10;">
-					<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where These Ads Were Shown by: <span class="sub_advertiser_name">___</span></button>
-					<div class="dropdown-content">
-
-						<h3 class="widget-title">
-							<!-- Where These Ads Were Shown -->
-							<div class="tip">
-								<img src="/images/info.png">
-								<div class="tiptext">
-										This module shows the regions where people who saw ads by this funder are located - each point represents one ad.
-										<br><br>
-										Hover over a dot to see that ad's distribution across all regions, and click to see that ad's summary (ad will open in a new tab).
-										<br><br>
-										Ads for which no regional data is available are omitted
-								</div>
-							</div>
-						</h3>
-						
-						
-						<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
-						<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
-						<div class="loader red" id="regions_loader">
-							<div class="lds-grid">
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-								<div></div>
-							</div>
-						</div>
-						<div id="regions">
-						</div>
-					</div>
-				</div>
-			<% } %>
+				
 			<hr>
 			<div class="dropdown" style="z-index: 15;">
 				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; What Was Said in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
@@ -276,18 +232,6 @@
 					</h3>
 					<h5 class="all_funders" style="color :#AAAAAA">&nbsp;This chart applies to all pages from this Funder</h5>
 					
-					<!-- Selection between wordcloud and phrase cloud -->
-					<!-- <br/> -->
-					<!-- <div>
-						<h3 style="text-align: center;">Please select an option below to view a Word / Phrase cloud.</h3>
-					</div>
-					<div style="text-align: -webkit-center;" class="btn-group-container">
-						<div class="btn-group btn-group-justified" style="width: 80%; height: 40px;" role="group" aria-label="...">
-							<div id="wordcloudBtn" type="button" style="border-radius: 5px; border-bottom-right-radius: 0px; border-top-right-radius: 0px; padding: 5px" class="btn btn-danger">Wordcloud</div>
-							<div id="phrasecloudBtn" type="button" style="border-radius: 5px; border-bottom-left-radius: 0px; border-top-left-radius: 0px; padding: 5px" class="btn btn-default">Phrasecloud</div>
-						</div>
-					</div> -->
-
 					<br/>
 
 					<div class="loader red" style="text-align: center;" id="wordmap_loader">
@@ -310,21 +254,6 @@
 					</div>
 
 					<img style="border: 1px solid lightgrey;" id="imageElement" src="" alt="Image">
-
-					<!-- <div class="dropdown" style="z-index: 15; border: 1px solid lightgrey; box-shadow: none;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Exact counts for the top phrases/words:</span></button>
-						
-						<div class="dropdown-content">
-							<table class="table" id="infoTable">
-								<thead>
-									<tr>
-										<th>Category</th>
-										<th>Count</th>
-									</tr>
-								</thead>
-							</table>
-						</div>
-					</div>	 -->
 				</div>
 			</div>
 
@@ -350,43 +279,23 @@
 					
 					<!-- <br/> -->
 
-					<!-- <div class="loader red" style="text-align: center;" id="wordmap_loader">
-						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating, please wait 20-40 seconds...</p>
-						<div class="lds-grid">
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-						</div>
-					</div> -->
-
 					<div id="wordmap-error" style="display: none;" style="padding-top: 20px; padding-bottom: 20px">
 						<br/><h3 style="text-align: center;">There was an error generating the Word/Phrase cloud.</h3><br/>
 					</div>
 
-					<!-- <div class="dropdown" style="z-index: 15; border: 1px solid lightgrey; box-shadow: none;"> -->
-						<!-- <div style="background-color: #6c6c6c" class="dropdown-btn widget-title"></div> -->
-						
-						<div class="dropdown-content">
-							<table class="table" id="infoTable">
-								<thead>
-									<tr>
-										<th>Creative Body</th>
-										<th style="max-width: 5%">#Ads</th>
-									</tr>
-								</thead>
-								<tbdody>
+					<div class="dropdown-content">
+						<table class="table" id="infoTable">
+							<thead>
+								<tr>
+									<th>Creative Body</th>
+									<th style="max-width: 5%">#Ads</th>
+								</tr>
+							</thead>
+							<tbdody>
 
-								</tbdody>
-							</table>
-						</div>
-					<!-- </div>	 -->
-
+							</tbdody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -403,7 +312,6 @@
 			var dropdownBtn = dropdown.querySelector(".dropdown-btn");
 			var dropdownContent = dropdown.querySelector(".dropdown-content");
 
-			// console.log(dropdownContent.classList.contains("dropdown-content-navigation"))
 			if (!dropdownContent.classList.contains("dropdown-content-navigation")) {
 				dropdownContent.style.display = "block";
 			}
@@ -495,7 +403,6 @@
 		}
 		timerInterval = setInterval(() => {
 			timer--;
-			console.log(timer);
 			if (timer <= 0) {
 				clearInterval(timerInterval);
 				timer = 0;
@@ -513,15 +420,6 @@
 			country
 		};
 
-		performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
-			const filteredDemographics = pageFilter(data);
-			drawDemographics(filteredDemographics);
-			if (country !== 'us') {
-				drawRegions(filteredDemographics);
-			}
-			demographicsData = data;
-		});
-
 		// Get the funder's pages
 		performRequest('/facebook_ads_v2/funder_pages', commonData, data => {
 			const filteredPages = pageFilter(data)
@@ -536,18 +434,17 @@
 			timelineData = data;
 		});
 
-		if (country === 'us') {
-			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-				// drawMap(data);
-				mapData = data;
-				rawMap = new Statemap(data, "chart-container"); // TO DO
-				prevRawMap = rawMap;
-			});
-		}
+		performRequest('/facebook_ads_v2/funder_map', commonData, data => {
+			// drawMap(data);
+			mapData = data;
+			rawMap = new Statemap(data, "chart-container", country); // TO DO
+			prevRawMap = rawMap;
+		});
+		// if (country === 'us' || country === 'ca') {
+		// }
 
 		performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
 			summaryTable = data.summary_table;
-			console.log(data.summary_table)
 			
 			cloudTable.clear().draw();
 			
@@ -588,7 +485,6 @@
 		// CALL PHRASECLOUD
 		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
 			if (data.error) {
-				console.log("error");
 				d3.select('#wordmap-error').style('display', 'block')
 				d3.select('#wordmap_loader').style('display', 'none');
 				d3.select("#imageElement").style("display", 'none');
@@ -597,28 +493,11 @@
 			}
 
 			phrasecloudImage = data.img; // Store wordcloud image
-			// phrasecloudData = data.summary_table; // Store wordcloud data
-			console.log("PHRASE DATA GOTTEN");
-			console.log(data);
 
 			d3.select('#wordmap_loader').style('display', 'none')
 			d3.select("#imageElement").style("display", 'block');
 			cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
 
-			// if (summaryTable === null) {
-			// 	summaryTable = data.summary_table;
-			// 	console.log("SUMMARY TABLE");
-			// 	console.log(data.summary_table)
-
-			// 	for (const phraseObj of summaryTable) {
-			// 		// Add data to the DataTable
-			// 		cloudTable.row.add([
-			// 			phraseObj.creative_bodies,
-			// 			phraseObj.freq
-			// 		]).draw(false);
-			// 	}
-			// 	cloudTable.draw(true);
-			// }
 		}, 'phrasecloud', error => {
 			phrasecloudData = "error";
 			console.error("An error occurred:", error);
@@ -672,7 +551,7 @@
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
 		d3.select('#map_loader').style('display', 'block');	
-		if (country != 'us') d3.select('#regions_loader').style('display', 'block');
+		// if (country != 'us' && country != 'ca') d3.select('#regions_loader').style('display', 'block');
 		d3.select('#wordmap_loader').style('display', 'none'); // User has to select an option before the loader becomes visible
 		// d3.select('#wordmap-explain').style('display', 'block');
 		d3.select('#funder_pages').html('');
@@ -716,12 +595,13 @@
 		d3.select('#timeline_loader').style('display', 'block')
 		d3.select('#map_loader').style('display', 'block')
 		d3.select('#timeline').html('')
-		if (country != 'us') {
-			d3.select('#regions_loader').style('display', 'block')
-			d3.select('#regions').html('')
-		} else {
-			d3.select("#chart-container").style("display", "none")
-		}
+		// if (country != 'us' && country != 'ca') {
+		// 	d3.select('#regions_loader').style('display', 'block')
+		// 	d3.select('#regions').html('')
+		// } else {
+		// }
+		d3.select("#chart-container").style("display", "none")
+		d3.select('#regions_loader').style('display', 'block')
 		// d3.select('#wordmap_loader').style('display', 'block')
 		// Scroll to show data if on mobile
 		$([document.documentElement, document.body]).animate({
@@ -758,27 +638,15 @@
 			} catch (err) {
 				performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
 					const filteredDemographics = pageFilter(data);
-					// demographicsData = data;
+					demographicsData = data;
 					drawDemographics(filteredDemographics);
-					if (country != 'us')  drawRegions(filteredDemographics)
 				});
 			}
-			// try {
-			// 	if (country != 'us')  drawRegions(pageFilter(demographicsData))
-			// } catch (err) {
-			// 	performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
-			// 		const filteredDemographics = pageFilter(data);
-			// 		drawRegions(filteredDemographics);
-			// 	});
-			// }
 			try {
-				// This one HAS to call a request right away, as page_id needs to be defined
-				if (country === 'us') {
-					commonData.page_id = p.page_id;
-					performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-						rawMap = new Statemap(data, "chart-container");
-					});
-				}
+				commonData.page_id = p.page_id;
+				performRequest('/facebook_ads_v2/funder_map', commonData, data => {
+					rawMap = new Statemap(data, "chart-container", country);
+				});
 				//drawMap(pageFilter(mapData))
 			} catch (err) {
 				console.log(err)
@@ -822,36 +690,23 @@
 			d3.select('#demographics').html('')
 		}
 		try {
-			if (country != 'us')  drawRegions(pageFilter(demographicsData))
+			if (prevRawMap) {
+				rawMap = prevRawMap
+				rawMap.draw();
+			} else {
+				rawMap = new Statemap(data, "chart-container", country);
+			}
 		} catch (err) {
-			performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
-				const filteredDemographics = pageFilter(data);
-				drawRegions(filteredDemographics);
-			});
-		}
-		try {
-			if (country === 'us') {
-				// drawMap(mapData)
+			commonData.page_id = p.page_id;
+			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 				if (prevRawMap) {
 					rawMap = prevRawMap
 					rawMap.draw();
 				} else {
-					rawMap = new Statemap(data, "chart-container");
+					rawMap = new Statemap(data, "chart-container", country);
+					prevRawMap = rawMap;
 				}
-			}
-		} catch (err) {
-			if (country === 'us') {
-				commonData.page_id = p.page_id;
-				performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-					if (prevRawMap) {
-						rawMap = prevRawMap
-						rawMap.draw();
-					} else {
-						rawMap = new Statemap(data, "chart-container");
-						prevRawMap = rawMap;
-					}
-				});	
-			}
+			});	
 		}
 	}
 
@@ -1011,16 +866,21 @@
 
 	updateFacebookTimestamps()
 	function updateFacebookTimestamps() {
-		end = new Date()
-		end.setDate(end.getDate() - fbEndDay)
-		startDay = new Date()
-		startDay.setDate(startDay.getDate() - fbStartDay)
-		format = d3.timeFormat('%b %d, %Y')
+		end = new Date();
+		end.setDate(end.getDate() - fbEndDay);
+		
+		// Add 1 day to the end date
+		end.setDate(end.getDate() + 1);
+
+		startDay = new Date();
+		startDay.setDate(startDay.getDate() - fbStartDay);
+		
+		format = d3.timeFormat('%b %d, %Y');
 
 		d3.selectAll('.facebook_date')
-			.html(`Time Frame: ${format(startDay)} - ${format(end)}`)
+			.html(`Time Frame: ${format(startDay)} - ${format(end)}`);
 		d3.selectAll('.facebook_timestamp_no_calendar')
-			.html(`${format(startDay)} - ${format(end)}`)
+			.html(`${format(startDay)} - ${format(end)}`);
 	}
 
 	function drawTimeline(data, pageId=null) {
@@ -1104,9 +964,6 @@
 
 	function drawDemographics(data) {
 		// Create the targetted demographics chart
-		// console.log("DRAWING DEMOGRAPHICS")
-		// console.log(data)
-
 		// Clear existing chart if there is one
 		var container = d3.select("#demographics")
 		container.html("")
@@ -1358,249 +1215,6 @@
 
 		// Remove the loading indicator once the chart is finished
 		d3.select('#demographics_loader').style('display', 'none')
-	}
-
-	function drawRegions(data) {
-
-		// Remove loading indicator
-		d3.select('#regions_loader').style('display', 'none')
-
-		// Clear the region chart if one exists
-		var container = d3.select("#regions")
-		container.html("")
-		var margin = {top: 10, right: 30, bottom: 30, left: 50}
-		var width = container.node().getBoundingClientRect().width - margin.left - margin.right
-		var height = Object.keys(regionCodes).length * 30 + 50
-
-		// Create the drawing area
-		var svg = container
-			.append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
-			.append("g")
-				.attr("transform",
-					"translate(" + margin.left + "," + margin.top + ")");
-
-		// Create the x-axis
-		var x = d3.scaleLinear()
-			.domain([0, 1])
-			.range([ 0, width ]);
-		svg.append("g")
-			.attr("transform", "translate(0," + height + ")")
-			.call(
-				d3.axisBottom(x)
-					.tickFormat(d3.format('.0%'))
-			);
-
-		// Get the y-domain from list of regions
-		var yDomain = Object.values(regionCodes)
-		yDomain.push('Other')
-		yDomain.push('')
-
-		// Used to pick the color of the dots
-		var color = function(d) {
-			return colorSchemes.red
-		}
-
-		// Create a list of objects (one corresponding to each dot)
-		var cleanedData = []
-		for (var i = 0; i < data.length; i++) {
-			var foundRegions = []
-
-			for (var j = 0; j < data[i].regions.length; j++) {
-				console.log(data[i].regions)
-				var point = data[i].regions[j]
-				var region = getRegionLabel(point._id)
-
-				cleanedData.push({
-					region: region,
-					percentage: point.percentage,
-					ad: data[i]._id,
-					url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
-					spend: rangeToLabel(data[i].spend)
-				})
-
-				foundRegions.push(region)
-			}
-
-			if (data[i].regions.length != 0) {
-				for (var j = 0; j < yDomain.length-1; j++) {
-					if (!foundRegions.includes(yDomain[j])) {
-						cleanedData.push({
-							region: yDomain[j],
-							percentage: 0,
-							ad: data[i]._id,
-							url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
-							spend: rangeToLabel(data[i].spend)
-						})
-					}
-				}
-			}
-		}
-
-		// Get quartiles and media for box plots
-		var sumstat = d3.nest()
-			.key(function(d) {return d.region})
-			.rollup(function(d) {
-				q1 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.25)
-				median = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.5)
-				q3 = d3.quantile(d.map(function(g) { return g.percentage;}).sort(d3.ascending),.75)
-				interQuantileRange = q3 - q1
-				min = Math.max(q1 - 1.5 * interQuantileRange, 0)
-				max = Math.min(q3 + 1.5 * interQuantileRange, 1)
-				return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
-			})
-			.entries(cleanedData)
-			.sort((a, b) => d3.descending(a.value.median, b.value.median))
-
-		// Sort y-domain (regions) by their prevalence
-		yDomain = yDomain.sort((a, b) => {
-			var arr = sumstat.map(d => d.key)
-			return d3.ascending(
-				(arr.indexOf(a) == -1) ? 100000 : arr.indexOf(a),
-				(arr.indexOf(b) == -1) ? 100000 : arr.indexOf(b)
-			)
-		})
-
-		// Calculate y-coordinates of each row
-		var yRange = []
-		for (var i = 0; i < yDomain.length; i++) {
-			yRange.push(height * i / (yDomain.length - 1))
-		}
-
-		// Create y-axis
-		var y = d3.scaleOrdinal()
-			.domain(yDomain)
-			.range(yRange)
-		svg.append("g")
-			.call(d3.axisLeft(y));
-
-		var defaultRadius = 3
-
-		// Used when dots are moused over
-		var highlight = function(d) {
-			d3.selectAll('.ad_region_'+d.ad)
-				.transition()
-				.duration(200)
-				.attr('r', 6)
-				.style('opacity', 1)
-				.style('fill', 'black')
-		}
-
-		// Removes highlights when mouse leaves
-		var doNotHighlight = function(d) {
-			d3.selectAll('.region_dot')
-				.transition()
-				.duration(200)
-				.attr('r', defaultRadius)
-				.style('opacity', 0.2)
-				.style('fill', color)
-		}
-
-		// Opens the ad's page on facebook (on click)
-		var viewAd = function(d) {
-			window.open(d.url, '_blank')
-		}
-
-
-		if (data.length < 1000) {
-			// Draw the dots
-			svg.append('g')
-				.selectAll('dot')
-				.data(cleanedData)
-				.enter()
-				.append('circle')
-					.attr('class', function (d) {return 'region_dot ad_region_' + d.ad})
-					.attr('cx', function(d) {return x(d.percentage)})
-					.attr('cy', function(d) {return perturb(y(d.region), 12)})
-					.attr('r', defaultRadius)
-					.style('fill', color)
-					.style('opacity', 0.2)
-					.style('cursor', 'pointer')
-					.on("mouseover", highlight)
-					.on("mouseleave", doNotHighlight)
-					.on("click", viewAd)
-		} else {
-			// If there are more than 1000 ads, use a violin plot instead of dots
-
-			// Create histogram for violin plot
-			var histogram = d3.histogram()
-				.domain([0, 1])
-				.thresholds(x.ticks(160))
-				.value(d => d)
-
-			// Calculate statistics for each bin on the histogram
-			var numstat = d3.nest()
-				.key(function(d) { return d.region;})
-				.rollup(function(d) {   // For each key..
-					input = d.map(function(g) { return g.percentage;})
-					bins = histogram(input)   // And compute the binning on it.
-					var lengths = bins.map(b => b.length)
-					var maxLength = d3.max(lengths)
-					return lengths.map((v, i) => {
-						return {
-							size: v / maxLength,
-							start: i / lengths.length
-						}
-					})
-				})
-				.entries(cleanedData)
-
-			// Draw the violins
-			svg.selectAll("myViolin")
-				.data(numstat)
-				.enter()
-				.append("g")
-				.attr("transform", function(d){ return("translate(0, " + y(d.key) +")") } )
-				.append("path")
-					.style("fill", color)
-					.datum(function(d){ return(d.value)})
-					.attr("d", d3.area()
-						.y0(function(d){return(d.size * 10)} )
-						.y1(function(d){return(-d.size * 10) } )
-						.x(function(d){return(x(d.start)) } )
-					)
-
-		}
-
-		var boxHeight = 12
-		// Draw the horizontal lines ('whiskers') of the boxplots
-		svg.selectAll('horizLines')
-			.data(sumstat)
-			.enter()
-			.append('line')
-				.attr("y1", function(d){return y(d.key)})
-				.attr("y2", function(d){return y(d.key)})
-				.attr("x1", function(d){return x(d.value.min)})
-				.attr("x1", function(d){return x(d.value.max)})
-				.attr('stroke', 'black')
-				.style('pointer-events', 'none')
-
-		// Draw the rectangles of the boxplots
-		svg.selectAll('boxes')
-			.data(sumstat)
-			.enter()
-			.append('rect')
-				.attr('y', function(d){return(y(d.key) - boxHeight/2)})
-				.attr('x', function(d){return(x(d.value.q1))})
-				.attr('width', function(d){return(x(d.value.q3) - x(d.value.q1))})
-				.attr('height', boxHeight)
-				.attr('stroke', 'black')
-				.attr('fill', 'transparent')
-				.style('pointer-events', 'none')
-
-		// Draw the media lines of the box plot
-		svg.selectAll('medianLines')
-			.data(sumstat)
-			.enter()
-			.append('line')
-				.attr('x1', function(d){return(x(d.value.median))})
-				.attr('x2', function(d){return(x(d.value.median))})
-				.attr('y1', function(d){return(y(d.key) - boxHeight/2)})
-				.attr('y2', function(d){return(y(d.key) + boxHeight/2)})
-				.attr('stroke', 'black')
-				.style('pointer-events', 'none')
-
 	}
 
 	async function fetchTopoData() {

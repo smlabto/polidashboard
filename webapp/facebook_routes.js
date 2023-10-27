@@ -139,6 +139,7 @@ router.post('/facebook_ads_v2/funder_timeline', (req, res) => {
 });
 
 router.post('/facebook_ads_v2/funder_map', (req, res) => {
+    console.log("RECEIVED MAP REQUEST")
     var start = parseInt(req.body.startDay)
     var end = parseInt(req.body.endDay)
     var funder = req.body.funder
@@ -146,6 +147,7 @@ router.post('/facebook_ads_v2/funder_map', (req, res) => {
     var page_id = req.body.page_id
     if (page_id == '') page_id = null;
     if (funder == '') funder = null;
+    console.log(req.body)
     generateFunderMap(start, end, funder, country, page_id, res)
 });
 
@@ -579,7 +581,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
             const stateId = stateCodeDictionary.get(obj['name']);
             const minSpendValue = minSpend.get(obj['name']);
             const maxSpendValue = maxSpend.get(obj['name']);
-            
+            console.log(stateId);
             return {
                 name: obj['name'],
                 stateId: stateId,
@@ -813,7 +815,7 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
 
 
 async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
-    const apiUrl = "http://192.168.1.128:8089";
+    const apiUrl = "http://192.168.1.129:8089";
 
     // Replace with the appropriate query parameters
     // Currently using temporary parameters
