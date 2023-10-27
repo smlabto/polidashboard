@@ -500,8 +500,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
         ];
     }
 
-    // Eventually don't hardcode this, once more countries are setup
-    const stateCodeDictionary = countryStates['us'];
+    const stateCodeDictionary = countryStates[country];
     
     const cursor = db.collection('facebook_ads_' + country)
         .aggregate(query, { allowDiskUse: true });
