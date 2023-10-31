@@ -24,6 +24,7 @@ async def main(country: str,
                if_only_politically_relevant: bool = False,
                is_politically_relevant_threshold: float = 0.75,
                if_extended_stop_words: bool = False,
+               if_generate_img_base64: bool = True,
                max_table_length: int = 100,
                dpi: int = 100):
     # if both funding_entity and page_id are not None, raise an exception
@@ -31,6 +32,7 @@ async def main(country: str,
         raise HTTPException(status_code=400, detail="Both funding_entity and page_id cannot be specified")
 
     # only adding the page name to the ads if page_id is provided
+    page_name = None
     if page_id is not None:
         page = fetch_db_data.fetch_page(db, country, page_id)
         if page is not None:
@@ -55,19 +57,28 @@ async def main(country: str,
                                                     is_politically_relevant_threshold=is_politically_relevant_threshold,
                                                     if_only_politically_relevant=if_only_politically_relevant,
                                                     if_extended_stop_words=if_extended_stop_words)
-        img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, dpi=dpi, debug=False)
+        img_base64 = None
+        if if_generate_img_base64:
+            img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, dpi=dpi, debug=False)
+
+        top_keywords = fetch_db_data.top_keyword_to_d3_dict_list(top_keywords)
 
         # make a result dict with the image base64 string and the top keywords
         result_dict = {"img": img_base64, "result": top_keywords, "summary_table": ads_summary}
         return json.dumps(result_dict)
 
     else:
-        key_phrases = process_ads.extract_top_key_phrase(ads,
-                                                         top_n=top_n_key_phrases,
-                                                         share_word_threshold=key_phrase_share_word_threshold)
-        img_base64 = generate_wordcloud.generate_phrase_wordcloud(key_phrases, dpi=dpi, debug=False)
+        top_key_phrases = process_ads.extract_top_key_phrase(ads,
+                                                             top_n=top_n_key_phrases,
+                                                             share_word_threshold=key_phrase_share_word_threshold)
+        img_base64 = None
+        if if_generate_img_base64:
+            img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_key_phrases, dpi=dpi, debug=False)
+
+        top_key_phrases = fetch_db_data.top_keyphrase_to_d3_dict_list(top_key_phrases)
+
         # make a result dict with the image base64 string and the top key phrases
-        result_dict = {"img": img_base64, "result": key_phrases, "summary_table": ads_summary}
+        result_dict = {"img": img_base64, "result": top_key_phrases, "summary_table": ads_summary}
         return json.dumps(result_dict)
 
 
@@ -75,6 +86,7 @@ async def main(country: str,
 async def app_shutdown():
     print("Closing connection to database.....")
     client.close()
+
 
 if __name__ == '__main__':
     # to run the server, run the following command in the terminal:
