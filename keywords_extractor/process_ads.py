@@ -6,6 +6,9 @@ from nltk.corpus import stopwords, words
 from stop_words import get_stop_words
 import torch.nn.functional as F
 import torch
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 # command used for downloading the nltk words
 # nltk.download('stopwords')
@@ -52,6 +55,7 @@ def is_politically_relevant(word, political_context_embedding, is_politically_re
     avg_similarity = sum(similarities) / len(similarities)
     return avg_similarity > is_politically_relevant_threshold
 
+
 def extend_stop_words(stop_words):
     import spacy
     en = spacy.load('en_core_web_lg')
@@ -71,14 +75,52 @@ def extract_phrase(text, top_n=10, max_length=3, min_length=1):
     return keyword_list
 
 
-def extract_top_key_phrase(ads, top_n=200, share_word_threshold=0.49, min_length=1, max_length=3):
+def parallel_extract_phrases(chunk_data, min_length=1, max_length=3, debug=False):
+    start_idx, end_idx, chunk = chunk_data
+    if debug:
+        print(f"Process handling indices: {start_idx} to {end_idx}")
+    results = []
+    for unique_creative_ad in chunk:
+        freq = unique_creative_ad["freq"]
+        ad_text = unique_creative_ad["creative_bodies"]
+        key_phrases = extract_phrase(ad_text, min_length=min_length, max_length=max_length)
+        results.extend([(phrase, freq) for phrase in key_phrases])
+    return results
+
+
+def extract_top_key_phrase(unique_creative_ads_table, top_n=200, share_word_threshold=0.49, min_length=1, max_length=3,
+                           num_processes=32, minimum_number_of_unique_ads_to_parallel=30, debug=False):
     key_phrase_freq = defaultdict(int)
 
-    for ad in ads:
-        ad_text = ad["creative_bodies"]
-        key_phrases = extract_phrase(ad_text, min_length=min_length, max_length=max_length)
-        for phrase in key_phrases:
-            key_phrase_freq[phrase] += 1
+    if len(unique_creative_ads_table) > minimum_number_of_unique_ads_to_parallel:
+        # if the length of the unique_creative_ads_table is less than number of processes
+        # then use the length of the unique_creative_ads_table as the number of processes
+        if len(unique_creative_ads_table) < num_processes:
+            num_processes = len(unique_creative_ads_table)
+
+        # Split data into chunks for each process
+        chunk_size = len(unique_creative_ads_table) // num_processes
+        chunks = [(i, i + chunk_size, unique_creative_ads_table[i:i + chunk_size]) for i in
+                  range(0, len(unique_creative_ads_table), chunk_size)]
+
+        # Use partial function to fixate the min_length and max_length parameters for parallel_extract_phrases
+        parallel_extract_phrases_prefilled = partial(parallel_extract_phrases,
+                                                     min_length=min_length,
+                                                     max_length=max_length,
+                                                     debug=debug)
+
+        with ProcessPoolExecutor(max_workers=num_processes) as executor:
+            for result in executor.map(parallel_extract_phrases_prefilled, chunks):
+                for phrase, freq in result:
+                    key_phrase_freq[phrase] += freq
+
+    else:
+        for unique_creative_ad in unique_creative_ads_table:
+            freq = unique_creative_ad["freq"]
+            ad_text = unique_creative_ad["creative_bodies"]
+            key_phrases = extract_phrase(ad_text, min_length=min_length, max_length=max_length)
+            for phrase in key_phrases:
+                key_phrase_freq[phrase] += freq
 
     # Sort key_phrases by frequency
     sorted_key_phrases = sorted(key_phrase_freq.keys(), key=lambda x: key_phrase_freq[x], reverse=True)
@@ -142,7 +184,7 @@ def get_page_names_plus_ads_dict_list(combined_ads):
     return page_names_plus_ads_dict_list
 
 
-def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5,
+def extract_keywords(ads, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5,
                      if_only_politically_relevant=False, if_extended_stop_words=False):
     if if_extended_stop_words:
         extended_stop_words = extend_stop_words(stop_words)
@@ -151,6 +193,8 @@ def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, s
     else:
         # Use Tfidf Vectorizer to get important words based on TF-IDF scores
         vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=200)
+
+    texts = [ad["creative_bodies"] for ad in ads]
 
     tfidf_matrix = vectorizer.fit_transform(texts)
     feature_names = vectorizer.get_feature_names_out()
