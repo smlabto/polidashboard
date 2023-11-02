@@ -5,7 +5,10 @@ Description:
     We receive them as numerical codes, this file acts as a key-value pair to convert
     The respective state names to their numerical codes
 
-    All codes refer to id's found in TopoJsons from https://code.highcharts.com/mapdata/
+    All codes refer to id's found in TopoJsons gathered from https://code.highcharts.com/mapdata/
+
+    For Spain, the map is taken from unpkg (https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json)
+    As it supports autonomous regions, which is what facebook provides us with
 */
 
 const us = new Map([
@@ -63,52 +66,35 @@ const us = new Map([
     ["Wyoming", "56"]
 ]);
 
-// const ca = new Map([
-//     ["Unknown", "N/A"],
-//     ["Manitoba", "CA-MB"],
-//     ["Saskatchewan", "CA-SK"],
-//     ["Alberta", "CA-AB"],
-//     ["British Columbia", "CA-BC"],
-//     ["Nunavut", "CA-NU"],
-//     ["Northwest Territories", "CA-NT"],
-//     ["Newfoundland and Labrador", "CA-NL"],
-//     ["Nova Scotia", "CA-NS"],
-//     ["Ontario", "CA-ON"],
-//     ["Quebec", "CA-QC"],
-//     ["New Brunswick", "CA-NB"],
-//     ["Yukon", "CA-YT"],
-//     ["Prince Edward Island", "CA-PE"],
-// ]);
-
 const br = new Map([
     ["Unknown", "N/A"],
-    ["Acre (state)", "BR.AC"], // Checked
-    ["Alagoas", "BR.AL"], // Checked
-    ["Amapá", "BR.AP"], // Checked
+    ["Acre (state)", "BR.AC"], 
+    ["Alagoas", "BR.AL"], 
+    ["Amapá", "BR.AP"], 
     ["Amazonas", "BR.AM"],
-    ["Bahia", "BR.BA"], // Checked
-    ["Ceará", "BR.CE"], // Checked
-    ["Federal District", "BR.DF"], // Checked
-    ["Espírito Santo", "BR.ES"], // Checked
-    ["Goiás", "BR.GO"], // Checked
-    ["Maranhão", "BR.MA"], // Checked
-    ["Mato Grosso", "BR.MT"], // Checked
-    ["Mato Grosso do Sul", "BR.MS"], // Checked
-    ["Minas Gerais", "BR.MG"], // Checked
-    ["Pará", "BR.PA"], // Checked
-    ["Paraíba", "BR.PB"], // Checked
-    ["Paraná", "BR.PR"], // Checked
-    ["Pernambuco", "BR.PE"], // Checked
-    ["Piauí", "BR.PI"], // Checked
-    ["Rio de Janeiro (state)", "BR.RJ"], // Checked
-    ["Rio Grande do Norte", "BR.RN"], // Checked
-    ["Rio Grande do Sul", "BR.RS"], // Checked
-    ["Rondônia", "BR.RO"], // Checked
-    ["Roraima", "BR.RR"], // Checked
-    ["Santa Catarina", "BR.SC"], // Checked
-    ["São Paulo (state)", "BR.SP"], // Checked
-    ["Sergipe", "BR.SE"], // Checked
-    ["Tocantins", "BR.TO"], // Checked
+    ["Bahia", "BR.BA"], 
+    ["Ceará", "BR.CE"], 
+    ["Federal District", "BR.DF"], 
+    ["Espírito Santo", "BR.ES"], 
+    ["Goiás", "BR.GO"], 
+    ["Maranhão", "BR.MA"], 
+    ["Mato Grosso", "BR.MT"], 
+    ["Mato Grosso do Sul", "BR.MS"], 
+    ["Minas Gerais", "BR.MG"], 
+    ["Pará", "BR.PA"], 
+    ["Paraíba", "BR.PB"], 
+    ["Paraná", "BR.PR"], 
+    ["Pernambuco", "BR.PE"], 
+    ["Piauí", "BR.PI"], 
+    ["Rio de Janeiro (state)", "BR.RJ"], 
+    ["Rio Grande do Norte", "BR.RN"], 
+    ["Rio Grande do Sul", "BR.RS"], 
+    ["Rondônia", "BR.RO"], 
+    ["Roraima", "BR.RR"], 
+    ["Santa Catarina", "BR.SC"], 
+    ["São Paulo (state)", "BR.SP"], 
+    ["Sergipe", "BR.SE"], 
+    ["Tocantins", "BR.TO"], 
 ]);
 
 const ca = new Map([
@@ -127,26 +113,6 @@ const ca = new Map([
     ["Yukon", "CA.YT"],
     ["Prince Edward Island", "CA.PE"],
 ]);
-
-// const de = new Map([
-//     ["Unknown", "N/A"],
-//     ["Baden-Württemberg", "08"],
-//     ["Bayern", "09"],
-//     ["Berlin", "11"],
-//     ["Brandenburg", "12"],
-//     ["Bremen", "04"],
-//     ["Hamburg", "02"],
-//     ["Hessen", "06"],
-//     ["Mecklenburg-Vorpommern", "13"],
-//     ["Niedersachsen", "03"],
-//     ["Nordrhein-Westfalen", "07"],
-//     ["Rheinland-Pfalz", "10"],
-//     ["Saarland", "12"],
-//     ["Sachsen", "14"],
-//     ["Sachsen-Anhalt", "15"],
-//     ["Schleswig-Holstein", "01"],
-//     ["Thüringen", "16"]
-// ]);
 
 const de = new Map([
     ["Unknown", "N/A"],
@@ -168,30 +134,49 @@ const de = new Map([
     ["Thüringen", "DE.TH"]
 ]);
 
-// const au = new Map([
-//     ["Unknown", "N/A"],
-//     ["New South Wales", 0], // D
-//     ["Victoria", 1], // D
-//     ["Queensland", 2], // D
-//     ["South Australia", 3], // D
-//     ["Western Australia", 4],
-//     ["Tasmania", 5],
-//     ["Northern Territory", 6], //D 
-//     ["Australian Capital Territory", 7],
-//     ["Jervis Bay Territory", 8],
-// ]);
-
 const au = new Map([
     ["Unknown", "N/A"],
-    ["New South Wales", "AU.NSW"], // D
-    ["Victoria", "AU.VIC"], // D
-    ["Queensland", "AU.QLD"], // D
-    ["South Australia", "AU.SA"], // D
+    ["New South Wales", "AU.NSW"], 
+    ["Victoria", "AU.VIC"], 
+    ["Queensland", "AU.QLD"], 
+    ["South Australia", "AU.SA"], 
     ["Western Australia", "AU.WA"],
     ["Tasmania", "AU.TAS"],
-    ["Northern Territory", "AU.NT"], //D 
+    ["Northern Territory", "AU.NT"], 
     ["Australian Capital Territory", "AU.ACT"],
     ["Jervis Bay Territory", "AU.JB"],
+]);
+
+const es = new Map([
+    ["Unknown", "N/A"],
+    ["Andalusia", "01"], 
+    ["Aragón", "02"],
+    ["Asturias", "03"],
+    ["Balearic Islands", "04"],
+    ["Islas Canarias", "05"],
+    ["Cantabria", "06"],
+    ["Castilla y Leon", "07"], 
+    ["Castilla-La Mancha", "08"],
+    ["Cataluña", "09"],
+    ["Comunidad Valenciana", "10"],
+    ["Extremadura", "11"],
+    ["Galicia", "12"],
+    ["Comunidad de Madrid", "13"],
+    ["Region of Murcia", "14"],
+    ["Navarra", "15"],
+    ["País Vasco", "16"],
+    ["La Rioja", "17"],
+    ["Ceuta", "18"],
+    ["Melilla", "19"],
+]);
+
+const dk = new Map([
+    ["Unknown", "N/A"],
+    ["Capital Region of Denmark", "DK.6325"],
+    ["Central Denmark Region", "DK.6326"],
+    ["North Denmark Region", "DK.3568"],
+    ["Zealand Region", "DK.3563"],
+    ["Region of Southern Denmark", "DK.3564"],
 ]);
 
 const gb = new Map([
@@ -210,7 +195,9 @@ const maps = {
     'de': de,
     'au': au,
     'gb': gb,
-    'br': br
+    'br': br,
+    'es': es,
+    'dk': dk,
     // ^^^ add defined maps here
 }
 

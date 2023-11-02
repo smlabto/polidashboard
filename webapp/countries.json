@@ -129,6 +129,22 @@
         }
     },
     {
+        "name": "Spain",
+        "code": "es",
+        "first date": "15-10-2022",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Denmark",
+        "code": "dk",
+        "first date": "15-10-2022",
+        "currency": "DKK",
+        "currency symbol": "Kr.",
+        "regions": {}
+    },
+    {
         "name": "United Kingdom",
         "code": "gb",
         "first date": "15-10-2022",
