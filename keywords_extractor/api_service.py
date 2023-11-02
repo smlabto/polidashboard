@@ -25,7 +25,9 @@ async def main(country: str,
                is_politically_relevant_threshold: float = 0.75,
                if_extended_stop_words: bool = False,
                if_generate_img_base64: bool = True,
-               dpi: int = 100):
+               dpi: int = 100,
+               num_processes: int = 32,
+               minimum_number_of_unique_ads_to_parallel: int = 30):
     # if both funding_entity and page_id are not None, raise an exception
     if funding_entity is not None and page_id is not None:
         raise HTTPException(status_code=400, detail="Both funding_entity and page_id cannot be specified")
@@ -68,7 +70,9 @@ async def main(country: str,
         ads_unique_creatives_only = fetch_db_data.create_ads_unique_creatives_only_table(ads, country)
         top_key_phrases = process_ads.extract_top_key_phrase(ads_unique_creatives_only,
                                                              top_n=top_n_key_phrases,
-                                                             share_word_threshold=key_phrase_share_word_threshold)
+                                                             share_word_threshold=key_phrase_share_word_threshold,
+                                                             num_processes=num_processes,
+                                                             minimum_number_of_unique_ads_to_parallel=minimum_number_of_unique_ads_to_parallel,)
         img_base64 = None
         if if_generate_img_base64:
             img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_key_phrases, dpi=dpi, debug=False)
