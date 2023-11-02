@@ -25,7 +25,6 @@ async def main(country: str,
                is_politically_relevant_threshold: float = 0.75,
                if_extended_stop_words: bool = False,
                if_generate_img_base64: bool = True,
-               max_table_length: int = 100,
                dpi: int = 100):
     # if both funding_entity and page_id are not None, raise an exception
     if funding_entity is not None and page_id is not None:
@@ -43,8 +42,6 @@ async def main(country: str,
     ads = fetch_db_data.fetch_ads(db, country, funding_entity, page_id, start_time, end_time)
     if page_id is not None:
         ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
-
-    ads_summary = fetch_db_data.create_ads_summary_table(ads, country)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
@@ -68,7 +65,8 @@ async def main(country: str,
         return json.dumps(result_dict)
 
     else:
-        top_key_phrases = process_ads.extract_top_key_phrase(ads,
+        ads_unique_creatives_only = fetch_db_data.create_ads_unique_creatives_only_table(ads, country)
+        top_key_phrases = process_ads.extract_top_key_phrase(ads_unique_creatives_only,
                                                              top_n=top_n_key_phrases,
                                                              share_word_threshold=key_phrase_share_word_threshold)
         img_base64 = None
