@@ -142,7 +142,7 @@ def get_page_names_plus_ads_dict_list(combined_ads):
     return page_names_plus_ads_dict_list
 
 
-def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5,
+def extract_keywords(ads, top_n=200, is_politically_relevant_threshold=0.75, similarity_threshold=0.5,
                      if_only_politically_relevant=False, if_extended_stop_words=False):
     if if_extended_stop_words:
         extended_stop_words = extend_stop_words(stop_words)
@@ -151,6 +151,8 @@ def extract_keywords(texts, top_n=200, is_politically_relevant_threshold=0.75, s
     else:
         # Use Tfidf Vectorizer to get important words based on TF-IDF scores
         vectorizer = TfidfVectorizer(stop_words=list(stop_words), max_features=200)
+
+    texts = [ad["creative_bodies"] for ad in ads]
 
     tfidf_matrix = vectorizer.fit_transform(texts)
     feature_names = vectorizer.get_feature_names_out()

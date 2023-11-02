@@ -55,7 +55,7 @@ def merge_multiple_creative_bodies(ads):
     return ads
 
 
-def create_ads_summary_table(ads, country, max_table_length=100):
+def create_ads_summary_table(ads, country):
     # create a list of dictionaries of unique creative_bodies
     ads_summary_table = []
     for ad in ads:
@@ -83,8 +83,6 @@ def create_ads_summary_table(ads, country, max_table_length=100):
     # sort the ads_summary_table by frequency
     ads_summary_table = sorted(ads_summary_table, key=lambda x: x["freq"], reverse=True)
     # if the length of the ads_summary_table is greater than max_table_length, then only keep the top max_table_length
-    if len(ads_summary_table) > max_table_length:
-        ads_summary_table = ads_summary_table[:max_table_length]
 
     return ads_summary_table
 

@@ -44,14 +44,14 @@ async def main(country: str,
     if page_id is not None:
         ads = fetch_db_data.merge_page_name_with_associated_ads(ads, page_name)
 
-    ads_summary = fetch_db_data.create_ads_summary_table(ads, country, max_table_length)
+    ads_summary = fetch_db_data.create_ads_summary_table(ads, country)
 
     # if ads is an empty list, raise an exception
     if len(ads) == 0:
         raise HTTPException(status_code=404, detail="No ads found for the given params")
 
     if is_wordcloud:
-        top_keywords = process_ads.extract_keywords([ad["creative_bodies"] for ad in ads],
+        top_keywords = process_ads.extract_keywords(ads,
                                                     top_n=top_n_keywords,
                                                     similarity_threshold=keyword_share_word_threshold,
                                                     is_politically_relevant_threshold=is_politically_relevant_threshold,
@@ -64,7 +64,7 @@ async def main(country: str,
         top_keywords = fetch_db_data.top_keyword_to_d3_dict_list(top_keywords)
 
         # make a result dict with the image base64 string and the top keywords
-        result_dict = {"img": img_base64, "result": top_keywords, "summary_table": ads_summary}
+        result_dict = {"img": img_base64, "result": top_keywords}
         return json.dumps(result_dict)
 
     else:
@@ -78,7 +78,7 @@ async def main(country: str,
         top_key_phrases = fetch_db_data.top_keyphrase_to_d3_dict_list(top_key_phrases)
 
         # make a result dict with the image base64 string and the top key phrases
-        result_dict = {"img": img_base64, "result": top_key_phrases, "summary_table": ads_summary}
+        result_dict = {"img": img_base64, "result": top_key_phrases}
         return json.dumps(result_dict)
 
 
