@@ -89,7 +89,7 @@ def parallel_extract_phrases(chunk_data, min_length=1, max_length=3, debug=False
 
 
 def extract_top_key_phrase(unique_creative_ads_table, top_n=200, share_word_threshold=0.49, min_length=1, max_length=3,
-                           num_processes=32, minimum_number_of_unique_ads_to_parallel=30, debug=False):
+                           num_processes=8, minimum_number_of_unique_ads_to_parallel=800, debug=False):
     key_phrase_freq = defaultdict(int)
 
     if len(unique_creative_ads_table) > minimum_number_of_unique_ads_to_parallel:

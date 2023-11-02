@@ -26,8 +26,8 @@ async def main(country: str,
                if_extended_stop_words: bool = False,
                if_generate_img_base64: bool = True,
                dpi: int = 100,
-               num_processes: int = 32,
-               minimum_number_of_unique_ads_to_parallel: int = 30):
+               num_processes: int = 8,
+               minimum_number_of_unique_ads_to_parallel: int = 800):
     # if both funding_entity and page_id are not None, raise an exception
     if funding_entity is not None and page_id is not None:
         raise HTTPException(status_code=400, detail="Both funding_entity and page_id cannot be specified")
