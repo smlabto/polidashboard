@@ -8,6 +8,7 @@
     "mongoose": "^6.0.7",
     "node-fetch": "^3.3.2",
     "nodemon": "^2.0.12",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "wordcloud": "^1.2.2"
   }
 }

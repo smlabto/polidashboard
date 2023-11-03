@@ -60,7 +60,9 @@ async def main(country: str,
         if if_generate_img_base64:
             img_base64 = generate_wordcloud.generate_keyword_wordcloud(top_keywords, dpi=dpi, debug=False)
 
-        top_keywords = fetch_db_data.top_keyword_to_d3_dict_list(top_keywords)
+        # top_keywords = fetch_db_data.top_keyword_to_d3_dict_list(top_keywords)
+        
+
 
         # make a result dict with the image base64 string and the top keywords
         result_dict = {"img": img_base64, "result": top_keywords}
@@ -74,13 +76,19 @@ async def main(country: str,
                                                              num_processes=num_processes,
                                                              minimum_number_of_unique_ads_to_parallel=minimum_number_of_unique_ads_to_parallel,)
         img_base64 = None
-        if if_generate_img_base64:
-            img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_key_phrases, dpi=dpi, debug=False)
+        # if if_generate_img_base64:
+        #     img_base64 = generate_wordcloud.generate_phrase_wordcloud(top_key_phrases, dpi=dpi, debug=False)
 
         top_key_phrases = fetch_db_data.top_keyphrase_to_d3_dict_list(top_key_phrases)
-
+        
+        import unicodedata
+        normalized_data = []
+        for item in top_key_phrases:
+            normalized_text = ''.join([unicodedata.normalize('NFKD', char) for char in item['text'] if not unicodedata.combining(char)])
+            normalized_data.append({'text': normalized_text, 'size': item['size']})
+        
         # make a result dict with the image base64 string and the top key phrases
-        result_dict = {"img": img_base64, "result": top_key_phrases}
+        result_dict = {"result": normalized_data}
         return json.dumps(result_dict)
 
 

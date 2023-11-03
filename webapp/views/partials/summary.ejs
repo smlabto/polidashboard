@@ -235,7 +235,7 @@
 					<br/>
 
 					<div class="loader red" style="text-align: center;" id="wordmap_loader">
-						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating, please wait 20-40 seconds...</p>
+						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating...</p>
 						<div class="lds-grid">
 							<div></div>
 							<div></div>
@@ -253,7 +253,10 @@
 						<br/><h3 style="text-align: center;">There was an error generating the Word/Phrase cloud.</h3><br/>
 					</div>
 
-					<img style="border: 1px solid lightgrey;" id="imageElement" src="" alt="Image">
+					<!-- <img style="border: 1px solid lightgrey;" id="imageElement" src="" alt="Image"> -->
+					<!-- <div id="new-wordcloud-test"></div> -->
+					<div id="new-wordcloud-test" class="wordcloud" style="width: 100%; height:300px; max-height: 300px;"></div>
+					<!-- <canvas id="new-wordcloud-test" class="wordcloud" style="width: 100%; height:300px; max-height: 300px;"></canvas> -->
 				</div>
 			</div>
 
@@ -376,7 +379,7 @@
 		ordering: true,
 		order: [[ 1, "desc" ]]
 	});
-	const cloudImageElement = document.getElementById("imageElement");
+	// const cloudImageElement = document.getElementById("imageElement");
 	
 	let requestCount = 0; // Track the number of requests made
 	let timer = 0; // Initial timer value
@@ -393,10 +396,10 @@
 	}
 
 	function performFunderRequests(funder) {
-		if (timer > 40) { // Should help prevent spamming requests
-			alert("Please wait " + (timer - 40) + " seconds before making another request.");
-			return false;
-		}
+		// if (timer > 40) { // Should help prevent spamming requests
+		// 	alert("Please wait " + (timer - 40) + " seconds before making another request.");
+		// 	return false;
+		// }
 		// Decrement the timer every second
 		if (timerInterval) {
 			clearInterval(timerInterval); // Clear the existing interval
@@ -490,23 +493,80 @@
 
 		// CALL PHRASECLOUD
 		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
+			console.log("OKDSMCOKSDMC")
+			console.log(data)
+			const wordcloudContainer = document.getElementById('new-wordcloud-test');
+			const existingCanvas = wordcloudContainer.querySelector('canvas');
+			d3.select('#wordmap-error').style('display', 'none')
+			if (existingCanvas) {
+				wordcloudContainer.removeChild(existingCanvas);
+			}
 			if (data.error) {
 				d3.select('#wordmap-error').style('display', 'block')
 				d3.select('#wordmap_loader').style('display', 'none');
 				d3.select("#imageElement").style("display", 'none');
 				phrasecloudData = "error";
+				console.log("BUTT");
+				d3.select('#wordmap-error').style('display', 'block')
+				d3.select('#wordmap_loader').style('display', 'none');
+				if (wordcloudContainer.querySelector('canvas')) {
+					wordcloudContainer.removeChild(existingCanvas);
+				}
 				return null;
 			}
 
 			phrasecloudImage = data.img; // Store wordcloud image
 
 			d3.select('#wordmap_loader').style('display', 'none')
-			d3.select("#imageElement").style("display", 'block');
-			cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
+			// cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
+
+			// Experiment here
+			const maxFontSize = d3.max(data.result, d => d.size);
+			const fontSizeScale = d3.scaleLinear()
+				.domain([1, maxFontSize]) // Original range
+				.range([10, 60]); // New range for font sizes
+			const wordcloudInput = data.result.map(item => [item.text.toString(), fontSizeScale(item.size)]);
+			const shadesOfBlue = ['#00a6fb', '#0582ca', '#006494', '#003554', '#006ebe'];
+
+			// Function to get a random shade of blue
+			function getRandomBlueColor() {
+				const randomIndex = Math.floor(Math.random() * shadesOfBlue.length);
+				return shadesOfBlue[randomIndex];
+			}
+
+			const canvas = document.createElement('canvas');
+			// const ctx = canvas.getContext('2d');
+			console.log(wordcloudContainer.offsetWidth)
+			console.log("ABOVE")
+			canvas.width = wordcloudContainer.offsetWidth * 2;
+			canvas.height = wordcloudContainer.offsetHeight * 2;
+			canvas.style.maxWidth = wordcloudContainer.offsetWidth + 'px';
+			canvas.style.maxHeight = wordcloudContainer.offsetHeight + 'px';
+			
+			wordcloudContainer.append(canvas);
+			WordCloud(canvas, { 
+				list: wordcloudInput, 
+				weightFactor: 2, 
+				gridSize: 6, 
+				minRotation: 0,
+				maxRotation: 0,
+				color: (word, weight, fontSize, distance, theta) => getRandomBlueColor(),
+				minSize: 14,
+				backgroundColor: 'transparent',
+			});
+
+			canvas.style.padding = '7px'; 
+			d3.select('#wordmap_loader').style('display', 'none');
+			
 
 		}, 'phrasecloud', error => {
 			phrasecloudData = "error";
 			console.error("An error occurred:", error);
+			d3.select('#wordmap-error').style('display', 'block')
+			d3.select('#wordmap_loader').style('display', 'none');
+			if (wordcloudContainer.querySelector('canvas')) {
+				wordcloudContainer.removeChild(existingCanvas);
+			}
 		});
 
 		return true;
@@ -538,6 +598,14 @@
 			}
 		});
 
+		// Delete any wordcloud canvas
+		const wordcloudContainer = document.getElementById('new-wordcloud-test');
+		const existingCanvas = wordcloudContainer.querySelector('canvas');
+		d3.select('#wordmap-error').style('display', 'none')
+		if (existingCanvas) {
+			wordcloudContainer.removeChild(existingCanvas);
+		}
+
 		chosenPage = null;
 		d3.selectAll('.page_name')
 			// .style('display', 'none')
@@ -564,7 +632,7 @@
 		d3.select('#funder_note').remove();
 		
 		d3.select('#wordmap_loader').style('display', 'block'); // Show loader
-		d3.select("#imageElement").style("display", 'none'); // Don't show image right away
+		// d3.select("#imageElement").style("display", 'none'); // Don't show image right away
 
 		d3.selectAll('.sub_advertiser_name')
 			.text(funder)
@@ -1218,16 +1286,6 @@
 
 		// Remove the loading indicator once the chart is finished
 		d3.select('#demographics_loader').style('display', 'none')
-	}
-
-	async function fetchTopoData() {
-		try {
-			const mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
-			return mapDataset;
-		} catch (error) {
-			console.error("Error fetching map data:", error);
-			throw error;
-		}
 	}
 
 </script>
