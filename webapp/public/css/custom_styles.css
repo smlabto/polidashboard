@@ -1030,3 +1030,6 @@ hr {
 	margin-bottom: 2px;
 }
 
+.facebook_date {
+	display: flex;
+}

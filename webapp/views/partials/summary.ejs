@@ -1,7 +1,7 @@
 <div class="widget-container boxed">
 	<div class="inner" id="summary">
 		<div class="facebook_nav_light p-tip">
-			<span class="facebook_date">
+			<span class="facebook_date" style="display: flex">
 			</span>
 			<div class="tiptext">
 				Click to edit time frame
@@ -23,7 +23,7 @@
 		<div id="summary-focus">
 			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
 			<div class="dropdown" style="z-index: 50;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Ads Spending Tracker For: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<!-- ### Start of Pages Funded Widget -->
 					<!-- <div class="navigation-instructions" id="right-navigation-instructions">
@@ -72,7 +72,7 @@
 						<!-- Total Number of Active Ads Per Day -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div class="tiptext">
+							<div class="tiptext" id="tiptext-active">
 								This chart shows the total number of ads that were active for each day of the selected timeframe.
 							</div>
 						</div>
@@ -291,7 +291,7 @@
 							<thead>
 								<tr>
 									<th>Creative Body</th>
-									<th style="max-width: 5%">#Ads</th>
+									<th>#Ads</th>
 								</tr>
 							</thead>
 							<tbdody>
@@ -377,13 +377,17 @@
 			'pageLength',
 		],
 		ordering: true,
-		order: [[ 1, "desc" ]]
+		order: [[ 1, "desc" ]],
+		fixedColumns: true,
+		autoWidth: false,
+		columnsDefs: [
+			{ "width": "100px", "targets": [1] },
+		]
+
 	});
 	// const cloudImageElement = document.getElementById("imageElement");
 	
 	let requestCount = 0; // Track the number of requests made
-	let timer = 0; // Initial timer value
-	let timerInterval;
 
 	function performRequest(url, requestData, successCallback, requestType='base') {
 		console.log("Request requested: " + url + " " + requestType);
@@ -396,25 +400,6 @@
 	}
 
 	function performFunderRequests(funder) {
-		// if (timer > 40) { // Should help prevent spamming requests
-		// 	alert("Please wait " + (timer - 40) + " seconds before making another request.");
-		// 	return false;
-		// }
-		// Decrement the timer every second
-		if (timerInterval) {
-			clearInterval(timerInterval); // Clear the existing interval
-		}
-		timerInterval = setInterval(() => {
-			timer--;
-			if (timer <= 0) {
-				clearInterval(timerInterval);
-				timer = 0;
-			}
-		}, 1000);
-		
-		// Add 30 to the timer, the shorted amount of time a request can go through is 30 seconds
-		timer = timer + 30;
-
 		d3.select("#chart-container").style("display", "none")
 		const commonData = {
 			startDay: fbStartDay,
@@ -518,46 +503,45 @@
 			phrasecloudImage = data.img; // Store wordcloud image
 
 			d3.select('#wordmap_loader').style('display', 'none')
-			// cloudImageElement.src = "data:image/png;base64," + phrasecloudImage;
-
-			// Experiment here
 			const maxFontSize = d3.max(data.result, d => d.size);
-			const fontSizeScale = d3.scaleLinear()
-				.domain([1, maxFontSize]) // Original range
-				.range([10, 60]); // New range for font sizes
-			const wordcloudInput = data.result.map(item => [item.text.toString(), fontSizeScale(item.size)]);
-			const shadesOfBlue = ['#00a6fb', '#0582ca', '#006494', '#003554', '#006ebe'];
-
-			// Function to get a random shade of blue
-			function getRandomBlueColor() {
-				const randomIndex = Math.floor(Math.random() * shadesOfBlue.length);
-				return shadesOfBlue[randomIndex];
-			}
-
-			const canvas = document.createElement('canvas');
-			// const ctx = canvas.getContext('2d');
-			console.log(wordcloudContainer.offsetWidth)
-			console.log("ABOVE")
-			canvas.width = wordcloudContainer.offsetWidth * 2;
-			canvas.height = wordcloudContainer.offsetHeight * 2;
-			canvas.style.maxWidth = wordcloudContainer.offsetWidth + 'px';
-			canvas.style.maxHeight = wordcloudContainer.offsetHeight + 'px';
 			
-			wordcloudContainer.append(canvas);
-			WordCloud(canvas, { 
-				list: wordcloudInput, 
-				weightFactor: 2, 
-				gridSize: 6, 
-				minRotation: 0,
-				maxRotation: 0,
-				color: (word, weight, fontSize, distance, theta) => getRandomBlueColor(),
-				minSize: 14,
-				backgroundColor: 'transparent',
-			});
+			d3.select("#new-wordcloud-test")
+				.selectAll("svg")
+				.remove();
 
-			canvas.style.padding = '7px'; 
-			d3.select('#wordmap_loader').style('display', 'none');
-			
+			var fill = d3.scaleOrdinal(d3.schemeCategory10);
+
+			var layout = d3.layout.cloud()
+				.size([wordcloudContainer.offsetWidth, wordcloudContainer.offsetHeight])
+				.words(data.result)
+				.padding(1)
+				.rotate(0)
+				.font("Open Sans")
+				.fontSize(function(d) {
+					return ((d.size/maxFontSize)*50)+10;
+				})
+				.on("end", draw);
+			layout.start(); 
+
+			function draw(words) {
+				d3.select("#new-wordcloud-test").append("svg")
+				.attr("width", layout.size()[0])
+				.attr("height", layout.size()[1])
+				.attr("style", "display: block; margin-left: auto; margin-right: auto; background: transparent; text-align: center;")
+				.append("g")
+				.attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+				.selectAll("text")
+				.data(words)
+				.enter().append("text")
+				.style("font-size", function(d) { return (d.size) + "px"; })
+				.style("font-family", "Open Sans")
+				.style("fill", function(d, i) { return fill(i); })
+				.attr("text-anchor", "middle")
+				.attr("transform", function(d) {
+					return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+				})
+				.text(function(d) { return d.text; });
+			} 
 
 		}, 'phrasecloud', error => {
 			phrasecloudData = "error";
@@ -572,6 +556,37 @@
 		return true;
 	}
 	
+	function zoomToFitBounds(words) {
+		var X0 = d3.min( words, function (d) {
+			return d.x - (d.width/2);
+		}),
+		X1 = d3.max( words, function (d) {
+			return d.x + (d.width/2);
+		});
+
+		var Y0 = d3.min( words, function (d) {
+			return d.y - (d.height/2);
+		}),
+		Y1 = d3.max( words, function (d) {
+			return d.y + (d.height/2);
+		});
+
+		var scaleX = (X1 - X0) / (window.innerWidth/6);
+		var scaleY = (Y1 - Y0) / (window.innerHeight/6);
+
+		var scale = 1 / Math.max(scaleX, scaleY);
+
+		var translateX = Math.abs(X0) * scale;
+		var translateY = Math.abs(Y0) * scale;
+
+		d3.select("#new-wordcloud-test").attr("transform", "translate(" +
+			translateX + "," + translateY + ")" +
+			" scale(" + scale * 2 + ")");
+		console.log("WOAH")
+		console.log(window.innerWidth)
+		
+	}
+
 	function showFunder(funder) {
 		const funderSuccess = performFunderRequests(funder);
 		if (!funderSuccess) {
@@ -636,11 +651,12 @@
 
 		d3.selectAll('.sub_advertiser_name')
 			.text(funder)
-			.style('text-decoration', 'underline')
 		
 		d3.select('#tiptext-pages')
-			.html('This module shows all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span><br><br>Funding entities can set up and control multiple Facebook Pages from which they can then use to run custom advertising campaigns on both Facebook and Instagram.')
+			.html('This module shows all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span><br><br>Meta’s advertisers can set up and control multiple Facebook Pages. Meta’s advertisers must have a Facebook Page created before they can advertise.<br><br>Click "Filter by to only see ')
 
+		d3.select('#tiptext-active')
+			.html('This chart shows the total number of active ads funded by: <span style="color: yellow;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to remove it from the chart.')
 		// Scroll to the funder, if mobile
 		if (isMobile) {
 			$([document.documentElement, document.body]).animate({
@@ -911,6 +927,7 @@
 			.append('a')
 			.attr('href', function(d) {return (`https://www.facebook.com/${d.page_id}`)})
 			.attr('target', '_blank')
+			.style('text-decoration', 'underline')
 			.text(function(d) {return d.page_name})
 
 		// Create the number of ads
@@ -1010,6 +1027,10 @@
 					padding: {
 						right: 0,
 						left: 0
+					},
+					label: {
+						text: 'Ads Spending Range',
+						position: 'outer-center'
 					}
 				},
 				y: {
@@ -1020,6 +1041,10 @@
 					min: 0,
 					padding: {
 						bottom: 0
+					},
+					label: {
+						text: 'Number of Ads',
+						position: 'outer-middle'
 					}
 				}
 			},
