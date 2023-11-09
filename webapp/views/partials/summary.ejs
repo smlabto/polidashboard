@@ -230,9 +230,9 @@
 							</div>
 						</div>
 					</h3>
-					<h5 class="all_funders" style="color :#AAAAAA">&nbsp;This chart applies to all pages from this Funder</h5>
-					
-					<br/>
+
+					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
+					<br>
 
 					<div class="loader red" style="text-align: center;" id="wordmap_loader">
 						<p style="margin-bottom: 0px; margin-top: 20px; font-size: 16px;">Generating...</p>
@@ -278,13 +278,10 @@
 							</div>
 						</div>
 					</h3>
-					<h5 class="all_funders" style="color :#AAAAAA">&nbsp;This table applies to all pages from this Funder</h5>
-					
-					<!-- <br/> -->
 
-					<div id="wordmap-error" style="display: none;" style="padding-top: 20px; padding-bottom: 20px">
-						<br/><h3 style="text-align: center;">There was an error generating the Word/Phrase cloud.</h3><br/>
-					</div>
+					<br>
+					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
+					<br>
 
 					<div class="dropdown-content">
 						<table class="table" id="infoTable">
@@ -356,6 +353,7 @@
 	var mapData;
 	var prevRawMap = null;
 	var rawMap = null;
+	var wordcloudData = null;
 	var chosenPage = null;
 	var mainFunder;
 
@@ -377,16 +375,15 @@
 			'pageLength',
 		],
 		ordering: true,
+		
+		columnDefs: [
+			{  orderDataType: "dom-text-numeric" , targets: [1] },
+		],
 		order: [[ 1, "desc" ]],
 		fixedColumns: true,
 		autoWidth: false,
-		columnsDefs: [
-			{ "width": "100px", "targets": [1] },
-		]
-
 	});
-	// const cloudImageElement = document.getElementById("imageElement");
-	
+
 	let requestCount = 0; // Track the number of requests made
 
 	function performRequest(url, requestData, successCallback, requestType='base') {
@@ -432,24 +429,8 @@
 		// }
 
 		performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
-			summaryTable = data.summary_table;
-			
-			cloudTable.clear().draw();
-			
-			for (const phraseObj of summaryTable) {
-				if (phraseObj.creative_bodies === "") {
-					continue;
-				} 
-				const snapshotUrl = phraseObj.snapshot_url.replace(/'/g, "\\'");
-				const freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')">~${phraseObj.freq} &nbsp;&nbsp;<i class="fas fa-link"></i></a>`;
-				// Add data to the DataTable
-				cloudTable.row.add([
-					phraseObj.creative_bodies,
-					freqObj
-				]).draw(false);
-			}
-			cloudTable.draw(true);
-
+			summaryTable = data
+			drawSummaryTable(data);
 		});
 
 		performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
@@ -469,86 +450,16 @@
 			endDay: fbEndDay,
 			funder,
 			country,
-			is_wordcloud: false,
 		};
 		
-		phrasecloudImage = null;
-		phrasecloudData = null;
-		summaryTable = null;
+		// summaryTable = null;
 
 		// CALL PHRASECLOUD
 		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
-			console.log("OKDSMCOKSDMC")
-			console.log(data)
-			const wordcloudContainer = document.getElementById('new-wordcloud-test');
-			const existingCanvas = wordcloudContainer.querySelector('canvas');
-			d3.select('#wordmap-error').style('display', 'none')
-			if (existingCanvas) {
-				wordcloudContainer.removeChild(existingCanvas);
-			}
-			if (data.error) {
-				d3.select('#wordmap-error').style('display', 'block')
-				d3.select('#wordmap_loader').style('display', 'none');
-				d3.select("#imageElement").style("display", 'none');
-				phrasecloudData = "error";
-				console.log("BUTT");
-				d3.select('#wordmap-error').style('display', 'block')
-				d3.select('#wordmap_loader').style('display', 'none');
-				if (wordcloudContainer.querySelector('canvas')) {
-					wordcloudContainer.removeChild(existingCanvas);
-				}
-				return null;
-			}
-
-			phrasecloudImage = data.img; // Store wordcloud image
-
-			d3.select('#wordmap_loader').style('display', 'none')
-			const maxFontSize = d3.max(data.result, d => d.size);
-			
-			d3.select("#new-wordcloud-test")
-				.selectAll("svg")
-				.remove();
-
-			var fill = d3.scaleOrdinal(d3.schemeCategory10);
-
-			var layout = d3.layout.cloud()
-				.size([wordcloudContainer.offsetWidth, wordcloudContainer.offsetHeight])
-				.words(data.result)
-				.padding(1)
-				// .rotate(0)
-				.rotate(function() {
-					// Generate a random rotation angle between -5 and 5 degrees
-					return (Math.random() * 10) - 5;
-				})
-				.font("Open Sans")
-				.fontSize(function(d) {
-					return ((d.size/maxFontSize)*50)+10;
-				})
-				.on("end", draw);
-			layout.start(); 
-
-			function draw(words) {
-				d3.select("#new-wordcloud-test").append("svg")
-				.attr("width", layout.size()[0])
-				.attr("height", layout.size()[1])
-				.attr("style", "display: block; margin-left: auto; margin-right: auto; background: transparent; text-align: center;")
-				.append("g")
-				.attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-				.selectAll("text")
-				.data(words)
-				.enter().append("text")
-				.style("font-size", function(d) { return (d.size) + "px"; })
-				.style("font-family", "Open Sans")
-				.style("fill", function(d, i) { return fill(i); })
-				.attr("text-anchor", "middle")
-				.attr("transform", function(d) {
-					return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-				})
-				.text(function(d) { return d.text; });
-			} 
+			wordcloudData = data;
+			drawWordcloud(data);
 
 		}, 'phrasecloud', error => {
-			phrasecloudData = "error";
 			console.error("An error occurred:", error);
 			d3.select('#wordmap-error').style('display', 'block')
 			d3.select('#wordmap_loader').style('display', 'none');
@@ -586,8 +497,6 @@
 		d3.select("#new-wordcloud-test").attr("transform", "translate(" +
 			translateX + "," + translateY + ")" +
 			" scale(" + scale * 2 + ")");
-		console.log("WOAH")
-		console.log(window.innerWidth)
 		
 	}
 
@@ -596,11 +505,13 @@
 		if (!funderSuccess) {
 			return;
 		}
+
 		// Show statistics on a funding entity
 		mainFunder = funder;
-		timelineData = null;
-		demographicsData = null;
-		mapData = null;
+		// timelineData = null;
+		// demographicsData = null;
+		// mapData = null;
+
 		// cancelRequest('/facebook_ads_v2/funder_word');
 		d3.select('#wordmap-error').style('display', 'none');
 		const table = document.getElementById("infoTable");
@@ -683,21 +594,15 @@
 
 	function showPage(p) {
 		// Highlight statistics on a specific page
-		
 		d3.select('#demographics_loader').style('display', 'block')
 		d3.select('#demographics').html('')
 		d3.select('#timeline_loader').style('display', 'block')
 		d3.select('#map_loader').style('display', 'block')
 		d3.select('#timeline').html('')
-		// if (country != 'us' && country != 'ca') {
-		// 	d3.select('#regions_loader').style('display', 'block')
-		// 	d3.select('#regions').html('')
-		// } else {
-		// }
+		
 		d3.select("#chart-container").style("display", "none")
 		d3.select('#regions_loader').style('display', 'block')
-		// d3.select('#wordmap_loader').style('display', 'block')
-		// Scroll to show data if on mobile
+		
 		$([document.documentElement, document.body]).animate({
 			scrollTop: $("#page-scroll").offset().top - 30
 		}, 500);
@@ -743,8 +648,28 @@
 				});
 				//drawMap(pageFilter(mapData))
 			} catch (err) {
+				console.log(err);
+			}
+
+			try {
+				commonData.page_id = p.page_id;
+				performRequest('/facebook_ads_v2/funder_word', commonData, data => {
+					console.log(data.result);
+					drawWordcloud(data); 
+				});
+			} catch (err) {
 				console.log(err)
 			}
+
+			try {
+				commonData.page_id = p.page_id;
+				performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
+					drawSummaryTable(data); 
+				});
+			} catch (err) {
+				console.log(err)
+			}
+			
 		}, 10)
 
 	}
@@ -802,6 +727,27 @@
 				}
 			});	
 		}
+		try {
+			drawWordcloud(wordcloudData);
+		} catch (err) {
+			// commonData.page_id = p.page_id;
+			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
+				wordcloudData = data;
+				drawWordcloud(data);
+			});	
+		}
+
+		try {
+			drawSummaryTable(summaryTable);
+		} catch (err) {
+			// commonData.page_id = p.page_id;
+			performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
+				wordcloudData = data;
+				drawSummaryTable(data);
+			});	
+		}
+
+
 	}
 
 	function pageFilter(d) {
@@ -1312,10 +1258,106 @@
 				.attr('y2', function(d){return(y(d.key) + boxHeight/2)})
 				.attr('stroke', 'black')
 
-
 		// Remove the loading indicator once the chart is finished
 		d3.select('#demographics_loader').style('display', 'none')
 	}
 
+	// Need this because d3 wordcloud is just weird
+	// Source: https://stackoverflow.com/questions/50222762/redrawing-word-cloud-with-d3-wordcloud
+	function deepCopy(oldValue) { 
+		var newValue
+		strValue = JSON.stringify(oldValue)
+		return newValue = JSON.parse(strValue)
+	}
+
+	function drawWordcloud(data) {
+		d3.select("#new-wordcloud-test")
+			.selectAll("svg")
+			.remove();
+			
+		d3.select("#new-wordcloud-test")
+			.style("height", '0px')
+			.style("max-height", '0px')
+			.selectAll("svg")
+			.style("opacity", 0);
+			
+		d3.select('#wordmap_loader').style('display', 'block');
+		d3.select('#wordmap-error').style('display', 'none');
+
+		const wordcloudContainer = document.getElementById('new-wordcloud-test');
+		
+		d3.select('#wordmap_loader').style('display', 'none')
+		const maxFontSize = d3.max(data.result, d => d.size);
+		
+		var fill = d3.scaleOrdinal(d3.schemeCategory10);
+
+		var layout = d3.layout.cloud()
+			.size([wordcloudContainer.offsetWidth, 300])
+			.words(deepCopy(data.result))
+			.padding(1)
+			.rotate(function() {
+				// Generate a random rotation angle between -5 and 5 degrees
+				return (Math.random() * 10) - 5;
+			})
+			.font("Open Sans")
+			.fontSize(function(d) {
+				return ((d.size/maxFontSize)*50)+10;
+			})
+			.on("end", draw);
+		layout.start(); 
+		
+		
+		d3.select("#new-wordcloud-test")
+			.style("height", '300px')
+			.style("max-height", '300px')
+
+		function draw(words) {
+			d3.select("#new-wordcloud-test").append("svg")
+			.attr("width", layout.size()[0])
+			.attr("height", layout.size()[1])
+			.attr("style", "display: block; margin-left: auto; margin-right: auto; background: transparent; text-align: center;")
+			.append("g")
+			.attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+			.selectAll("text")
+			.data(words)
+			.enter().append("text")
+			.style("font-size", function(d) { return (d.size) + "px"; })
+			.style("font-family", "Open Sans")
+			.style("fill", function(d, i) { return fill(i); })
+			.attr("text-anchor", "middle")
+			.attr("transform", function(d) {
+				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+			})
+			.text(function(d) { return d.text; });
+		} 
+		
+		d3.select("#new-wordcloud-test")
+			.selectAll("svg")
+			.style("opacity", 1);
+	}
+
+	function drawSummaryTable(data) {
+		cloudTable.clear().draw();
+		
+		for (const phraseObj of data.summary_table) {
+			if (phraseObj.creative_bodies === "") {
+				continue;
+			} 
+			const cleanedUrl = phraseObj.snapshot_url.replace(/[^\x00-\x7F]/g, "");
+
+			// Replace single quotes in snapshot_url
+			const snapshotUrl = cleanedUrl.replace(/'/g, "\\'");
+			
+			const freqValue = phraseObj.freq; // Extract the numerical value
+        	const freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
+        
+			// Add data to the DataTable
+			cloudTable.row.add([
+				phraseObj.creative_bodies,
+				freqObj
+			]).draw(false);
+		}
+		cloudTable.draw(true);
+	}
 </script>
 

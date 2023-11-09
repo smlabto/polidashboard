@@ -147,7 +147,7 @@ router.post('/facebook_ads_v2/funder_map', (req, res) => {
     var page_id = req.body.page_id
     if (page_id == '') page_id = null;
     if (funder == '') funder = null;
-    console.log(req.body)
+    // console.log(req.body)
     generateFunderMap(start, end, funder, country, page_id, res)
 });
 
@@ -169,7 +169,6 @@ router.post('/facebook_ads_v2/funder_word', (req, res) => {
     var country = req.body.country
     var page_id = req.body.page_id
     var is_wordcloud = req.body.is_wordcloud
-    if (page_id == '') page_id = null;
     if (funder == '') funder = null;
     generateWordMap(start, end, funder, country, is_wordcloud, page_id, res);
 });
@@ -235,7 +234,7 @@ function generateHeatmap(start, end, country, res=null) {
         db.collection('facebook_ads_' + country)
             .aggregate(query)
             .toArray((err, data) => {
-                console.log(country)
+                // console.log(country)
                 heatmapData[heatmapCode] = {
                     data: data,
                     timestamp: Date.now()
@@ -580,7 +579,6 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
             const stateId = stateCodeDictionary.get(obj['name']);
             const minSpendValue = minSpend.get(obj['name']);
             const maxSpendValue = maxSpend.get(obj['name']);
-            console.log(stateId);
             return {
                 name: obj['name'],
                 stateId: stateId,
@@ -589,7 +587,6 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 maxSpend: maxSpendValue
             };
         });
-        // console.log(stateTotalsArrayWithNames);
         res.json(stateTotalsArrayWithNames);
     }
 }
@@ -643,7 +640,6 @@ function mergePageNameWithAssociatedAds(ads, pageName) {
 
 async function mergeMultipleCreativeBodies(ads) {
     for (const ad of ads) {
-        // console.log(ad)
         let creativeBodiesCombined = "";
 
         try {
@@ -675,11 +671,21 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             }
         }
 
+        function removeEmojis(input) {
+            // Define a regular expression to match emojis and special characters
+            const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+            
+            // Remove emojis and special characters
+            const cleanedInput = input.replace(emojiRegex, '');
+          
+            return cleanedInput;
+        }
+
         if (!foundPreviousAd) {
-            const creativeBodyEncoded = encodeURIComponent(ad.creative_bodies);
+            const creativeBodyEncoded = encodeURIComponent(removeEmojis(ad.creative_bodies));
             country = country.toUpperCase();
             const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${creativeBodyEncoded}&media_type=all`;
-
+            
             adsSummaryTable.push({
                 creative_bodies: ad.creative_bodies,
                 freq: 1,
@@ -700,9 +706,7 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
 }
 
 async function generateFreqTable(start, end, funder, country, page_id = null, res) {
-    if (funder !== null && page_id !== null) {
-        return { error: "An error occurred", data: null };
-    }
+    console.log("Generating frequency table: " + country);
 
     // Only add the page name to the ads if pageId is provided
     let pageName = '';
@@ -726,117 +730,31 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
     if (page_id !== null) {
         ads = mergePageNameWithAssociatedAds(ads, pageName);
     }
-    console.log("THIS IS COUNT")
-    console.log(country);
     const adsSummary = createAdsSummaryTable(ads, country);
-    // console.log(adsSummary)
     const resultDict = { summary_table: adsSummary };
     return res.json(resultDict);
-
-    // --- Below is the code for making the API to keywords_extractor, functionally works the same as above ---
-    // ########################################################################################################
-    const apiUrl = "http://192.168.1.129:8089/ads_summary";
-
-    // const _page_id = funder;
-    const _country = country;
-    const start_time = new Date( new Date() - start*60*60*24*1000)
-    const end_time = new Date( new Date() - end*60*60*24*1000)
-    console.log(start_time);
-    console.log(end_time);
-
-    // const fullUrl = apiUrl + "?" + queryParams.toString();
-    const queryParams = new URLSearchParams();
-    queryParams.append("funding_entity", funder);
-    queryParams.append("country", _country);
-    queryParams.append("start_time", start_time.toISOString());
-    queryParams.append("end_time", end_time.toISOString());
-    
-    const fullUrl = apiUrl + "?" + queryParams.toString();
-    try {
-        // Parse the URL
-        const url = new URL(fullUrl);
-
-        // Create an HTTP request options object
-        const options = {
-            method: 'GET',
-            hostname: url.hostname,
-            port: url.port,
-            path: url.pathname + url.search,
-        };
-
-        // Make the HTTP GET request
-        const request = https.request(options, (response) => {
-            let data = '';
-
-            // Listen for data events and accumulate the response data
-            response.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            response.on('end', () => {
-                if (response.statusCode !== 200) {
-                    // Check for a 422 status code and handle the response body
-                    if (response.statusCode === 422) {
-                        try {
-                            const responseData = JSON.parse(data);
-                            console.error("Validation error:", responseData);
-                            // return { error: "An error occurred", data: null };
-                        } catch (error) {
-                            console.error("Error parsing response body:", error);
-                            // return { error: "An error occurred", data: null };
-                        }
-                    } else {
-                        console.error(`HTTP error! Status: ${response.statusCode}`);
-                        return { error: "An error occurred", data: null };
-                    }
-                } else {
-                    const responseData = JSON.parse(JSON.parse(data));
-                    // console.log(typeof responseData)
-                    res.json(responseData);
-                }
-            });
-        });
-
-        // Handle any errors that occur during the request
-        request.on('error', (error) => {
-            console.error("Request error:", error);
-            res.json({ 'error': "An error occurred" });
-        });
-
-        // Send the request
-        request.end();
-    } catch (error) {
-        console.error("URL parsing error:", error);
-        res.json({ 'error': "An error occurred" });
-    }
 }
 
 
 
 async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
-    const apiUrl = "http://192.168.1.129:8089";
+    const apiUrl = "http://192.168.1.128:8089";
 
     // Replace with the appropriate query parameters
     // Currently using temporary parameters
-    const _page_id = funder;
     const _country = country;
     const start_time = new Date( new Date() - start*60*60*24*1000)
     const end_time = new Date( new Date() - end*60*60*24*1000)
-    // const start_time = new Date(start)//new Date("1970-08-23T11:31:07.676+00:00");
-    // const end_time = new Date(end)//new Date("2023-09-14T11:31:07.676+00:00");
-    console.log(start_time);
-    console.log(end_time);
-    const _is_wordcloud = is_wordcloud; // default is false
-
-    // const fullUrl = apiUrl + "?" + queryParams.toString();
+    
     const queryParams = new URLSearchParams();
-    queryParams.append("funding_entity", funder);
+    if (page_id != null) {
+        queryParams.append("page_id", page_id.toString());   
+    } else {
+        queryParams.append("funding_entity", funder);
+    }
     queryParams.append("country", _country);
     queryParams.append("start_time", start_time.toISOString());
     queryParams.append("end_time", end_time.toISOString());
-    if (is_wordcloud) {
-        queryParams.append("is_wordcloud", _is_wordcloud);
-    }
     
     const fullUrl = apiUrl + "?" + queryParams.toString();
     try {
@@ -867,10 +785,10 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
                         try {
                             const responseData = JSON.parse(data);
                             console.error("Validation error:", responseData);
-                            // return { error: "An error occurred", data: null };
+                            return { error: "An error occurred", data: null };
                         } catch (error) {
                             console.error("Error parsing response body:", error);
-                            // return { error: "An error occurred", data: null };
+                            return { error: "An error occurred", data: null };
                         }
                     } else {
                         console.error(`HTTP error! Status: ${response.statusCode}`);
@@ -878,7 +796,6 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
                     }
                 } else {
                     const responseData = JSON.parse(JSON.parse(data));
-                    // console.log(typeof responseData)
                     res.json(responseData);
                 }
             });
