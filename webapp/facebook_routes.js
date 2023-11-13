@@ -644,9 +644,10 @@ async function mergeMultipleCreativeBodies(ads) {
 
         try {
             for (const creativeBody of ad.creative_bodies) {
-                // if (creativeBodiesCombined === "") {
-                creativeBodiesCombined += " " + creativeBody;
-                // }
+                if (creativeBodiesCombined === "") {
+                    creativeBodiesCombined = creativeBody;
+                    console.log(creativeBody);
+                }
             }
             ad.creative_bodies = creativeBodiesCombined;
         } catch (error) {
@@ -673,6 +674,7 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
 
         function removeEmojis(input) {
             // Define a regular expression to match emojis and special characters
+            return input;
             const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
             
             // Remove emojis and special characters
@@ -682,9 +684,19 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
         }
 
         if (!foundPreviousAd) {
-            const creativeBodyEncoded = encodeURIComponent(removeEmojis(ad.creative_bodies));
             country = country.toUpperCase();
-            const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${creativeBodyEncoded}&media_type=all`;
+            
+            let shortenedBody = ad.creative_bodies;
+            const words = shortenedBody.split(/\s+/);
+            
+            if (words.length > 50) {
+                shortenedBody = words.slice(0, 50).join(" ");
+            }
+
+            const creativeBodyEncoded = encodeURIComponent(removeEmojis(shortenedBody).replace(/['"“”]/g, ""));
+            console.log(creativeBodyEncoded)
+
+            const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
             
             adsSummaryTable.push({
                 creative_bodies: ad.creative_bodies,
@@ -725,11 +737,11 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
         ads = mergePageNameWithAssociatedAds(ads, pageName);
     }
 
-    ads = await fetchAds(db, country, funder, page_id, start, end);
+    // ads = await fetchAds(db, country, funder, page_id, start, end);
 
-    if (page_id !== null) {
-        ads = mergePageNameWithAssociatedAds(ads, pageName);
-    }
+    // if (page_id !== null) {
+    //     ads = mergePageNameWithAssociatedAds(ads, pageName);
+    // }
     const adsSummary = createAdsSummaryTable(ads, country);
     const resultDict = { summary_table: adsSummary };
     return res.json(resultDict);

@@ -13,27 +13,34 @@
 				About PoliDashboard
 			</h3>
 			<p>
-				<a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is a data visualization tool designed to help voters, journalists, and campaign staffers to monitor the health of political discussions online and learn about the political and social issue ads that are being shown to users on Facebook and its various other products including Instagram. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+				<a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is a data visualization tool designed to help voters, journalists, and campaign staffers to monitor the health of political discussions online and learn more about social issues, elections or politics related ads running on Meta’s social media and advertising platforms such as Facebook and Instagram. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
 			</p>
 			<p>
 				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 4em; width: auto; float: left; padding-right: 10px;">
-				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at Ted Rogers School of Management in Toronto as part of an international election transparency initiative. Country-specific modules are presented in partnership with various academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available.
+				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at Ted Rogers School of Management in Toronto as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available.
 			</p>
 		</div>
 		<div id="summary-focus">
 			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
 			<div class="dropdown" style="z-index: 50;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Ads Spending Tracker For: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<!-- ### Start of Pages Funded Widget -->
-					<!-- <div class="navigation-instructions" id="right-navigation-instructions">
-						<button class="exit-button" onclick="d3.select('#right-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
-						<strong>Navigation Instructions</strong>
-						<ul>
-							<li>Click on <i class="fas fa-chart-bar"></i> to see a chart of the total number of active ads per day posted by a page controlled by a funder.</li>
-							<li>Hover over any dots in the line chart to see the total number of active ads by a funder (or a page that they control) on a specific date in the selected timeframe.</li>
-						</ul>
-					</div> -->
+					<div class="dropdown" style="z-index: 15;">
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<ul>
+									<li>By default, the dashboard will show ads statistics for all social issues, elections or politics related ads from every Facebook page funded by an advertiser.</li>
+									<li>If an advertiser is running ads from more than one Facebook page, click the “Filter by” icon next to a page on the list to filter ads associated with only that Facebook page.</li>
+									<li>To advertise on Meta platforms, advertisers must first create at least one Facebook Page.</li>
+									<li>Meta’s advertisers can set up and control multiple Facebook Pages.</li>
+								</ul>
+							</div>
+						</div>
+					</div>	
+
 					
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"> -->
 					<h3 class="widget-title" id="page-scroll">
@@ -298,6 +305,7 @@
 					</div>
 				</div>
 			</div>
+
 		</div>
 	</div>
 </div>
@@ -550,7 +558,7 @@
 		d3.select('#regions').html('');
 		d3.select('#timeline').html('');
 		d3.selectAll('.advertiser_name')
-			.text('Funded by: ' + funder);
+			.text('Ads Spending Tracker for: ' + funder);
 		d3.select('#funder_pages_loader').style('display', 'block');
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
@@ -568,10 +576,10 @@
 			.text(funder)
 		
 		d3.select('#tiptext-pages')
-			.html('This module shows all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span><br><br>Meta’s advertisers can set up and control multiple Facebook Pages. Meta’s advertisers must have a Facebook Page created before they can advertise.<br><br>Click "Filter by to only see ')
+			.html('This module shows a list of all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.')
 
 		d3.select('#tiptext-active')
-			.html('This chart shows the total number of active ads funded by: <span style="color: yellow;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to remove it from the chart.')
+			.html('This chart shows the total number of active ads funded by: <span style="color: yellow;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to hide/show it in the chart.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
 		// Scroll to the funder, if mobile
 		if (isMobile) {
 			$([document.documentElement, document.body]).animate({
@@ -933,11 +941,11 @@
 
 		var rows = [
 			['date'],
-			['0 - 99'],
-			['100 - 499'],
-			['500 - 999'],
-			['1000 - 4999'],
-			['5000+']
+			[currencySymbol + '0 - ' + currencySymbol + '99'],
+			[currencySymbol + '100 - ' + currencySymbol + '499'],
+			[currencySymbol + '500 - ' + currencySymbol + '999'],
+			[currencySymbol + '1000 - ' + currencySymbol + '4999'],
+			[currencySymbol + '5000+']
 		]
 
 		// Create empty rows
@@ -949,8 +957,22 @@
 		}
 
 		// Fill rows based on data
+		function timelineRangeToLabel(range) {
+			// Get string for a range
+			if (range.upper_bound < 100) {
+				return currencySymbol + '0 - ' + currencySymbol + '99'
+			} else if (range.upper_bound < 500) {
+				return currencySymbol + '100 - ' + currencySymbol + '499'
+			} else if (range.upper_bound < 1000) {
+				return currencySymbol + '500 - ' + currencySymbol + '999'
+			} else if (range.upper_bound < 5000) {
+				return currencySymbol + '1000 - ' + currencySymbol + '4999'
+			} else {
+				return currencySymbol + '5000+'
+			}
+		}
 		data.forEach(ad => {
-			var row = rows.map(el => el[0]).indexOf(rangeToLabel(ad.spend))
+			var row = rows.map(el => el[0]).indexOf(timelineRangeToLabel(ad.spend))
 			for (var c = 1; c < rows[0].length; c++) {
 				if (rows[0][c] > Date.parse(ad.first_collected) && rows[0][c] < Date.parse(ad.latest_collected)) {
 					rows[row][c]++;
@@ -979,7 +1001,7 @@
 						left: 0
 					},
 					label: {
-						text: 'Ads Spending Range',
+						text: 'Ads Spending Range (by Date)',
 						position: 'outer-center'
 					}
 				},
@@ -1297,7 +1319,7 @@
 			.padding(1)
 			.rotate(function() {
 				// Generate a random rotation angle between -5 and 5 degrees
-				return (Math.random() * 10) - 5;
+				return (Math.random() * 5) - 5;
 			})
 			.font("Open Sans")
 			.fontSize(function(d) {
@@ -1343,21 +1365,27 @@
 			if (phraseObj.creative_bodies === "") {
 				continue;
 			} 
-			const cleanedUrl = phraseObj.snapshot_url.replace(/[^\x00-\x7F]/g, "");
+			// const cleanedUrl = phraseObj.snapshot_url.replace(/[^\x00-\x7F]/g, "");
+			const cleanedUrl = phraseObj.snapshot_url;
 
-			// Replace single quotes in snapshot_url
+			// Replace single and double quotes in snapshot_url
 			const snapshotUrl = cleanedUrl.replace(/'/g, "\\'");
+			// const snapshotUrl = cleanedUrl.replace(/['"]/g, "");
 			
 			const freqValue = phraseObj.freq; // Extract the numerical value
         	const freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
         
+			let truncatedCreativeBodies = phraseObj.creative_bodies;
+
 			// Add data to the DataTable
 			cloudTable.row.add([
-				phraseObj.creative_bodies,
+				truncatedCreativeBodies,
 				freqObj
 			]).draw(false);
 		}
 		cloudTable.draw(true);
 	}
+
+	
 </script>
 
