@@ -5,10 +5,11 @@
     const outlineColor = "#888888";
 
 	class Statemap {
-		constructor(data, mapName, country='us') {
+		constructor(data, mapName, country='us', funder='') {
 			this.data = data;
 			this.mapName = mapName;
             this.country = country;
+            this.funder = funder;
 
 			this.draw();
 		}
@@ -59,22 +60,22 @@
             const isMobile = (document.documentElement.clientWidth < 768);
             var tooltipContentTemplate = `
                 <span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>
-                <div class='maptip-title'>Avg. % of Audience for this Region (shown ads by this funder):</div>
+                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
                 <hr style='margin-top: 0; margin-bottom: 10px'>
                 <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>State:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
-                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
                     <p class='maptip-text'>{costRange}</p>
                 </div>`;
             
             if (isMobile) {
                 tooltipContentTemplate = `
                 <span class='tooltip-emoji' style='top: 16px; position: absolute; right: 6px; font-size: 20px;'><i id="close-tooltip" class="far fa-times-circle fa-lg"></i></span>
-                <div class='maptip-title'>Avg. % of Audience for this Region (shown ads by this funder):</div>
+                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range::</div>
                 <hr style='margin-top: 0; margin-bottom: 10px'>
                 <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>State:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
-                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost:</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
                     <p class='maptip-text'>{costRange}</p>
                 </div>`;
             }
@@ -489,19 +490,20 @@
                     });
                 
 
-                var mapTextTip = $("#map-textip");
+                var mapTextTip = $("#tiptext-map");
                 let unknownStateData = _d.find(item => item.name === "Unknown");
+                this.unknownAudience = (unknownStateData.value * 100).toFixed(2);
+                // console.log("FUNDER")
+                // console.log(funder)
                 mapTextTip
                     .html(`
-                        This module shows where in the country ads by this funder/FB page were shown for the selected timeframe.
-                        <br><br>
-                        Hover over any part of the map to see what percentage of the ads' audience came from that state/region for the selected timeframe.
-                        <br><br>
+                        This module shows the locations where ads funded by: <span style="color: yellow;">${this.funder}</span> were shown for the selected date range...
                     ` +
-                    (unknownStateData ? `<span style="color: yellow;">NOTE:<br>* Out of the audience exposed to this funder's ads, an average of <u>${(unknownStateData.value * 100).toFixed(2)}%</u> came from regions that were either unidentified or located outside the selected country. This visualization takes into account the data from these unknown/outside regions.
-                        <br>
-                        * The estimated total ad spending by this funder (in regions outside the selected country or in unknown regions) during the specified timeframe is between: ${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.</span>
-                        </span>` : "" )
+                    (unknownStateData ? `<br><br><span style="color: yellow;">NOTE: ${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
+                        <br><br>
+                        NOTE: The estimated total ads spend on people from regions that were either unidentifiable or located outside the selected country was between: <span style="color: yellow;">${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.
+                        </span>
+                        ` : "" )
                     
                     );
                 

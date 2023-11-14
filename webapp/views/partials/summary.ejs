@@ -110,18 +110,51 @@
 			
 			<!-- ### Start of Map Widget ### -->
 			<div class="dropdown" style="z-index: 40;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Where Facebook Ads Funded by: <span class="sub_advertiser_name">___</span> Were Shown</button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Location of <span class="sub_advertiser_name">___</span>'s Ad Audience</button>
 				<div class="dropdown-content">
+					<div class="dropdown" style="z-index: 15;">
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<ul>
+									<li>Hover over any location on the map to view what percentages of an advertiser’s ad audience came from that location.</li>
+									<li>For every social issues, elections or politics related ad, Meta provides a detailed breakdown of the location(s) of the ad’s audience as a percentage of the total audience. For example, for a hypothetical Ad #1, Meta will report what percentage of the total audience came from each of the various locations where the ad was shown.</li>
+									<li>Meta assigned people’s location based on where they or their device connected to the internet and/or based on information in their account profile.</li>
+									<li>
+										To estimate the geographic reach of an advertiser’s ad(s) for a selected date range, we calculate the average percentage of the total audience, broken down by location within a country. Specifically:
+										<ol>
+											<li>We sum up the audience percentages for all ads by the advertiser for each location within a country;</li>
+											<li>We then divide this sum by the total number of ads shown to people from each location.</li>
+										</ol>
+									</li>
+									<li>
+										For example:
+										<ul>
+											<li>Lets say an advertiser has 2 ads on Facebook</li>
+											<ul>
+												<li>For Ad #1: 50% of the total audience came from California, and</li>
+												<li>For Ad #2: 20% of the total audience came from California.</li>
+												<li>So 50% + 20% = 70%</li>
+												<li>70%/2 ads = 35%</li>
+												<li>This 35% represents the average-percentage of the audience for all ads by this advertiser from this location for the selected date range and is the percentage figure displayed on the map for this location.</li>
+											</ul>
+										</ul>
+									</li>
+
+								</ul>
+							</div>
+						</div>
+					</div>	
+
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Where These Ads Were Shown -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div id="map-textip" class="tiptext">
+							<div id="tiptext-map" class="tiptext">
 								This module shows where Meta ads by this funder/page were shown.
 								<br><br>
 								Hover over any state/region to see what percentage of this funder's ads were shown to users residing in that state/region.
-								<!-- This module shows the distribution of this funder's viewed ads across different States.
-								Hover over any State to see what percentage of this funder's ads were shown there. -->
 								<br><br>
 								Ads for which no regional data is available are omitted.
 							</div>
@@ -154,7 +187,7 @@
 
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demographic of Who Was Shown Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demographics of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 
 					<div class="dropdown" style="z-index: 15;">
@@ -163,11 +196,13 @@
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
 								<ul>
-									<li>Hover and keep your mouse over a dot to see that ad's distribution across all demographic’s groups on Facebook.</li>
-									<li>If all other dots (other than the dot you hovered over) is at or close to the 0% mark on the x-axis, it suggests that ad was only (or mostly) targeted at that specific demographic group and no other.</li>
-									<li>Click on a dot see the ad and additional stats about the ad (ad will open in a new tab).</li>
-									<li>New to box plot? Here’s a <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer</a> on how to interpret a box plot chart.</li>
-									<li>Note: if more than 1000 ads are visible, they will be hidden and replaced with a violin plot to save resources. Select a shorter time frame or use the page filters to see individual ads.</li>
+									<li>Each dot in the chart represents one ad.</li>
+									<li>Hover over a dot to see the demographic breakdown by gender and age of people who were shown that particular ad — as denoted by ALL of the corresponding black dots that appear in the chart.</li>
+
+									<li>If all the other black dots that appear — other than the dot you hovered over —  are at or close to the 0% mark on the x-axis, it suggests that particular ad was shown only (or mostly) to that specific demographic group and no other.</li>
+									<li>Click on any dot to see the actual ad and additional stats about that specific ad (Link will open in a new tab and will take you to Meta’s Ad Library)</li>
+									<li>Note: If more than 1000 ads are visible, the box plot chart will be hidden and replaced with a violin plot to save computing resources. If you want to see individual ads from this advertiser, select a shorter time frame or use the “Filters by” feature.</li>
+									<li>New to box plot? Here’s a more detailed <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer on box plot charts.</a></li>
 								</ul>
 							</div>
 						</div>
@@ -177,7 +212,7 @@
 						<!-- Who Was Shown These Ads -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div class="tiptext">
+							<div id="tiptext-demographic" class="tiptext">
 								<!-- This module shows the age and gender breakdowns of people who saw ads by this funding entity - each dot represents one ad.
 								<br><br>
 								Hover over a dot to see that ad's distribution across all demographics, and click to see that ad's summary (ad will open in a new tab). -->
@@ -193,7 +228,7 @@
 					
 					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
 					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
-
+					
 					<br>
 					<div id="demographics_legend">
 						<span id="demographics_men">Men</span>
@@ -221,20 +256,14 @@
 				
 			<hr>
 			<div class="dropdown" style="z-index: 15;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; What Was Said in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Most Frequently-used Phrases in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				
 				<div class="dropdown-content">
 					<h3 class="widget-title">
 						<!-- Where These Ads Were Shown -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div class="tiptext">
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-								<br><br>
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-								<br><br>
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-							</div>
+							<div id="tiptext-wordcloud" class="tiptext"></div>
 						</div>
 					</h3>
 
@@ -269,20 +298,27 @@
 
 			<hr>
 			<div class="dropdown" style="z-index: 15;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Frequency of Repeated Phrases in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Most Frequently-used Advertising Copy/Primary Text in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				
 				<div class="dropdown-content">
+					<div class="dropdown" style="z-index: 15;">
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<ul>
+									<li>Click on the links in the table to view examples of ads funded by this advertiser that used this ad copy. (Link will open in a new tab and will launch a search in Meta's Ad Library for ads that contain the given ad copy.)</li>
+									<li>Note: the number of ads shown in the table is approximate and might be lower/higher than what might appear in Meta’s Ad Library.</li>
+								</ul>
+							</div>
+						</div>
+					</div>	
+
 					<h3 class="widget-title">
 						<!-- Where These Ads Were Shown -->
 						<div class="tip">
 							<img src="/images/info.png">
-							<div class="tiptext">
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-								<br><br>
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-								<br><br>
-								Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. Sample Text. 
-							</div>
+							<div id="tiptext-frequency" class="tiptext"></div>
 						</div>
 					</h3>
 
@@ -294,7 +330,7 @@
 						<table class="table" id="infoTable">
 							<thead>
 								<tr>
-									<th>Creative Body</th>
+									<th>Ad Copy/Primary Text</th>
 									<th>#Ads</th>
 								</tr>
 							</thead>
@@ -430,7 +466,7 @@
 		performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 			// drawMap(data);
 			mapData = data;
-			rawMap = new Statemap(data, "chart-container", country); // TO DO
+			rawMap = new Statemap(data, "chart-container", country, funder); // TO DO
 			prevRawMap = rawMap;
 		});
 		// if (country === 'us' || country === 'ca') {
@@ -580,6 +616,18 @@
 
 		d3.select('#tiptext-active')
 			.html('This chart shows the total number of active ads funded by: <span style="color: yellow;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to hide/show it in the chart.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
+
+		d3.select('#tiptext-demographic')
+			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.')
+		
+		d3.select('#tiptext-wordcloud')
+			.html('This module shows the top 100 most frequently-used phrases in the ad copy (aka… primary text field) of ads funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.<br><br>In the word cloud, the larger the text, the more frequently it appeared in ads funded by this advertiser.')
+		
+		d3.select('#tiptext-frequency')
+			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="color: yellow;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
+		
+		console.log(rawMap)
+		console.log("rawmpa")
 		// Scroll to the funder, if mobile
 		if (isMobile) {
 			$([document.documentElement, document.body]).animate({
@@ -652,7 +700,7 @@
 			try {
 				commonData.page_id = p.page_id;
 				performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-					rawMap = new Statemap(data, "chart-container", country);
+					rawMap = new Statemap(data, "chart-container", country, funder);
 				});
 				//drawMap(pageFilter(mapData))
 			} catch (err) {
@@ -721,7 +769,7 @@
 				rawMap = prevRawMap
 				rawMap.draw();
 			} else {
-				rawMap = new Statemap(data, "chart-container", country);
+				rawMap = new Statemap(data, "chart-container", country, funder);
 			}
 		} catch (err) {
 			commonData.page_id = p.page_id;
@@ -730,7 +778,7 @@
 					rawMap = prevRawMap
 					rawMap.draw();
 				} else {
-					rawMap = new Statemap(data, "chart-container", country);
+					rawMap = new Statemap(data, "chart-container", country, funder);
 					prevRawMap = rawMap;
 				}
 			});	
@@ -1037,7 +1085,7 @@
 		container.html("")
 
 		// Get the chart dimensions
-		var margin = {top: 10, right: 30, bottom: 30, left: 50}
+		var margin = {top: 10, right: 30, bottom: 40, left: 70}
 		var width = container.node().getBoundingClientRect().width - margin.left - margin.right
 		var height = 400 - margin.top - margin.bottom
 
@@ -1054,6 +1102,7 @@
 		var x = d3.scaleLinear()
 			.domain([0, 1])
 			.range([ 0, width ]);
+
 		svg.append("g")
 			.attr("transform", "translate(0," + height + ")")
 			.call(
@@ -1061,7 +1110,10 @@
 					.tickFormat(d3.format('.0%'))
 			);
 
-
+		svg.append("text")
+			.attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 20) + ")")
+			.style("text-anchor", "middle")
+			.text("Audience Demographics (in %)");
 
 		var yDomain = ['M 13-17', 'W 13-17', 'M 18-24', 'W 18-24', 'M 25-34', 'W 25-34', 'M 35-44', 'W 35-44', 'M 45-54', 'W 45-54', 'M 55-64', 'W 55-64', 'M 65+', 'W 65+', '? 18-65+', '']
 
@@ -1076,6 +1128,8 @@
 		var cleanedData = [] // The cleaned data will be a list of objects corresponding to each dot
 		var foundUnderage = false // Most of the time we only show engagement for users 18+,
 		// but sometimes there is underage engagement that needs to be shown.
+		console.log("DATA");
+		console.log(data);
 		for (var i = 0; i < data.length; i++) {
 			var foundDemos = []
 
@@ -1134,6 +1188,14 @@
 			.range(yRange)
 		svg.append("g")
 			.call(d3.axisLeft(y));
+
+		svg.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 0 - margin.left)
+			.attr("x", 0 - (height / 2))
+			.attr("dy", "1em")
+			.style("text-anchor", "middle")
+			.text("Gender and Age");
 
 		var defaultRadius = 3
 
@@ -1371,10 +1433,14 @@
 			// Replace single and double quotes in snapshot_url
 			const snapshotUrl = cleanedUrl.replace(/'/g, "\\'");
 			// const snapshotUrl = cleanedUrl.replace(/['"]/g, "");
+			let startDateFilter = `${startDay.getFullYear()}-${(startDay.getMonth() + 1).toString().padStart(2, '0')}-${startDay.getDate().toString().padStart(2, '0')}`;
+			let endDateFilter = `${end.getFullYear()}-${(end.getMonth() + 1).toString().padStart(2, '0')}-${end.getDate().toString().padStart(2, '0')}`;
+
+			let fullFilter = `&start_date[min]=${startDateFilter}&start_date[max]=${endDateFilter}`
 			
 			const freqValue = phraseObj.freq; // Extract the numerical value
-        	const freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
-        
+        	var freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl + fullFilter}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
+			
 			let truncatedCreativeBodies = phraseObj.creative_bodies;
 
 			// Add data to the DataTable

@@ -687,6 +687,7 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             country = country.toUpperCase();
             
             let shortenedBody = ad.creative_bodies;
+            shortenedBody = shortenedBody.replace(/\n/g, ' ');
             const words = shortenedBody.split(/\s+/);
             
             if (words.length > 50) {
