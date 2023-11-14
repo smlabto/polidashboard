@@ -92,7 +92,7 @@ def update_audiences(ad, country):
             db['facebook_audiences_' + country].update_one({
                 '_id': ad['id'],
             }, {
-                '$push' : { 
+                '$set' : { 
                     'audience' : {
                         '_id': {
                             'age': audience['age'],
