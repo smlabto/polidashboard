@@ -1,22 +1,5 @@
 <div class="widget-container boxed" style="overflow-y: auto;">
 	<div class="inner">
-
-		<div class="facebook_nav_light p-tip">
-			<span class="facebook_date" style="display: flex">
-			</span>
-			<div class="tiptext">
-				Click to edit time frame
-			</div>
-		</div>
-		<hr>
-		<h2 class="widget-title" style="text-align: center;">
-			List of Political Advertisers on Meta's Platforms
-		</h2>
-		
-		<div style="text-align: center;">
-			<i style="font-style: italic; font-size: 12px; color:#737373">Best viewed on a desktop browser or as a desktop site on mobile.<br /><br /></i>
-		</div>
-
 		<div class="dropdown" style="z-index: 15; margin-bottom: 10px;">
 			<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 			
@@ -38,30 +21,60 @@
 			</div>
 		</div>	
 
+		<br>
+		<div>
+			<div class="tip">
+				<img src="/images/info.png">
+				<div class="tiptext">
+					This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.
+				</div>
+			</div>
+			<h2 class="widget-title" style="text-align: center;">
+				List of Political Advertisers on Meta's Platforms
+			</h2>
+		</div>
+		
+		<hr>
+		<div id="inner_country_select"></div><br />
+
+		<div style="text-align: center; display: none">
+			<i style="font-style: italic; font-size: 12px; color:#737373">Best viewed on a desktop browser or as a desktop site on mobile.<br /><br /></i>
+		</div>
+
+		<div class="facebook_nav_light p-tip">
+			<span class="facebook_date" style="display: flex"></span>
+			<div class="tiptext">
+				Click to edit time frame
+			</div>
+		</div>
+
+		<br><br>
+
 		<div class="row p-0">
 			<div class="col-sm-6">
 			  <div class="row">
 				<div class="infographic_box">
-				  <h3>
-					<i class="fas fa-users red"></i>
-					<span class="total_advertisers_replace"></span>
-				  </h3>
-				  <p>Total # of Advertisers For the Selected Date Range</p>
+					<h3>
+						<i class="fas fa-users red"></i>
+						<span class="total_advertisers_replace"></span>
+					</h3>
+					<p>Total # of Advertisers</p>
 				</div>
 			  </div>
 			</div>
 			<div class="col-sm-6">
 				<div class="row">
-				  <div class="infographic_box">
-					<h3>
-						<i class="fas fa-layer-group red"></i>
-					  	<span class="total_advertisements_replace"></span>
-					</h3>
-					<p>Total # of Advertisements For the Selected Date Range</p>
-				  </div>
+					<div class="infographic_box">
+						<h3>
+							<i class="fas fa-layer-group red"></i>
+							<span class="total_advertisements_replace"></span>
+						</h3>
+						<p>Total # of Advertisements</p>
+					</div>
 				</div>
-			  </div>
+			</div>
 		</div>
+
 		<div>
 			<form id="heatmap_filter_form" onsubmit="return false">
 				<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
@@ -69,12 +82,6 @@
 		</div>
 		<div class="second-thead">
 			Ads Spending Range (<%= currency %>) 
-			<div class="tip">
-				<img src="/images/info.png">
-				<div class="tiptext">
-					This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.
-				</div>
-			</div>
 		</div>
 		<table id="top_funders" class="heatmap">
 			<colgroup>
@@ -112,7 +119,31 @@
 </div>
 
 <script type="text/javascript">
+	// Create the duplicate dropdown
+	d3.select('#inner_country_select')
+		.style('text-align', 'center')
+		// .append('div')
+		// .attr('class', 'country-select')
+		.append('input')
+			.attr('type', 'text')
+			.attr('id', 'duplicateCountry')
+			.style('border', '1px solid black') // Border style
+    		.style('border-radius', '5px')
+			
+			// .on('change', duplicateDropdownChange);
 
+	$('#duplicateCountry').countrySelect({
+		onlyCountries: <%- JSON.stringify(validCountries) %>,
+		responsiveDropdown: true,
+		preferredCountries: [],		
+		defaultCountry: country
+	})
+
+	$('#duplicateCountry').change(c => {
+		console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
+		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
+	})
+	
 
 	const fbStartDay = <%- JSON.stringify(fbStartDay) %>
 	const fbEndDay = <%- JSON.stringify(fbEndDay) %>

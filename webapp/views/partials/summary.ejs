@@ -21,6 +21,7 @@
 			</p>
 		</div>
 		<div id="summary-focus">
+			<div id="inner_country_select_2"></div><br />
 			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
 			<div class="dropdown" style="z-index: 50;">
 				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
@@ -110,7 +111,7 @@
 			
 			<!-- ### Start of Map Widget ### -->
 			<div class="dropdown" style="z-index: 40;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Location of <span class="sub_advertiser_name">___</span>'s Ad Audience</button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Geographic Location of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
@@ -347,6 +348,17 @@
 </div>
 
 <script type="text/javascript">
+	// For mobile users
+	// document.addEventListener('click', function (event) {
+	// 	var tooltip = document.querySelector('.tiptext');
+    //     // var tipElement = document.querySelector('.tip');
+        
+    //     // Check if the click is outside the tooltip and tip
+	// 	tooltip.style.visibility = 'hidden';
+    //     // if (!tooltip.contains(event.target)) {
+    //     // }
+    // });
+	
 	// JavaScript to toggle the dropdown content
 	document.addEventListener("DOMContentLoaded", function () {
 		var dropdowns = document.querySelectorAll(".dropdown");
@@ -626,13 +638,40 @@
 		d3.select('#tiptext-frequency')
 			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="color: yellow;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
 		
-		console.log(rawMap)
-		console.log("rawmpa")
 		// Scroll to the funder, if mobile
 		if (isMobile) {
 			$([document.documentElement, document.body]).animate({
 				scrollTop: $("#summary").offset().top
 			}, 500);
+
+			// Create the duplicate dropdown
+			d3.select('#inner_country_select_2')
+				.html('')
+				
+			d3.select('#inner_country_select_2')
+				.style('text-align', 'center')
+				// .append('div')
+				// .attr('class', 'country-select')
+				.append('input')
+					.attr('type', 'text')
+					.attr('id', 'duplicateCountry2')
+					.style('border', '1px solid black') // Border style
+					.style('border-radius', '5px')
+					
+					// .on('change', duplicateDropdownChange);
+
+			$('#duplicateCountry2').countrySelect({
+				onlyCountries: <%- JSON.stringify(validCountries) %>,
+				responsiveDropdown: true,
+				preferredCountries: [],		
+				defaultCountry: country
+			})
+
+			$('#duplicateCountry2').change(c => {
+				console.log($("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2)
+				window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2
+			})
+	
 		}
 
 		// Fix for Conservative Party naming discrepancy
@@ -1041,7 +1080,7 @@
 				x: {
 					type: 'timeseries',
 					tick: {
-						format: '%Y-%m-%d',
+						format: '%b. %d, %Y',
 						culling: true
 					},
 					padding: {
@@ -1065,6 +1104,21 @@
 					label: {
 						text: 'Number of Ads',
 						position: 'outer-middle'
+					}
+				}
+			},
+			tooltip: {
+				format: {
+					title: function (x) {
+						// Calculate and display total for the y-axis plots
+						var total = 0;
+						for (var i = 1; i < rows.length; i++) {
+							total += rows[i][rows[0].indexOf(x)];
+						}
+						return 'Date: ' + d3.time.format('%b. %d, %Y')(new Date(x)) + '\nTotal: ' + total + ' ads';
+					},
+					value: function (value, ratio, id) {
+						return value;
 					}
 				}
 			},
@@ -1442,6 +1496,10 @@
         	var freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl + fullFilter}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
 			
 			let truncatedCreativeBodies = phraseObj.creative_bodies;
+			let creativeBodiesArray = truncatedCreativeBodies.split(' ');
+			if (creativeBodiesArray.length > 100) {
+				truncatedCreativeBodies = creativeBodiesArray.slice(0, 100).join(' ') + '...';
+			}
 
 			// Add data to the DataTable
 			cloudTable.row.add([
