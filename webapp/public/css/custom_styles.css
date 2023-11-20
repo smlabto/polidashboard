@@ -160,6 +160,7 @@ a:hover {
 
 .container {
 	min-width: 80vw;
+	background-color: #212121;
 }
 
 .row {
@@ -187,6 +188,7 @@ a:hover {
 .widget-content {
 	display: flex;
 	justify-content: center;
+	margin-bottom: 10px;
 }
 
 .toggle-header a {
@@ -212,9 +214,12 @@ a:hover {
 /* Header */
 
 header {
-	padding: 40px 28px 20px 28px;
+	/* padding: 40px 28px 20px 28px; */
+	/* padding-top: 30px; */
 	display: flex;
 	justify-content: space-between;
+	padding-left: 4%;
+	background: #121212;
 }
 
 .country-select.inside {
@@ -228,7 +233,7 @@ header {
 
 .country-select {
 	margin-right: auto;
-	margin-left: 2.5%;
+	/* margin-left: 2.5%; */
 }
 
 .country-select input {
@@ -256,6 +261,8 @@ footer a {
 	width: 300px;
 	max-width: 100% !important;
 	height: auto;
+	padding-top: 20px;
+	padding-bottom: 15px;
 }
 
 .right-logo {
@@ -269,13 +276,13 @@ footer a {
 
 @media only screen and (max-width: 550px) {
 	header {
-		padding: 25px;
+		/* padding: 25px; */
 		display: block;
 		text-align: center;
 	}
 
 	.right-logo {
-		width:70%;
+		/* width:70%; */
 		margin-left: 17%;
 		margin-right: 13%;
 		margin-top: 0;
@@ -284,12 +291,12 @@ footer a {
 	}
 
 	#main-logo {
-		width: 70%;
+		/* width: 70%; */
 		display: block;
 		text-align: center !important;
-		margin-bottom: 10px;
-		margin-left: 15%;
-		margin-right: 15%;
+		/* margin-bottom: 10px; */
+		/* margin-left: 15%;
+		margin-right: 15%; */
 	}
 
 	header {
@@ -360,7 +367,7 @@ footer a {
 	visibility: hidden;
 	position: absolute;
 	width: 230px;
-	background-color: #212121;
+	/* background-color: #212121; */
 	color: white;
 	/* text-align: center; */
 	text-align: left;
@@ -967,6 +974,7 @@ h3.widget-title, h4.summary_subtitle {
     padding: 10px;
     transform-origin: top;
     animation: slideDown 0.5s ease forwards; /* Use CSS animation */
+	margin-bottom: 16px;
 }
 
 /* Dropdown content */
@@ -1033,4 +1041,40 @@ hr {
 .facebook_date {
 	font-size: 15px;
 	display: flex;
+	border: 1px solid #006ebe !important;
+	background: #006ebe !important; 
+	padding: 0 5px;
+}
+
+.dropdown-timeframe {
+	margin-bottom: 0px;
+	font-style: italic;
+	font-size: 11px;
+	color: grey;
+	position: absolute;
+	bottom: 8px;
+	text-align: left;
+}
+
+.dropdown-polidashboard {
+	margin-bottom: 0px;
+	font-style: italic;
+	font-size: 11px;
+	color: grey;
+}
+
+.about {
+	background: white;
+	color: black;
+	padding: 22px;
+	border-radius: 5px;
+	height:	fit-content;
+}
+
+.time-select {
+	border: 1px solid black;
+	border-radius: 5px;
+	max-width: 280px;
+	width: 100%;
+	text-align: center;
 }

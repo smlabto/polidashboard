@@ -63,7 +63,7 @@
                 <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
                 <hr style='margin-top: 0; margin-bottom: 10px'>
                 <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: #facc15;'>&nbsp;&nbsp;{statePercentage}%</span></p>
                     <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
                     <p class='maptip-text'>{costRange}</p>
                 </div>`;
@@ -71,10 +71,10 @@
             if (isMobile) {
                 tooltipContentTemplate = `
                 <span class='tooltip-emoji' style='top: 16px; position: absolute; right: 6px; font-size: 20px;'><i id="close-tooltip" class="far fa-times-circle fa-lg"></i></span>
-                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range::</div>
+                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
                 <hr style='margin-top: 0; margin-bottom: 10px'>
                 <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: yellow;'>&nbsp;&nbsp;{statePercentage}%</span></p>
+                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: #facc15;'>&nbsp;&nbsp;{statePercentage}%</span></p>
                     <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
                     <p class='maptip-text'>{costRange}</p>
                 </div>`;
@@ -127,6 +127,7 @@
                 .style("position", "absolute")
                 .style("visibility", "hidden")
                 .style("z-index", 100)
+                .style("background", "black")
                 .style("text-align", "left");
 
             const maptipOffset = 5;
@@ -497,11 +498,11 @@
                 // console.log(funder)
                 mapTextTip
                     .html(`
-                        This module shows the locations where ads funded by: <span style="color: yellow;">${this.funder}</span> were shown for the selected date range...
+                        This module shows the locations where ads funded by: <span style="color: #facc15;">${this.funder}</span> were shown for the selected date range...
                     ` +
-                    (unknownStateData ? `<br><br><span style="color: yellow;">NOTE: ${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
+                    (unknownStateData ? `<br><br>NOTE: <span style="color: #facc15;">${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
                         <br><br>
-                        NOTE: The estimated total ads spend on people from regions that were either unidentifiable or located outside the selected country was between: <span style="color: yellow;">${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.
+                        NOTE: The estimated total ads spend on people from regions that were either unidentifiable or located outside the selected country was between: <span style="color: #facc15;">${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.
                         </span>
                         ` : "" )
                     

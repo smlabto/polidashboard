@@ -32,21 +32,21 @@
 
 	const country = <%- JSON.stringify(country) %>
 
-	d3.select('header')
-		.append('input')
-		.attr('type', 'text')
-		.attr('id', 'country')
+	// d3.select('header')
+	// 	.append('input')
+	// 	.attr('type', 'text')
+	// 	.attr('id', 'country')
 
-	$('#country').countrySelect({
-		onlyCountries: <%- JSON.stringify(validCountries) %>,
-		responsiveDropdown: true,
-		preferredCountries: [],		
-		defaultCountry: country
-	})
+	// $('#country').countrySelect({
+	// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
+	// 	responsiveDropdown: true,
+	// 	preferredCountries: [],		
+	// 	defaultCountry: country
+	// })
 	
-	$('#country').change(c => {
-		window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
-	})
+	// $('#country').change(c => {
+	// 	window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
+	// })
 
     // Create the duplicate dropdown
     d3.select('#inner_country_select')

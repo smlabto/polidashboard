@@ -1,31 +1,32 @@
 <div class="widget-container boxed">
 	<div class="inner" id="summary">
-		<div class="facebook_nav_light p-tip">
+		<!-- <div class="facebook_nav_light p-tip">
 			<span class="facebook_date" style="display: flex">
 			</span>
 			<div class="tiptext">
 				Click to edit time frame
 			</div>
-		</div>
-		<hr>
+		</div> -->
+		<!-- <hr> -->
 		<div id="summary-home">
 			<h3 class="widget-title" id="top_10_title">
 				About PoliDashboard
 			</h3>
 			<p>
-				<a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is a data visualization tool designed to help voters, journalists, and campaign staffers to monitor the health of political discussions online and learn more about social issues, elections or politics related ads running on Meta’s social media and advertising platforms such as Facebook and Instagram. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+				<span style="font-style: italic;">Making the invisible visible</span> — <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
 			</p>
 			<p>
 				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 4em; width: auto; float: left; padding-right: 10px;">
-				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at Ted Rogers School of Management in Toronto as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available.
+				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. See the <a href="https://polidashboard.com/about/" target="_blank">About</a> page for more info.
 			</p>
 		</div>
 		<div id="summary-focus">
 			<div id="inner_country_select_2"></div><br />
 			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
 			<div class="dropdown" style="z-index: 50;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 1. List of Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
+					<div class="dropdown-timeframe"></div>
 					<!-- ### Start of Pages Funded Widget -->
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
@@ -66,7 +67,11 @@
 							<div></div>
 						</div>
 					</div>
-					<div id="funder_pages"></div> 
+					<div id="funder_pages" style="margin-bottom: 7px;"></div> 
+					
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
+					</div>
 				</div>
 			</div>
 		
@@ -74,8 +79,9 @@
 
 			<!-- ### Start of Ads Per Day Widget ### -->
 			<div class="dropdown" style="z-index: 30;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Total Number of Active Ads Per Day Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 2. Total Number of Active Ads Per Day Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
+					<div class="dropdown-timeframe"></div>
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Total Number of Active Ads Per Day -->
 						<div class="tip">
@@ -103,7 +109,10 @@
 							<div></div>
 						</div>
 					</div>
-					<div id="timeline"></div>
+					<div id="timeline" style="margin-bottom: 8px"></div>
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
+					</div>
 				</div>
 			</div>	
 
@@ -111,8 +120,9 @@
 			
 			<!-- ### Start of Map Widget ### -->
 			<div class="dropdown" style="z-index: 40;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Geographic Location of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 3. Geographic Location of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
+					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						
@@ -182,15 +192,18 @@
 					<div class="widget-content" id="chart-container">
 						<div id="map-tooltip"></div>
 					</div>
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
+					</div>
 				</div>
 			</div>
 			<hr>
 
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Demographics of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 4. Demographics of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
-
+					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						
@@ -249,17 +262,19 @@
 							<div></div>
 						</div>
 					</div>
-					<div id="demographics">
-
+					<div id="demographics" style="margin-bottom: 10px"></div>
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
 					</div>
 				</div>
 			</div>
 				
 			<hr>
 			<div class="dropdown" style="z-index: 15;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Most Frequently-used Phrases in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 5. Most Frequently-used Phrases in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				
 				<div class="dropdown-content">
+					<div class="dropdown-timeframe"></div>
 					<h3 class="widget-title">
 						<!-- Where These Ads Were Shown -->
 						<div class="tip">
@@ -294,14 +309,20 @@
 					<!-- <div id="new-wordcloud-test"></div> -->
 					<div id="new-wordcloud-test" class="wordcloud" style="width: 100%; height:300px; max-height: 300px;"></div>
 					<!-- <canvas id="new-wordcloud-test" class="wordcloud" style="width: 100%; height:300px; max-height: 300px;"></canvas> -->
+					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
+					</div>
 				</div>
+				
 			</div>
 
 			<hr>
 			<div class="dropdown" style="z-index: 15;">
-				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; Most Frequently-used Advertising Copy/Primary Text in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
+				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 6. Most Frequently-used Advertising Copy in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				
 				<div class="dropdown-content">
+					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						
@@ -339,6 +360,9 @@
 
 							</tbdody>
 						</table>
+					</div>
+					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
+						Polidashboard.com
 					</div>
 				</div>
 			</div>
@@ -606,7 +630,7 @@
 		d3.select('#regions').html('');
 		d3.select('#timeline').html('');
 		d3.selectAll('.advertiser_name')
-			.text('Ads Spending Tracker for: ' + funder);
+			.html('Political Ad Spending Stats for: <span style="color: #006ebe">' + funder + '</span>');
 		d3.select('#funder_pages_loader').style('display', 'block');
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
@@ -624,22 +648,23 @@
 			.text(funder)
 		
 		d3.select('#tiptext-pages')
-			.html('This module shows a list of all Facebook Page(s) funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.')
+			.html('This module shows a list of all Facebook Page(s) funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
 
 		d3.select('#tiptext-active')
-			.html('This chart shows the total number of active ads funded by: <span style="color: yellow;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to hide/show it in the chart.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
+			.html('This chart shows the total number of active ads funded by: <span style="color: #facc15;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to hide/show it in the chart.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
 
 		d3.select('#tiptext-demographic')
-			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.')
+			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
 		
 		d3.select('#tiptext-wordcloud')
-			.html('This module shows the top 100 most frequently-used phrases in the ad copy (aka… primary text field) of ads funded by: <span style="color: yellow;">' + funder + '</span> for the selected date range.<br><br>In the word cloud, the larger the text, the more frequently it appeared in ads funded by this advertiser.')
+			.html('This module shows the top 100 most frequently-used phrases in the ad copy (aka… primary text field) of ads funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.<br><br>In the word cloud, the larger the text, the more frequently it appeared in ads funded by this advertiser.')
 		
 		d3.select('#tiptext-frequency')
-			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="color: yellow;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
+			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="color: #facc15;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
 		
 		// Scroll to the funder, if mobile
 		if (isMobile) {
+			d3.selectAll('.dropdown-polidashboard').style('display', 'none')
 			$([document.documentElement, document.body]).animate({
 				scrollTop: $("#summary").offset().top
 			}, 500);
@@ -1011,7 +1036,7 @@
 		format = d3.timeFormat('%b %d, %Y');
 
 		d3.selectAll('.facebook_date')
-			.html(`Time Frame: ${format(startDay)} - ${format(end)}`);
+			.html(`▼ ${format(startDay)} - ${format(end)}`);
 		d3.selectAll('.facebook_timestamp_no_calendar')
 			.html(`${format(startDay)} - ${format(end)}`);
 	}
@@ -1080,7 +1105,7 @@
 				x: {
 					type: 'timeseries',
 					tick: {
-						format: '%b. %d, %Y',
+						format: '%d/%m/%Y', //Old format '%b. %d, %Y',
 						culling: true
 					},
 					padding: {
@@ -1107,27 +1132,27 @@
 					}
 				}
 			},
-			tooltip: {
-				format: {
-					title: function (x) {
-						// Calculate and display total for the y-axis plots
-						var total = 0;
-						for (var i = 1; i < rows.length; i++) {
-							total += rows[i][rows[0].indexOf(x)];
-						}
-						return 'Date: ' + d3.time.format('%b. %d, %Y')(new Date(x)) + '\nTotal: ' + total + ' ads';
-					},
-					value: function (value, ratio, id) {
-						return value;
-					}
-				}
-			},
+			// tooltip: {
+			// 	format: {
+			// 		title: function (x) {
+			// 			// Calculate and display total for the y-axis plots
+			// 			var total = 0;
+			// 			for (var i = 1; i < rows.length; i++) {
+			// 				total += rows[i][rows[0].indexOf(x)];
+			// 			}
+			// 			return 'Date: ' + d3.time.format('%b. %d, %Y')(new Date(x)) + '\nTotal: ' + total + ' ads';
+			// 		},
+			// 		value: function (value, ratio, id) {
+			// 			return value;
+			// 		}
+			// 	}
+			// },
 			bindto: '#timeline',
 			size: {
 				height: '200'
 			},
 			padding: {
-				right: 25
+				right: 35
 			}
 		});
 	}
@@ -1509,6 +1534,9 @@
 		}
 		cloudTable.draw(true);
 	}
+
+	d3.selectAll('.dropdown-timeframe')
+		.html(`<i class="fas fa-calendar-alt"></i> ${format(startDay)} - ${format(end)}`);
 
 	
 </script>
