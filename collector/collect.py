@@ -78,21 +78,10 @@ def update_timestamp(ad, country):
 def update_audiences(ad, country):
     if 'demographic_distribution' in ad:
         for audience in ad['demographic_distribution']:
-            # db['facebook_audiences_' + country].update_one({
-            #     '_id': {
-            #         'age': audience['age'],
-            #         'gender': audience['gender'],
-            #         'ad': ad['id']
-            #     },
-            # }, {
-            #     '$set': {
-            #         'percentage': float(audience['percentage'])
-            #     }
-            # }, upsert=True) # Old query, this storage method had bad performance
             db['facebook_audiences_' + country].update_one({
                 '_id': ad['id'],
             }, {
-                '$set' : { 
+                '$addToSet' : { 
                     'audience' : {
                         '_id': {
                             'age': audience['age'],
@@ -103,6 +92,24 @@ def update_audiences(ad, country):
                     }
                 }
             }, upsert=True)
+
+            # update the audience values in case they have been updated
+            filter_criteria = {
+                '_id': ad['id'],
+                'audience._id': {
+                    'age': audience['age'],
+                    'gender': audience['gender'],
+                    'ad': ad['id']
+                }
+            }
+
+            update_data = {
+                '$set': {
+                    'audience.$.percentage': float(audience['percentage'])
+                }
+            }
+
+            db['facebook_audiences_' + country].update_one(filter_criteria, update_data, upsert=True)
 
 def update_regions(ad, country):
     if 'delivery_by_region' in ad:
