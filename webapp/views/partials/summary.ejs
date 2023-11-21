@@ -20,9 +20,29 @@
 				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. See the <a href="https://polidashboard.com/about/" target="_blank">About</a> page for more info.
 			</p>
 		</div>
+
 		<div id="summary-focus">
-			<div id="inner_country_select_2"></div><br />
+			
+			<!-- <div id="inner_country_select_2"></div><br /> -->
+
 			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
+
+			<div id="summary-time-select" style="text-align: center;">
+				<div style="display: inline-block">
+					<div class="date_picker time-select" style="display: flex;" >
+						<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+							<div style="display: flex; margin: 10px; margin-right: 5px;">
+								<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+								<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">🞃</div>
+							</div>
+						</div>
+						<span class="facebook_date"></span>
+					</div>
+				</div>
+			</div>
+			<br><br>
+
+			<!-- Start of Modules -->
 			<div class="dropdown" style="z-index: 50;">
 				<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 1. List of Facebook Page(s) Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
@@ -630,7 +650,7 @@
 		d3.select('#regions').html('');
 		d3.select('#timeline').html('');
 		d3.selectAll('.advertiser_name')
-			.html('Political Ad Spending Stats for: <span style="color: #006ebe">' + funder + '</span>');
+			.html('Political Ad Spending Stats for: <span style="background: #facc15"; color: #000;>' + funder + '</span>');
 		d3.select('#funder_pages_loader').style('display', 'block');
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
@@ -645,13 +665,15 @@
 		// d3.select("#imageElement").style("display", 'none'); // Don't show image right away
 
 		d3.selectAll('.sub_advertiser_name')
-			.text(funder)
+			.style('background', '#facc15')
+			.style('color', '#000000')
+			.text(funder);
 		
 		d3.select('#tiptext-pages')
 			.html('This module shows a list of all Facebook Page(s) funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
 
 		d3.select('#tiptext-active')
-			.html('This chart shows the total number of active ads funded by: <span style="color: #facc15;">' + funder + '</span> for each day of the selected date range.<br><br>Click on a spending range to hide/show it in the chart.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
+			.html('This chart shows the total number of active ads funded by: <span style="color: #facc15;">' + funder + '</span> for each day of the selected date range.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
 
 		d3.select('#tiptext-demographic')
 			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
@@ -669,34 +691,35 @@
 				scrollTop: $("#summary").offset().top
 			}, 500);
 
-			// Create the duplicate dropdown
-			d3.select('#inner_country_select_2')
-				.html('')
+			// // Create the duplicate dropdown
+			// d3.select('#inner_country_select_2')
+			// 	.html('')
 				
-			d3.select('#inner_country_select_2')
-				.style('text-align', 'center')
-				// .append('div')
-				// .attr('class', 'country-select')
-				.append('input')
-					.attr('type', 'text')
-					.attr('id', 'duplicateCountry2')
-					.style('border', '1px solid black') // Border style
-					.style('border-radius', '5px')
+			// d3.select('#inner_country_select_2')
+			// 	.style('text-align', 'center')
+			// 	// .append('div')
+			// 	// .attr('class', 'country-select')
+			// 	.append('input')
+			// 		.attr('type', 'text')
+			// 		.attr('id', 'duplicateCountry2')
+			// 		.style('border', '1px solid black') // Border style
+			// 		.style('border-radius', '5px')
 					
-					// .on('change', duplicateDropdownChange);
+			// 		// .on('change', duplicateDropdownChange);
 
-			$('#duplicateCountry2').countrySelect({
-				onlyCountries: <%- JSON.stringify(validCountries) %>,
-				responsiveDropdown: true,
-				preferredCountries: [],		
-				defaultCountry: country
-			})
+			// $('#duplicateCountry2').countrySelect({
+			// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
+			// 	responsiveDropdown: true,
+			// 	preferredCountries: [],		
+			// 	defaultCountry: country
+			// })
 
-			$('#duplicateCountry2').change(c => {
-				console.log($("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2)
-				window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2
-			})
-	
+			// $('#duplicateCountry2').change(c => {
+			// 	console.log($("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2)
+			// 	window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2
+			// })
+		} else {
+			d3.select('#summary-time-select').style('display', 'none')
 		}
 
 		// Fix for Conservative Party naming discrepancy
@@ -1036,7 +1059,7 @@
 		format = d3.timeFormat('%b %d, %Y');
 
 		d3.selectAll('.facebook_date')
-			.html(`▼ ${format(startDay)} - ${format(end)}`);
+			.html(`${format(startDay)} - ${format(end)}`);
 		d3.selectAll('.facebook_timestamp_no_calendar')
 			.html(`${format(startDay)} - ${format(end)}`);
 	}
@@ -1097,6 +1120,7 @@
 			data: {
 				x: 'date',
 				columns: rows,
+				type: 'bar',
 				// type: 'timeseries',
 				// groups: [group],
 				// order: order
@@ -1105,7 +1129,7 @@
 				x: {
 					type: 'timeseries',
 					tick: {
-						format: '%d/%m/%Y', //Old format '%b. %d, %Y',
+						format: '%m/%d/%y', //Old format '%b. %d, %Y',
 						culling: true
 					},
 					padding: {
@@ -1113,7 +1137,7 @@
 						left: 0
 					},
 					label: {
-						text: 'Ads Spending Range (by Date)',
+						text: 'Ads Spending Range (by Date MM/DD/YY)',
 						position: 'outer-center'
 					}
 				},
@@ -1132,21 +1156,9 @@
 					}
 				}
 			},
-			// tooltip: {
-			// 	format: {
-			// 		title: function (x) {
-			// 			// Calculate and display total for the y-axis plots
-			// 			var total = 0;
-			// 			for (var i = 1; i < rows.length; i++) {
-			// 				total += rows[i][rows[0].indexOf(x)];
-			// 			}
-			// 			return 'Date: ' + d3.time.format('%b. %d, %Y')(new Date(x)) + '\nTotal: ' + total + ' ads';
-			// 		},
-			// 		value: function (value, ratio, id) {
-			// 			return value;
-			// 		}
-			// 	}
-			// },
+			legend: {
+				item: {onclick: function () {}}	
+			},
 			bindto: '#timeline',
 			size: {
 				height: '200'
@@ -1155,6 +1167,9 @@
 				right: 35
 			}
 		});
+		const firstElements = rows.map(row => row[0]).slice(1);
+		console.log(firstElements)
+		chart.groups([firstElements]);
 	}
 
 	function drawDemographics(data) {

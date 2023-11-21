@@ -159,7 +159,7 @@ a:hover {
 /* Structure */
 
 .container {
-	min-width: 80vw;
+	min-width: 90vw;
 	background-color: #212121;
 }
 
@@ -1041,8 +1041,8 @@ hr {
 .facebook_date {
 	font-size: 15px;
 	display: flex;
-	border: 1px solid #006ebe !important;
-	background: #006ebe !important; 
+	border: 1px solid #fff !important;
+	background: #fff !important; 
 	padding: 0 5px;
 }
 
@@ -1071,10 +1071,25 @@ hr {
 	height:	fit-content;
 }
 
+.time-select:hover > div {
+    background-color: #f2f2f2;
+}
+
+.time-select,
+.time-select * {
+    cursor: pointer;
+    background-color: inherit; /* Set the default background color */
+}
+
 .time-select {
-	border: 1px solid black;
-	border-radius: 5px;
-	max-width: 280px;
-	width: 100%;
-	text-align: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    max-width: 280px;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+}
+
+.no-interaction {
+    pointer-events: none;
 }

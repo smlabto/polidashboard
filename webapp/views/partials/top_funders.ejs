@@ -1,21 +1,16 @@
 <div class="widget-container boxed" style="overflow-y: auto;">
 	<div class="inner">
-		<div>
-
-		
-			<div style="text-align: center;">
-				<h3 style="margin-bottom: 3px;">Political Advertisers from: </h3>
-				<div id="inner_country_select"></div><br />
-			</div>
-
-			<div style="text-align: center; display: none">
-				<i style="font-style: italic; font-size: 12px; color:#737373">Best viewed on a desktop browser or as a desktop site on mobile.<br /><br /></i>
-			</div>
-
-			<div style="text-align: center;">
-				<div class="btn time-select date_picker">
-					
-					<div style="margin: 4px;"><i class="fas fa-calendar-alt"></i> Select Date Range</div>
+		<div style="text-align: center;">
+			<div id="inner_country_select"></div>
+			<br />
+			<div style="display: inline-block">
+				<div class="date_picker time-select" style="display: flex;" >
+					<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+						<div style="display: flex; margin: 10px; margin-right: 5px;">
+							<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+							<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">🞃</div>
+						</div>
+					</div>
 					<span class="facebook_date"></span>
 				</div>
 			</div>
@@ -42,14 +37,14 @@
 		
 		<br>
 		<div class="dropdown" style="z-index: 15;">
-			<button class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
+			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
 			<div class="dropdown-content">
 			
 				<div id="funder_table">
 					<div class="dropdown" style="z-index: 15; margin-bottom: 10px;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						<br><br>
-						<div>
+						<div style="font-size: 16px;">
 							<div class="tip">
 								<img src="/images/info.png">
 								<div class="tiptext">
@@ -64,13 +59,15 @@
 									<li>
 										Click on any advertiser to see:
 										<ul>
-											<li>What Facebook pages they fund</li>
-											<li>The ads that they are running</li>
-											<li>Where their ads are being shown and to whom</li>
+											<li>What Facebook page(s) they are funding</li>
+											<li>The ads they are running</li>
+											<li>Where geographically their ads are being shown</li>
+											<li>What demographic groups they are targeting</li>
+											<li>What is being said in their ads</li>
 										</ul>
 									</li>
 									<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
-									<li>Best viewed on a desktop browser.</li>
+									<li>Best viewed on a desktop browser or as a desktop site on mobile.</li>
 								</ul>
 							</div>
 						</div>
