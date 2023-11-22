@@ -1513,10 +1513,10 @@
 			.size([wordcloudContainer.offsetWidth, 300])
 			.words(deepCopy(data.result))
 			.padding(1)
-			// .rotate(function() {
-			// 	// Generate a random rotation angle between -5 and 5 degrees
-			// 	return (Math.random() * 5) - 5;
-			// })
+			.rotate(function() {
+				return (0);
+				// return (Math.random() * 5) - 5; // Old rotate
+			})
 			.font("Open Sans")
 			.fontSize(function(d) {
 				return ((d.size/maxFontSize)*50)+10;
