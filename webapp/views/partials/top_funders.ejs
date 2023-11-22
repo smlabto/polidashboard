@@ -37,22 +37,12 @@
 		
 		<br>
 		<div class="dropdown" style="z-index: 15;">
-			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
+			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
 			<div class="dropdown-content">
 			
 				<div id="funder_table">
 					<div class="dropdown" style="z-index: 15; margin-bottom: 10px;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
-						<br><br>
-						<div style="font-size: 16px;">
-							<div class="tip">
-								<img src="/images/info.png">
-								<div class="tiptext">
-									This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.
-								</div>
-							</div>
-						</div>
-						<br>
+						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
 								<ul>
@@ -72,6 +62,14 @@
 							</div>
 						</div>
 					</div>	
+					<div style="font-size: 16px">
+						<div class="tip" style="padding-bottom: 21px;">
+							<img src="/images/info.png">
+							<div class="tiptext">
+								This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.
+							</div>
+						</div>
+					</div>
 					<div>
 						<form id="heatmap_filter_form" onsubmit="return false">
 							<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">

@@ -218,7 +218,7 @@ header {
 	/* padding-top: 30px; */
 	display: flex;
 	justify-content: space-between;
-	padding-left: 4%;
+	padding: 0 7% 0 7%;
 	background: #121212;
 }
 
@@ -714,7 +714,7 @@ input[type=text] {
 	}
 
 	.heatmap_name_cell {
-		overflow: hidden;
+		/* overflow: hidden; */
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
@@ -1026,14 +1026,31 @@ hr {
 	transform: rotate(0deg);
 }
 
+.dropdown-arrow {
+	display: inline-block;
+	transition: transform 0.3s;
+	transform: rotate(90deg);
+}
+
 .dropdown-btn span {
 	transition: all 0.4s ease;
 }
-  
-.dropdown-btn:hover span {
-	transform: rotateZ(90deg);
+
+.dropdown-btn {
+    transition: filter 0.3s, font-size 0.1s;
 }
-  
+
+.dropdown-btn:hover {
+    filter: brightness(1.1);
+    font-size: 1.1em;
+}
+
+@media only screen and (max-width: 768px) {
+    .dropdown-btn:hover {
+        filter: none; /* Disable brightness effect on mobile */
+    }
+}
+
 .page_name {
 	margin-bottom: 2px;
 }
@@ -1092,4 +1109,22 @@ hr {
 
 .no-interaction {
     pointer-events: none;
+}
+
+.navbar-item {
+	padding: 8px 24px 8px !important;
+	color: white;
+	font-size: 16px;
+	border-radius: 3px;
+	margin: 3px;
+	/* border: 1px solid white; */
+}
+
+.navbar-item:hover {
+    color: black;
+}
+
+
+.navbar {
+	margin-bottom: 0px;
 }

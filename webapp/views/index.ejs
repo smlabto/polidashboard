@@ -136,39 +136,29 @@
 <body>
 	<div class="body-wrap" style="background-color: #212121;">
 		<!--container-->
-		<header>
-			<a href="https://polidashboard.com/">
-				<img alt="polidashboard" src="/images/main-logo.png" id="main-logo">
-			</a>
-			<!-- <div class="menu boxed">
-				<ul>
-					<li>
-						<a href="https://polidashboard.com/about/"><span>About</span></a>
-					</li>
-				</ul>
-			</div> -->
-		</header>
+		<nav class="navbar" style="background-color: #121212;">
+			<header>
+				<div class="navbar-header">
+					<a href="https://polidashboard.com/">
+						<img alt="polidashboard" src="/images/main-logo.png" id="main-logo">
+					</a>
+				</div>
+				<div class="navbar-collapse" id="nav-items" style="align-self: center;">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a class="navbar-item" href="https://polidashboard.com/about/" target="_blank"><i class="fas fa-receipt"></i> <span>About</span></a>
+						</li>
+						<li>
+							<a class="navbar-item" href="https://github.com/smlabto/polidashboard" target="_blank"><i class="fab fa-github"></i> Open Source</a>
+						</li>
+					</ul>
+				</div>
+			</header>
+		</nav>
+		
 		<div class="container">
 			<div class="content" style="padding-top: 0px;">
 				
-				
-				<!--menu-->
-				<!-- <div class="row">
-					<div class="col-sm-12">
-						<div class="menu boxed">
-							<ul class="pull-left">
-								<li>
-									<a href="https://polidashboard.com/"><span>An Election Transparency Initiative</span></a>
-								</li>
-							</ul>
-							<ul class="pull-right">
-								<li>
-									<a href="https://polidashboard.com/about/"><span>About</span></a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div> -->
 				
 				<%- include(child) %>
 
