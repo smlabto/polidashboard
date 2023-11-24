@@ -26,6 +26,21 @@
 			<!-- <div id="inner_country_select_2"></div><br /> -->
 			<div style="padding-bottom: 10px"> <!-- Summary Area -->
 				<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center; margin-bottom: 9px"></h2>
+				
+				<div id="summary-time-select" style="text-align: center; padding-bottom: 10px">
+					<div style="display: inline-block">
+						<div class="date_picker time-select" style="display: flex;" >
+							<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+								<div style="display: flex; margin: 10px; margin-right: 5px;">
+									<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+									<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">▼</div>
+								</div>
+							</div>
+							<span class="facebook_date"></span>
+						</div>
+					</div>
+				</div>
+
 				<div id="summary-stats">
 					<div class="summary-container" style="text-align: center;">
 						<div style="padding-left: 8px">
@@ -52,21 +67,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="dropdown-timeframe" style="position: relative; padding-top: 11px; padding-bottom: 5px;"></div>
+				<div class="dropdown-timeframe" id="summary-timeframe" style="position: relative; padding-top: 11px; padding-bottom: 5px;"></div>
 
-				<div id="summary-time-select" style="text-align: center;">
-					<div style="display: inline-block">
-						<div class="date_picker time-select" style="display: flex;" >
-							<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
-								<div style="display: flex; margin: 10px; margin-right: 5px;">
-									<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
-									<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">▼</div>
-								</div>
-							</div>
-							<span class="facebook_date"></span>
-						</div>
-					</div>
-				</div>
 			</div>
 
 			<!-- Start of Modules -->
@@ -727,6 +729,7 @@
 			$([document.documentElement, document.body]).animate({
 				scrollTop: $("#summary").offset().top
 			}, 500);
+			d3.select('#summary-timeframe').style('display', 'none')
 		} else {
 			d3.select('#summary-time-select').style('display', 'none')
 		}
