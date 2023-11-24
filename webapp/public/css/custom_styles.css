@@ -278,8 +278,9 @@ footer a {
 @media only screen and (max-width: 550px) {
 	header {
 		/* padding: 25px; */
-		display: block;
+		display: inline-block;
 		text-align: center;
+		padding-top: 0 !important;
 	}
 
 	.right-logo {
@@ -300,9 +301,10 @@ footer a {
 		margin-right: 15%; */
 	}
 
-	header {
-		padding-top: 0 !important;
+	.navbar {
+		text-align: center;
 	}
+
 }
 
 /* Tooltips */
@@ -1069,6 +1071,7 @@ hr {
 @media only screen and (max-width: 768px) {
     .dropdown-btn:hover {
         filter: none; /* Disable brightness effect on mobile */
+		font-size: 1em;
     }
 }
 
@@ -1079,8 +1082,8 @@ hr {
 .facebook_date {
 	font-size: 15px;
 	display: flex;
-	border: 1px solid #fff !important;
-	background: #fff !important; 
+	/* border: 1px solid #fff !important; */
+	/* background: #fff !important;  */
 	padding: 0 5px;
 }
 
@@ -1109,14 +1112,19 @@ hr {
 	height:	fit-content;
 }
 
-.time-select:hover > div {
+.time-select:hover * {
+    background-color: #f2f2f2;
+}
+
+/* Change background color of .time-select elements on hover */
+.time-select:hover {
     background-color: #f2f2f2;
 }
 
 .time-select,
 .time-select * {
     cursor: pointer;
-    background-color: inherit; /* Set the default background color */
+
 }
 
 .time-select {
@@ -1217,3 +1225,17 @@ hr {
 	}
 }
   
+.country-select.inside {
+    width: 254px;
+	min-width: 254px;
+}
+
+.country-select.inside .selected-flag {
+    width: 254px;
+	border-radius: 3px;
+}
+
+.country-select .selected-flag .arrow {
+	right: none;
+	left: 36px;
+}

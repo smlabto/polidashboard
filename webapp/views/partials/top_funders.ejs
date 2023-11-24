@@ -3,7 +3,7 @@
 		<div style="text-align: center;">
 			<div id="inner_country_select"></div>
 			<br />
-			<div style="display: inline-block">
+			<div style="display: inline-block" id="date-dropdown">
 				<div class="date_picker time-select" style="display: flex;" >
 					<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
 						<div style="display: flex; margin: 10px; margin-right: 5px;">
@@ -128,8 +128,8 @@
 			.attr('id', 'duplicateCountry')
 			.style('border', '1px solid black') // Border style
     		.style('border-radius', '5px')
-			
-			// .on('change', duplicateDropdownChange);
+			.style('font-size', '14px');
+
 
 	$('#duplicateCountry').countrySelect({
 		onlyCountries: <%- JSON.stringify(validCountries) %>,
