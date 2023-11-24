@@ -1,8 +1,15 @@
+import os
 from fb_ads_library_api import FbAdsLibraryTraversal
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import pymongo
 from time import sleep
 import sys
+
+api_key = os.environ.get("FACEBOOK_API_KEY")
+
+if not api_key:
+    print("API key not set. Please set the FACEBOOK_API_KEY environment variable.")
+    sys.exit(1)
 
 to_dt = lambda text: datetime.strptime(
         text,
@@ -83,10 +90,10 @@ def update_audiences(ad, country):
             }, {
                 '$addToSet' : { 
                     'audience' : {
-                        '_id': {
+                        '_id': { # It is important for these fields to be in this exact order
+                            'ad': ad['id'],
                             'age': audience['age'],
-                            'gender': audience['gender'],
-                            'ad': ad['id']
+                            'gender': audience['gender']
                         },
                         'percentage': float(audience['percentage'])
                     }
@@ -97,9 +104,9 @@ def update_audiences(ad, country):
             filter_criteria = {
                 '_id': ad['id'],
                 'audience._id': {
+                    'ad': ad['id'],
                     'age': audience['age'],
-                    'gender': audience['gender'],
-                    'ad': ad['id']
+                    'gender': audience['gender']
                 }
             }
 
@@ -134,7 +141,7 @@ def update_page(ad, country):
         }
     }, upsert=True)
 
-def ensure_indices(countr):
+def ensure_indices(country):
     db['facebook_timestamps_' + country].create_index('_id.timestamp')
     db['facebook_audiences_' + country].create_index('_id.ad')
     db['facebook_regions_'  + country].create_index('_id.ad')
@@ -150,11 +157,15 @@ if __name__=="__main__":
 
     print('Running ', country, datetime.now())
     
+    after_date = datetime.now() - timedelta(days=3) # Only get ads from the last 3 days
+    after_date = after_date.strftime('%Y-%m-%d')
+
     collector = FbAdsLibraryTraversal(
-        "[FACEBOOK_API_ADsLibrary_KEY_HERE]",
-        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages",
+        api_key,
+        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages,estimated_audience_size",
         ".",
         country,
+        after_date=after_date,
         api_version="v18.0" # Current version as of August 2023
     )
 

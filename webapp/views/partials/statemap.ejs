@@ -5,16 +5,18 @@
     const outlineColor = "#888888";
 
 	class Statemap {
-		constructor(data, mapName, country='us', funder='') {
+		constructor(data, mapName, country='us', funder='', pageName=null) {
 			this.data = data;
 			this.mapName = mapName;
             this.country = country;
             this.funder = funder;
+            this.pageName = pageName;
 
 			this.draw();
 		}
 
         async fetchTopoData() {
+            // Future work, rather than fetching the topo data from a URL, we can store the topo data in local files and fetch it from there
             try {
                 let mapDataset = null;
                 if (country === 'us') {
@@ -57,8 +59,36 @@
 
         draw() {  
             let _d = this.data
+            let _pageName = this.pageName
+            let _funder = this.funder
+            let _mapName = this.mapName
             const isMobile = (document.documentElement.clientWidth < 768);
-            var tooltipContentTemplate = `
+            var tooltipContentTemplate = ``;
+            if (_pageName === null) {
+                tooltipContentTemplate = `
+                    <div class='maptip-content'>
+                        <p class='maptip-text'> 
+                            On average, <span class="tip-yellow">{statePercentage}%</span> of the audience for ads funded by <span class="tip-yellow">{funderName}</span> came from <span class="tip-yellow">{stateName}</span>. 
+                        </p>
+                        <p class='maptip-text'> 
+                            The estimated cost for reaching this audience is somewhere between <span class="tip-yellow">{costRange}</span>.
+                        </p>
+                    </div>
+                `;
+            } else {
+                tooltipContentTemplate = `
+                    <div class='maptip-content'>
+                        <p class='maptip-text'> 
+                            On average, <span class="tip-yellow">{statePercentage}%</span> of the audience for ads posted on the <span class="tip-yellow">{pageName}</span> Facebook page (funded by <span class="tip-yellow">{funderName}</span>) came from <span class="tip-yellow">{stateName}</span>. 
+                        </p>
+                        <p class='maptip-text'> 
+                            The estimated cost for reaching this audience is somewhere between <span class="tip-yellow">{costRange}</span>.
+                        </p>
+                    </div>
+                `;
+            }
+            /*
+            tooltipContentTemplate = `
                 <span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>
                 <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
                 <hr style='margin-top: 0; margin-bottom: 10px'>
@@ -67,17 +97,12 @@
                     <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
                     <p class='maptip-text'>{costRange}</p>
                 </div>`;
+            */
             
             if (isMobile) {
-                tooltipContentTemplate = `
-                <span class='tooltip-emoji' style='top: 16px; position: absolute; right: 6px; font-size: 20px;'><i id="close-tooltip" class="far fa-times-circle fa-lg"></i></span>
-                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
-                <hr style='margin-top: 0; margin-bottom: 10px'>
-                <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: #facc15;'>&nbsp;&nbsp;{statePercentage}%</span></p>
-                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
-                    <p class='maptip-text'>{costRange}</p>
-                </div>`;
+                tooltipContentTemplate = tooltipContentTemplate + `
+                    <div id="map-close"></div>
+                `;
             }
             
             const customColorInterpolator = t => {
@@ -130,43 +155,75 @@
                 .style("background", "black")
                 .style("text-align", "left");
 
-            const maptipOffset = 5;
             function moveMapTooltip() {
+                if (tooltipPinned) { return null; }
+                var parentElement = document.getElementById("map-dropdown"); 
+                var childElement = document.getElementById("chart-container");
+
+                // Get the bounding rectangles of both elements
+                var parentRect = parentElement.getBoundingClientRect();
+                var childRect = childElement.getBoundingClientRect();
+
+                // Calculate the offset of the child element relative to its parent
+                var offsetX = childRect.left - parentRect.left; // This is needed if the navigation dropdown is open
+                var offsetY = childRect.top - parentRect.top;
+
                 var coords = d3.mouse(document.getElementById("chart-container"));
-                var xPos = coords[0] - 230; // - tooltip.node().getBoundingClientRect().width - maptipOffset;
-                var yPos = coords[1] + maptipOffset + 50;
+                var xPos = coords[0] - 220; 
+                var yPos = coords[1] + 50;
                 
                 if (isMobile) {
                     // Set xPos and yPos to (0, 0)
-                    xPos = 1;
-                    yPos = 1;
+                    console.log("IS MOBILE")
+                    xPos = 20;
+                    yPos = 20;
                 }
                 tooltip
-                    .style("left", xPos + "px")
-                    .style("top", yPos + "px")
+                    .style("left", xPos + offsetX + "px")
+                    .style("top", yPos + offsetY + "px")
                     .style("visibility", "hidden");
+            }
+
+            function pinMapTooltip(pin) {
+                tooltipPinned = pin;
             }
 
             let highlightedPath = null;
             let currentStateData = null;
             let stateSpend = {};
+            var tooltipPinned = false;
 
             function updateTooltipContent() {
+                // console.log("UPDATE TOOLTIP CONTENT")
+                // console.log(this.pageName)
+                // console.log(this.funder)
                 tooltip.html(tooltipContentTemplate
                     .replace("{stateName}", currentStateData.name)
-                    .replace("{statePercentage}", (currentStateData.value * 100).toFixed(4))
+                    .replace("{statePercentage}", (currentStateData.value * 100).toFixed(2))
                     .replace("{costRange}", `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}`)
+                    .replace("{funderName}", _funder)
+                    .replace("{pageName}", _pageName)
                 );
                 if (isMobile) {
-                    d3.select(`#close-tooltip`).on("click", function() {
-                        tooltip.style("visibility", "hidden");
-                    });
+                    d3.select(`#${_mapName}`).select("#map-tooltip").select("#map-close")
+                        .style("position", "absolute")
+                        .style("visibility", "visible")
+                        .style("top", "15px")
+                        .style("right", "15px")
+                        .style("scale", "1.5")
+                        .html(`<i class="far fa-times-circle"></i>`)
+                        .on("click", function() {
+                            tooltip.style("visibility", "hidden");
+                            d3.select('#map-close').style("visibility", "hidden");
+                        });
                 }
+                
             }
 
             this.fetchTopoData().then(mapDataset => {
 
                 function handleMouseOver(id) {
+                    if (tooltipPinned) { return null; }
                     tooltip.style("visibility", "visible");
                     if (currentStateData === null) {
                         currentStateData = _d.find(item => item.stateId === id);
@@ -187,6 +244,7 @@
                 }
 
                 function handleMouseMove(id) {
+                    if (tooltipPinned) { return null; }
                     if (currentStateData === null) {
                         currentStateData = _d.find(item => item.stateId === id);
                         stateSpend = {
@@ -200,6 +258,7 @@
                 }
 
                 function handleMouseOut() {
+                    if (tooltipPinned) { return null; }
                     if (!isMobile) {
                         tooltip.style("visibility", "hidden");
                     }
@@ -231,6 +290,19 @@
 
                 var filteredData = topojson.feature(mapDataset, topo_data).features;
                 // console.log(filteredData);
+                // d3.select(document).on("click", function (event) {
+                //     // Check if the clicked element is inside the 'g' element  
+                //     console.log(event)
+                //     if (!event) {
+                //         return null;
+                //     }
+                //     const isInsideGElement = d3.select(event.target).classed('county');
+                    
+                //     if (!isInsideGElement) {
+                //         // Call the pinMapTooltip function when the user clicks anywhere outside the 'g' element
+                //         pinMapTooltip(false);
+                //     }
+                // });
 
                 const states = g.append("g")
                     .attr("cursor", "pointer")
@@ -254,7 +326,10 @@
                         if (country === 'es' && (hoveredData.id === '04' || hoveredData.id === '05')) { return; }
                         handleMouseMove(hoveredData.id)
                     })
-                    .on("mouseout", handleMouseOut);
+                    .on("mouseout", handleMouseOut)
+                    // .on("click", function (e, d) {
+                    //     pinMapTooltip(true);
+                    // });
                    
                 // Add a square box pointing to a territory that might be too difficult to highlight with the mouse
                 // const width = 970;
@@ -512,11 +587,13 @@
                 if (!isMobile) {
                     tooltip
                         .on("mouseover", function() {
+                            if (tooltipPinned) { return null; }
                             moveMapTooltip();
                             tooltip
                                 .style("visibility", "hidden");
                         })
                         .on("mousemove", function() {
+                            if (tooltipPinned) { return null; }
                             moveMapTooltip();
                             tooltip
                                 .style("visibility", "hidden");
@@ -542,12 +619,12 @@
             .range([0, 1]);
 
             const grad = svg.append('defs')
-            .append('linearGradient')
-            .attr('id', 'grad')
-            .attr('x1', '0%')
-            .attr('x2', '0%')
-            .attr('y1', '0%')
-            .attr('y2', '100%');
+                .append('linearGradient')
+                .attr('id', 'grad')
+                .attr('x1', '0%')
+                .attr('x2', '0%')
+                .attr('y1', '0%')
+                .attr('y2', '100%');
 
             grad.selectAll('stop')
             .data([0, 0.1, 0.25, 1]) // Add 0.1 and 0.25 to the data array

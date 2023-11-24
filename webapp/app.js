@@ -5,6 +5,8 @@ var bodyParser = require('body-parser')
 var fs =  require('fs')
 const https = require("http") //https
 
+require('dotenv').config();
+
 mongoose.connect("mongodb://localhost/polidashboard")
 mongoose.connection.once('open', function() {
     var port = 8000; //443;

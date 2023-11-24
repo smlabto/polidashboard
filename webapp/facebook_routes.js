@@ -748,10 +748,8 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
     return res.json(resultDict);
 }
 
-
-
 async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
-    const apiUrl = "http://192.168.1.128:8089";
+    const apiUrl = process.env.WORDCLOUD_API_URL;
 
     // Replace with the appropriate query parameters
     // Currently using temporary parameters

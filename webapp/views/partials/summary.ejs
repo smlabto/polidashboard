@@ -16,31 +16,58 @@
 				<span style="font-style: italic;">Making the invisible visible</span> — <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
 			</p>
 			<p>
-				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 4em; width: auto; float: left; padding-right: 10px;">
-				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. <br><br><span style="font-size: 16px;">See the <a href="https://polidashboard.com/about/" target="_blank">About</a> page for more info about initiative and our various academic and civic partners.</span>
+				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 8em; width: auto; float: left; padding-right: 10px; padding-bottom: 8px;">
+				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. <br><br><span style="font-size: 16px;">See the <a href="https://polidashboard.com/about/" target="_blank">About page</a> for up-to-date information about PoliDashboard and our various academic and civic partners.</span>
 			</p>
 		</div>
 
 		<div id="summary-focus">
 			
 			<!-- <div id="inner_country_select_2"></div><br /> -->
-
-			<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center;"></h2>
-
-			<div id="summary-time-select" style="text-align: center;">
-				<div style="display: inline-block">
-					<div class="date_picker time-select" style="display: flex;" >
-						<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
-							<div style="display: flex; margin: 10px; margin-right: 5px;">
-								<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
-								<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">🞃</div>
+			<div style="padding-bottom: 10px"> <!-- Summary Area -->
+				<h2 id="pages_subtitle" class="advertiser_name" style="text-align: center; margin-bottom: 9px"></h2>
+				<div id="summary-stats">
+					<div class="summary-container" style="text-align: center;">
+						<div style="padding-left: 8px">
+							<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+							<div>
+								<span id="total_ads" class="summary-info" style="font-weight: 600; font-size: 16px"></span>
 							</div>
+							<span>Total # Advertisements</span>
 						</div>
-						<span class="facebook_date"></span>
+
+						<div style="border-right: 1px solid #cccccc; border-left: 1px solid #cccccc">
+							<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+							<div>
+								<span id="total_spend" class="summary-info" style="font-weight: 600; font-size: 16px"></span> 
+							</div>
+							<div>Total Ad Spend</div>
+						</div>
+						<div style="padding-right: 8px;">
+							<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+							<div>
+								<span id="total_impressions" class="summary-info" style="font-weight: 600; font-size: 16px"></span> 
+							</div>
+							<div>Total Impressions</div>
+						</div>
+					</div>
+				</div>
+				<div class="dropdown-timeframe" style="position: relative; padding-top: 11px; padding-bottom: 5px;"></div>
+
+				<div id="summary-time-select" style="text-align: center;">
+					<div style="display: inline-block">
+						<div class="date_picker time-select" style="display: flex;" >
+							<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+								<div style="display: flex; margin: 10px; margin-right: 5px;">
+									<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+									<div style="color: #555555; font-size: 10px; padding-bottom: 4px; padding-left: 4px;">🞃</div>
+								</div>
+							</div>
+							<span class="facebook_date"></span>
+						</div>
 					</div>
 				</div>
 			</div>
-			<br><br>
 
 			<!-- Start of Modules -->
 			<div class="dropdown" style="z-index: 50;">
@@ -91,7 +118,7 @@
 					
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 			</div>
@@ -133,7 +160,7 @@
 					<div id="timeline" style="margin-bottom: 8px"></div>
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 			</div>	
@@ -145,7 +172,7 @@
 				<button class="dropdown-btn widget-title"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 3. Geographic Location of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
 					<div class="dropdown-timeframe"></div>
-					<div class="dropdown" style="z-index: 15;">
+					<div class="dropdown" id="map-dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
@@ -212,11 +239,11 @@
 						</div>
 					</div>
 					<div class="widget-content" id="chart-container">
-						<div id="map-tooltip"></div>
+						<div id="map-tooltip"><div id="map-close"></div></div>
 					</div>
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 			</div>
@@ -225,7 +252,7 @@
 			<!-- ### Start of Demographic Widget ### -->
 			<div class="dropdown" style="z-index: 20;">
 				<button class="dropdown-btn widget-title"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 4. Demographics of the Audience of Ads Funded by: <span class="sub_advertiser_name">___</span></button>
-				<div class="dropdown-content">
+				<div class="dropdown-content" id="demographics-dropdown">
 					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
 						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
@@ -286,9 +313,10 @@
 						</div>
 					</div>
 					<div id="demographics" style="margin-bottom: 10px"></div>
+					
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 			</div>
@@ -335,7 +363,7 @@
 					<!-- <canvas id="new-wordcloud-test" class="wordcloud" style="width: 100%; height:300px; max-height: 300px;"></canvas> -->
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 				
@@ -387,7 +415,7 @@
 					</div>
 					<hr style="border-top: 1px solid #cccccc; margin-top: 10px;">
 					<div class="dropdown-polidashboard" style="position: absolute; bottom: 8px; right: 6px; width: 100px; text-align:right;">
-						Polidashboard.com
+						Polidashboard.org
 					</div>
 				</div>
 			</div>
@@ -530,7 +558,7 @@
 		performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 			// drawMap(data);
 			mapData = data;
-			rawMap = new Statemap(data, "chart-container", country, funder); // TO DO
+			rawMap = new Statemap(data, "chart-container", country, mainFunder); // TO DO
 			prevRawMap = rawMap;
 		});
 		// if (country === 'us' || country === 'ca') {
@@ -654,11 +682,13 @@
 		d3.select('#summary-home').style('display', 'none');
 		d3.select('#summary-focus').style('display', 'block');
 		d3.select('#summary-navigation-instructions').style('display', 'inline-block');
+		d3.selectAll('.summary-info').style('display', 'none');
+		d3.selectAll('.lds-ellipsis').style('display', 'inline-block');
 		d3.select('#demographics').html('');
 		d3.select('#regions').html('');
 		d3.select('#timeline').html('');
 		d3.selectAll('.advertiser_name')
-			.html('Political Ad Spending Stats for: <span style="color: #ffa900";>' + funder + '</span>');
+			.html('Political Ad Spending Stats for: <span style="background-color: #ffdd00";>' + funder + '</span>');
 		d3.select('#funder_pages_loader').style('display', 'block');
 		d3.select('#demographics_loader').style('display', 'block');
 		d3.select('#timeline_loader').style('display', 'block');
@@ -693,38 +723,10 @@
 		
 		// Scroll to the funder, if mobile
 		if (isMobile) {
-			d3.selectAll('.dropdown-polidashboard').style('display', 'none')
+			// d3.selectAll('.dropdown-polidashboard').style('display', 'none')
 			$([document.documentElement, document.body]).animate({
 				scrollTop: $("#summary").offset().top
 			}, 500);
-
-			// // Create the duplicate dropdown
-			// d3.select('#inner_country_select_2')
-			// 	.html('')
-				
-			// d3.select('#inner_country_select_2')
-			// 	.style('text-align', 'center')
-			// 	// .append('div')
-			// 	// .attr('class', 'country-select')
-			// 	.append('input')
-			// 		.attr('type', 'text')
-			// 		.attr('id', 'duplicateCountry2')
-			// 		.style('border', '1px solid black') // Border style
-			// 		.style('border-radius', '5px')
-					
-			// 		// .on('change', duplicateDropdownChange);
-
-			// $('#duplicateCountry2').countrySelect({
-			// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
-			// 	responsiveDropdown: true,
-			// 	preferredCountries: [],		
-			// 	defaultCountry: country
-			// })
-
-			// $('#duplicateCountry2').change(c => {
-			// 	console.log($("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2)
-			// 	window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry2").countrySelect("getSelectedCountryData").iso2
-			// })
 		} else {
 			d3.select('#summary-time-select').style('display', 'none')
 		}
@@ -794,7 +796,7 @@
 			try {
 				commonData.page_id = p.page_id;
 				performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-					rawMap = new Statemap(data, "chart-container", country, funder);
+					rawMap = new Statemap(data, "chart-container", country, mainFunder, p.page_name);
 				});
 				//drawMap(pageFilter(mapData))
 			} catch (err) {
@@ -866,13 +868,12 @@
 				rawMap = new Statemap(data, "chart-container", country, funder);
 			}
 		} catch (err) {
-			commonData.page_id = p.page_id;
 			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
 				if (prevRawMap) {
 					rawMap = prevRawMap
 					rawMap.draw();
 				} else {
-					rawMap = new Statemap(data, "chart-container", country, funder);
+					rawMap = new Statemap(data, "chart-container", country, mainFunder);
 					prevRawMap = rawMap;
 				}
 			});	
@@ -880,17 +881,15 @@
 		try {
 			drawWordcloud(wordcloudData);
 		} catch (err) {
-			// commonData.page_id = p.page_id;
-			performRequest('/facebook_ads_v2/funder_map', commonData, data => {
-				wordcloudData = data;
-				drawWordcloud(data);
-			});	
+			performRequest('/facebook_ads_v2/funder_word', commonData, data => {
+				console.log(data.result);
+				drawWordcloud(data); 
+			});
 		}
 
 		try {
 			drawSummaryTable(summaryTable);
 		} catch (err) {
-			// commonData.page_id = p.page_id;
 			performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
 				wordcloudData = data;
 				drawSummaryTable(data);
@@ -908,14 +907,19 @@
 		})
 	}
 
+	function formatBound(bound, withSymbol=false) {
+		var symbol = withSymbol ? currencySymbol : '';
+		return symbol + d3.format('.4s')(bound);
+	}
+
 	function spendToText(spend) {
 		// Format spend range
-		return `${currencySymbol + d3.format('.4s')(spend.lower_bound)} - ${currencySymbol + d3.format('.4s')(spend.upper_bound)} Spent`
+		return `<span style="font-weight: 600">${currencySymbol + d3.format('.4s')(spend.lower_bound)} - ${currencySymbol + d3.format('.4s')(spend.upper_bound)}</span> Total Ad Spend`
 	}
 
 	function impressionsToText(impressions) {
 		// Format impression minimum
-		return `More than ${d3.format('.4s')(impressions.lower_bound)} Impressions`
+		return `<span style="font-weight: 600">More than ${d3.format('.4s')(impressions.lower_bound)}</span> Total Impressions`
 	}
 
 	function perturb(y, amount) {
@@ -982,16 +986,128 @@
 		// --- Draw the list of a funder's pages ---
 		
 		// Create the container for the page widget
-		var pageContainers = d3.select(anchor)
-			.html("")
-			.selectAll('pageContainers')
-			.data(data)
-			.enter()
-			.append('div')
-				.attr('class', 'page-container')
+		d3.select('#summary-stats')
+			.style('border', '1px solid #cccccc')
+			.style('border-radius', '5px')
+			.style('padding', '5px')
+			.style('margin', '0px')
+		
+		d3.select('#total_ads')
+			.html(function () {
+				var grandTotal = d3.sum(data, function (d) { return d.total_ads; });
+				return `${grandTotal}`;
+			})
+		
+		d3.select('#total_spend')
+			.html(function () {
+				var spendMinTotal = d3.sum(data, function (d) { return d.spend.lower_bound; });
+				var spendMaxTotal = d3.sum(data, function (d) { return d.spend.upper_bound; });
+				return `${formatBound(spendMinTotal, true)} - ${formatBound(spendMaxTotal, true)}`;
+			})
+		
+		d3.select('#total_impressions')
+			.html(function () {
+				var impressionsTotal = d3.sum(data, function (d) { return d.impressions.lower_bound; });
+				return `${formatBound(impressionsTotal)}+`;
+			})
+		
+		d3.selectAll('.summary-info').style('display', 'inline');
+		d3.selectAll('.lds-ellipsis').style('display', 'none');
 
-		// Create the left column (with the filter button)
+		// .select('div') 
+		// 	.attr('class', 'page-container')
+		// 	.style('text-align', 'center')
+		// 	.html(function () {
+		// 		var firstData = data[0];
+		// 		var grandTotal = d3.sum(data, function (d) { return d.total_ads; });
+		// 		var spendMinTotal = d3.sum(data, function (d) { return d.spend.lower_bound; });
+		// 		var spendMaxTotal = d3.sum(data, function (d) { return d.spend.upper_bound; });
+		// 		var impressionsTotal = d3.sum(data, function (d) { return d.impressions.lower_bound; });
+
+
+
+		// 		return `
+		// 			<p style="padding-left: 8px; padding-right: 4px">
+		// 				<span style="font-weight: 600; font-size: 16px">${grandTotal}</span><br>
+		// 				Total # Advertisements
+		// 			</p>
+		// 			<p style="padding-left: 4px; padding-right: 4px; border-right: 1px solid #cccccc; border-left: 1px solid #cccccc">
+		// 				<span style="font-weight: 600; font-size: 16px">
+		// 					${formatBound(spendMinTotal, true)} - ${formatBound(spendMaxTotal, true)}
+		// 				</span> <br>
+		// 				Total Ad Spend
+		// 			</p>
+		// 			<p style="padding-left: 4px; padding-right: 8px">
+		// 				<span style="font-weight: 600; font-size: 16px">
+		// 					${formatBound(impressionsTotal)}+
+		// 				</span> <br>
+		// 				Total Impressions
+		// 			</p>
+		// 		`;
+		// 	});
+
+		var pageContainers = null
+
 		if (data.length > 1) {
+			d3.select(anchor) // Add a summary
+				.html("")
+
+			// d3.select(anchor).append('div')
+			// 		.style('border', '1px solid #cccccc')
+			// 		.style('border-radius', '5px')
+			// 		.style('padding', '5px')
+			// 		.style('margin-top', '10px')
+			// 	.append('h5')
+			// 		.style('margin-bottom', '10px')
+			// 		.style('text-align', 'center')
+			// 		.html(`
+			// 			Summary Stats for: <span style="color: #ff9a00">${mainFunder}</span> 
+			// 		`)
+			// 	.select(function () {
+        	// 		return this.parentNode; // go back to the first div
+    		// 	}).append('div') 
+			// 		.attr('class', 'page-container')
+			// 		.style('text-align', 'center')
+			// 		.html(function () {
+			// 			var firstData = data[0];
+			// 			var grandTotal = d3.sum(data, function (d) { return d.total_ads; });
+			// 			var spendMinTotal = d3.sum(data, function (d) { return d.spend.lower_bound; });
+			// 			var spendMaxTotal = d3.sum(data, function (d) { return d.spend.upper_bound; });
+			// 			var impressionsTotal = d3.sum(data, function (d) { return d.impressions.lower_bound; });
+
+			// 			return `
+			// 				<p style="padding-left: 8px; padding-right: 4px">
+			// 					<span style="font-weight: 600; font-size: 16px">${grandTotal}</span><br>
+			// 					Total # Advertisements
+			// 				</p>
+			// 				<p style="padding-left: 4px; padding-right: 4px; border-right: 1px solid #cccccc; border-left: 1px solid #cccccc">
+			// 					<span style="font-weight: 600; font-size: 16px">
+			// 						${formatBound(spendMinTotal, true)} - ${formatBound(spendMaxTotal, true)}
+			// 					</span> <br>
+			// 					Total Ad Spend
+			// 				</p>
+			// 				<p style="padding-left: 4px; padding-right: 8px">
+			// 					<span style="font-weight: 600; font-size: 14px">
+			// 						${formatBound(impressionsTotal)}+
+			// 					</span> <br>
+			// 					Total Impressions
+			// 				</p>
+			// 			`;
+			// 		});
+			
+			// d3.select(anchor)
+			// 	.append('hr')
+			// 	.style('margin', '0px')
+			// 	.style('border-top', '1px solid #cccccc')
+
+			pageContainers = d3.select(anchor)
+				.selectAll('pageContainers')
+				.data(data)
+				.enter()
+				.append('div')
+					.attr('class', 'page-container')
+					
+			// Create the left column (with the filter button)
 			var pageLefts = pageContainers.append('div')
 				.attr('class', 'page-left')
 				.style('max-wdith', '90px')
@@ -1004,6 +1120,14 @@
 						showPage(d)
 					})
 		} else {
+			pageContainers = d3.select(anchor)
+				.html("")
+				.selectAll('pageContainers')
+				.data(data)
+				.enter()
+				.append('div')
+					.attr('class', 'page-container')
+
 			var pageLefts = pageContainers.append('div')
 				.style('width', '20px')
 			d3.selectAll('.page_name')
@@ -1028,11 +1152,12 @@
 			.attr('href', function(d) {return (`https://www.facebook.com/${d.page_id}`)})
 			.attr('target', '_blank')
 			.style('text-decoration', 'underline')
+			.style('font-size', '14px')
 			.text(function(d) {return d.page_name})
 
 		// Create the number of ads
 		pageRights.append('p')
-			.text(function(d){return `${d.total_ads} Unique Ads `})
+			.html(function(d){return `<span style="font-weight: 600">${d.total_ads}</span> Total # Advertisements `})
 			.append('a')
 				.attr('href', function(d) {return `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&view_all_page_id=${d.page_id}&sort_data[direction]=desc&sort_data[mode]=relevancy_monthly_grouped&search_type=keyword_unordered&media_type=all`})
 				.attr('target', '_blank')
@@ -1040,7 +1165,7 @@
 
 		// Create the spend range and tooltip explanation
 		pageRights.append('p')
-			.text(function(d){return spendToText(d.spend)})
+			.html(function(d){return spendToText(d.spend)})
 			.attr('class', 'p-tip')
 			.append('div')
 				.attr('class', 'tiptext')
@@ -1048,7 +1173,7 @@
 
 		// Create the number of impressions range and tooltip explanation
 		pageRights.append('p')
-			.text(function(d) {return impressionsToText(d.impressions)})
+			.html(function(d) {return impressionsToText(d.impressions)})
 			.attr('class', 'p-tip')
 			.append('div')
 			.attr('class', 'tiptext')
@@ -1195,6 +1320,7 @@
 			.append("svg")
 				.attr("width", width + margin.left + margin.right)
 				.attr("height", height + margin.top + margin.bottom)
+				.attr("id", "main-demographics-svg")
 			.append("g")
 				.attr("transform",
 					"translate(" + margin.left + "," + margin.top + ")");
@@ -1315,29 +1441,47 @@
 
 		// Function to be called when you mouseover a dot
 		var highlight = function(d) {
+
 			d3.selectAll('.ad_'+d.ad)
 				.transition()
-				.duration(200)
+				.duration(50)
 				.attr('r', 6)
 				.style('opacity', 1)
 				.style('fill', "black")
-			console.log(d)
+		}
+
+		var highlightTooltip = function(d) {
 			var tooltipText = `
-				<span class='maptip-label' style="margin-bottom:5px">Demographic:</span>  ${d.demographic}<br><div style="margin-bottom: 4px"></div>
-				<span class='maptip-label' style="margin-bottom:5px">Audience %:</span>  ${d3.format(".1%")(d.percentage)}<br><div style="margin-bottom: 4px"></div>
-				<span class='maptip-label' style="margin-bottom:5px">Impressions:</span>  ${d.impressions}<br><div style="margin-bottom: 4px"></div>
-				<span class='maptip-label'>Spend Range:</span> ${currencySymbol + d.spend}
+				<p style="margin-bottom: 5px"><span class="tip-yellow">${d3.format(".1%")(d.percentage)}</span> of the audience for this ad are <span class="tip-yellow">${d.demographic}</span></p>
+				<p style="margin-bottom: 5px">The ad had <span class="tip-yellow">${d.impressions}</span> impressions and cost somewhere between <span class="tip-yellow">${currencySymbol + d.spend}</span></p>
+				<p style="margin-bottom: 5px">Click the dot to see the ad.</p>
 			`;
 
-
+			// console.log(d3.event.pageY)
 			var coords = d3.mouse(this);
 
 			// Calculate tooltip position based on the mouse position
-			var xPos = coords[0] + 80; // Adjust the offset as needed
-			var yPos = coords[1];
+			// console.log(coords)
+			var xPos = coords[0] + 100; // Adjust the offset as needed
+			var yPos = coords[1] - 20;
+
+			var parentElement = document.getElementById("demographics-dropdown");
+			var childElement = document.getElementById("demographics");
+
+			// Get the bounding rectangles of both elements
+			var parentRect = parentElement.getBoundingClientRect();
+			var childRect = childElement.getBoundingClientRect();
+
+			// Calculate the offset of the child element relative to its parent
+			var offsetX = childRect.left - parentRect.left;
+			var offsetY = childRect.top - parentRect.top;
+
+			// console.log("OffsetX:", offsetX);
+			// console.log("OffsetY:", offsetY);
+
 			tooltip.html(tooltipText)
-				.style("left", xPos + "px")
-				.style("top", yPos + "px")
+				.style("left", (xPos + offsetX) + "px")     
+				.style("top", (yPos + offsetY) + "px")
 				.style('visibility', 'visible');
 		}
 
@@ -1373,8 +1517,9 @@
 					.style('fill', color)
 					.style('opacity', 0.2)
 					.style('cursor', 'pointer')
+					.on("mouseenter", highlightTooltip)
 					.on("mouseover", highlight)
-					.on("mouseleave", doNotHighlight)
+					.on("mouseout", doNotHighlight)
 					.on("click", viewAd)
 		} else {
 			// If there are too many dots, show a violin plot instead of dots
@@ -1590,8 +1735,14 @@
 		cloudTable.draw(true);
 	}
 
-	d3.selectAll('.dropdown-timeframe')
-		.html(`<i class="fas fa-calendar-alt"></i> ${format(startDay)} - ${format(end)}`);
+	if (isMobile) {
+		mobileFormat = d3.timeFormat('%m/%d/%Y');
+		d3.selectAll('.dropdown-timeframe')
+			.html(`<i class="fas fa-calendar-alt"></i> ${mobileFormat(startDay)} - ${mobileFormat(end)}`);
+	} else {
+		d3.selectAll('.dropdown-timeframe')
+			.html(`<i class="fas fa-calendar-alt"></i> ${format(startDay)} - ${format(end)}`);
+	}
 
 	
 </script>
