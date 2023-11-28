@@ -277,12 +277,21 @@ function quickDateFilter(start, end) {
     return {
         '$and': [
             {
-                'first_collected': {
-                '$lte': endTime
-                }
+                '$or': [
+                    {
+                        'delivery_start_time': {
+                            '$gte': startTime
+                        }
+                    },
+                    {
+                        'first_collected': {
+                            '$gte': startTime
+                        }
+                    }
+                ]
             }, {
                 'latest_collected': {
-                    '$gte': startTime
+                    '$lte': endTime
                 }
             }
         ]
@@ -445,7 +454,7 @@ function generateFunderTimeline(start, end, funder, country, res) {
         }, {
             '$project': {
                 'spend': 1, 
-                'first_collected': 1, 
+                'first_collected': '$delivery_start_time', 
                 'latest_collected': 1,
                 'page_id': 1
             }

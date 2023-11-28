@@ -23,11 +23,11 @@ def fetch_ads(db, country, funding_entity, page_id, start_time, end_time):
     ads = None
     if page_id is not None and funding_entity is None:
         ads = ads_collection.find({"page_id": page_id,
-                                   "first_collected": {"$gte": start_time},
+                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
                                    "latest_collected": {"$lte": end_time}})
     if page_id is None and funding_entity is not None:
         ads = ads_collection.find({"funding_entity": funding_entity,
-                                   "first_collected": {"$gte": start_time},
+                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
                                    "latest_collected": {"$lte": end_time}})
     # convert to a list of dictionaries
     ads = list(ads)

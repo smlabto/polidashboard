@@ -13,11 +13,11 @@
 				About PoliDashboard
 			</h3>
 			<p>
-				<span style="font-style: italic;">Making the invisible visible</span> — <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics. The data is automatically updated every four hours via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+				<span style="font-style: italic;">Making the invisible visible</span> — <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics. The data is automatically updated every day via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
 			</p>
 			<p>
 				<img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 8em; width: auto; float: left; padding-right: 10px; padding-bottom: 8px;">
-				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific modules are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. <br><br><span style="font-size: 16px;">See the <a href="https://polidashboard.com/about/" target="_blank">About page</a> for up-to-date information about PoliDashboard and our various academic and civic partners.</span>
+				The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific dashboards are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. <br><br><span style="font-size: 16px;">See the <a href="https://polidashboard.com/about/" target="_blank">About page</a> for up-to-date information about PoliDashboard and our various academic and civic partners.</span>
 			</p>
 		</div>
 
@@ -80,15 +80,19 @@
 					<div class="dropdown-timeframe"></div>
 					<!-- ### Start of Pages Funded Widget -->
 					<div class="dropdown" style="z-index: 15;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-pages"></p>
+								<!-- <hr style="border-top: 1px solid #6c6c6c"> -->
 								<ul>
-									<li>By default, the dashboard will show ads statistics for all social issues, elections or politics related ads from every Facebook page funded by an advertiser.</li>
-									<li>If an advertiser is running ads from more than one Facebook page, click the “Filter by” icon next to a page on the list to filter ads associated with only that Facebook page.</li>
-									<li>To advertise on Meta platforms, advertisers must first create at least one Facebook Page.</li>
-									<li>Meta’s advertisers can set up and control multiple Facebook Pages.</li>
+									<li>To advertise on Meta platforms, advertisers must first create at least one Facebook Page. Meta’s advertisers can set up and control multiple Facebook Pages.</li>
+									<li>By default, the dashboard will show ads statistics for all social issues, elections or politics related ads from every Facebook page(s) funded by an advertiser.</li>
+									<li>If you want to see stats from a specific Facebook page funded by an advertiser, click on the “Filter by”icon.</li>
 								</ul>
 							</div>
 						</div>
@@ -98,10 +102,10 @@
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"> -->
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Facebook Pages Funded by -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div id="tiptext-pages" class="tiptext"></div>
-						</div>
+						</div> -->
 					</h3></h4>
 					<!-- <h4 id="pages_subtitle" class="advertiser_name"></h4> -->
 					<h5 id="funder_pages_subtitle" class="summary_subtitle page_name"> Filter by a page</h5>
@@ -133,15 +137,32 @@
 			<div class="dropdown" style="z-index: 30;">
 				<button class="dropdown-btn widget-title"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 2. Total Number of Active Ads Per Day Funded by: <span class="sub_advertiser_name">___</span></button>
 				<div class="dropdown-content">
+					<div class="dropdown" style="z-index: 15;">
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-timeline"></p>
+								<!-- <hr style="border-top: 1px solid #6c6c6c"> -->
+								<ul>
+									<li>Hover over any bar on the chart to see the total number of ads funded by this advertiser on that day.</li>
+								</ul>
+							</div>
+						</div>
+					</div>	
+
 					<div class="dropdown-timeframe"></div>
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Total Number of Active Ads Per Day -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div class="tiptext" id="tiptext-active">
 								This chart shows the total number of ads that were active for each day of the selected timeframe.
 							</div>
-						</div>
+						</div> -->
 					</h3>
 
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
@@ -177,7 +198,7 @@
 				<div class="dropdown-content">
 					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" id="map-dropdown" style="z-index: 15;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						<!-- <button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
@@ -208,12 +229,48 @@
 
 								</ul>
 							</div>
+						</div> -->
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-map"></p>
+								<ul>
+									<li>Hover over any location on the map to view what percentages of an advertiser’s ad audience came from that location.</li>
+									<li>For every social issues, elections or politics related ad, Meta provides a detailed breakdown of the location(s) of the ad’s audience as a percentage of the total audience. For example, for a hypothetical Ad #1, Meta will report what percentage of the total audience came from each of the various locations where the ad was shown.</li>
+									<li>Meta assigned people’s location based on where they or their device connected to the internet and/or based on information in their account profile.</li>
+									<li>
+										To estimate the geographic reach of an advertiser’s ad(s) for a selected date range, we calculate the average percentage of the total audience, broken down by location within a country. Specifically:
+										<ol>
+											<li>We sum up the audience percentages for all ads by the advertiser for each location within a country;</li>
+											<li>We then divide this sum by the total number of ads shown to people from each location.</li>
+										</ol>
+									</li>
+									<li>
+										For example:
+										<ul>
+											<li>Lets say an advertiser has 2 ads on Facebook</li>
+											<ul>
+												<li>For Ad #1: 50% of the total audience came from California, and</li>
+												<li>For Ad #2: 20% of the total audience came from California.</li>
+												<li>So 50% + 20% = 70%</li>
+												<li>70%/2 ads = 35%</li>
+												<li>This 35% represents the average-percentage of the audience for all ads by this advertiser from this location for the selected date range and is the percentage figure displayed on the map for this location.</li>
+											</ul>
+										</ul>
+									</li>
+								</ul>
+							</div>
 						</div>
+						
 					</div>	
 
 					<h3 class="widget-title" id="page-scroll">
 						<!-- Where These Ads Were Shown -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div id="tiptext-map" class="tiptext">
 								This module shows where Meta ads by this funder/page were shown.
@@ -222,7 +279,7 @@
 								<br><br>
 								Ads for which no regional data is available are omitted.
 							</div>
-						</div>
+						</div> -->
 					</h3>
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
 					<!-- Map loader icon -->
@@ -259,18 +316,22 @@
 				<div class="dropdown-content" id="demographics-dropdown">
 					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-demographic"></p>
 								<ul>
+									<li>New to box plot? Here’s a more detailed <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer on box plot charts</a></li>
 									<li>Each dot in the chart represents one ad.</li>
-									<li>Hover over a dot to see the demographic breakdown by gender and age of people who were shown that particular ad — as denoted by ALL of the corresponding black dots that appear in the chart.</li>
-
-									<li>If all the other black dots that appear — other than the dot you hovered over —  are at or close to the 0% mark on the x-axis, it suggests that particular ad was shown only (or mostly) to that specific demographic group and no other.</li>
+									<li>Hover over a dot to see what percentage of the audience of an ad came from that particular demographic group, how many impressions it had and how much it cost the advertiser to acquire that audience.</li>
+									<li>If that ad was shown to people from other demographic groups, additional black dots will appear along the X axis in the chart for those other demographic groups.</li>
+									<li>If all of the other black dots that appear, other than the dot you hovered over, are at or close to the 0% mark on the x-axis, it suggests that particular ad, the dot you hovered over, was shown/targeted only (or mostly) to that specific demographic group and no other.</li>
 									<li>Click on any dot to see the actual ad and additional stats about that specific ad (Link will open in a new tab and will take you to Meta’s Ad Library)</li>
-									<li>Note: If more than 1000 ads are visible, the box plot chart will be hidden and replaced with a violin plot to save computing resources. If you want to see individual ads from this advertiser, select a shorter time frame or use the “Filters by” feature.</li>
-									<li>New to box plot? Here’s a more detailed <a href="https://socialmedialab.ca/2021/09/03/improving-on-the-facebook-ad-library/" target="_blank">primer on box plot charts.</a></li>
+									<li>Note: If more than 1000 ads are visible, the interactive  box plot chart will be hidden and replaced with a violin plot to save computing resources. If you want to see individual ads from this advertiser, select a shorter time frame or use the “Filter by” feature.</li>
 								</ul>
 							</div>
 						</div>
@@ -278,18 +339,14 @@
 
 					<h3 class="widget-title">
 						<!-- Who Was Shown These Ads -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div id="tiptext-demographic" class="tiptext">
-								<!-- This module shows the age and gender breakdowns of people who saw ads by this funding entity - each dot represents one ad.
-								<br><br>
-								Hover over a dot to see that ad's distribution across all demographics, and click to see that ad's summary (ad will open in a new tab). -->
-								<!-- This module shows the age and gender of users who these ads (by this funding entity) were shown to - each dot represents one ad. -->
 								This module shows the age and gender of users who were shown ads from this funder/FB page for the selected timeframe - each dot represents one ad.
 								<br><br>
 								Hover over a dot to see that ad's distribution across all demographics, and click on a dot to see summary stats about the ad (ad will open in a new tab).
 							</div>
-						</div>
+						</div> -->
 					</h3>
 
 					<!-- <h4 id="pages_subtitle" class="summary_subtitle advertiser_name"></h4> -->
@@ -330,13 +387,30 @@
 				<button class="dropdown-btn widget-title"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; 5. Most Frequently-used Phrases in Ads Funded by: <span class="sub_advertiser_name">___</span></button>
 				
 				<div class="dropdown-content">
+					<div class="dropdown" style="z-index: 15;">
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-wordcloud"></p>
+								<!-- <hr style="border-top: 1px solid #6c6c6c"> -->
+								<ul>
+									<li>The size of the font in the word cloud corresponds to the number of ads by this advertiser that uses the phrase  in the selected date range.</li>
+								</ul>
+							</div>
+						</div>
+					</div>	
+
 					<div class="dropdown-timeframe"></div>
 					<h3 class="widget-title">
 						<!-- Where These Ads Were Shown -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div id="tiptext-wordcloud" class="tiptext"></div>
-						</div>
+						</div> -->
 					</h3>
 
 					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
@@ -380,12 +454,16 @@
 				<div class="dropdown-content">
 					<div class="dropdown-timeframe"></div>
 					<div class="dropdown" style="z-index: 15;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p id="tiptext-frequency"></p>
 								<ul>
-									<li>Click on the links in the table to view examples of ads funded by this advertiser that used this ad copy. (Link will open in a new tab and will launch a search in Meta's Ad Library for ads that contain the given ad copy.)</li>
+									<li>Click on the links in the table to view examples of ads funded by this advertiser that uses this ad copy. (Link will open in a new tab and will launch a search in Meta's Ad Library for ads that contain the given ad copy.)</li>
 									<li>Note: the number of ads shown in the table is approximate and might be lower/higher than what might appear in Meta’s Ad Library.</li>
 								</ul>
 							</div>
@@ -394,15 +472,13 @@
 
 					<h3 class="widget-title">
 						<!-- Where These Ads Were Shown -->
-						<div class="tip">
+						<!-- <div class="tip">
 							<img src="/images/info.png">
 							<div id="tiptext-frequency" class="tiptext"></div>
-						</div>
+						</div> -->
 					</h3>
 
-					<br>
 					<h5 id="pages_subtitle" class="summary_subtitle page_name"></h5>
-					<br>
 
 					<div class="dropdown-content">
 						<table class="table" id="infoTable">
@@ -711,19 +787,22 @@
 			.text(funder);
 		
 		d3.select('#tiptext-pages')
-			.html('This module shows a list of all Facebook Page(s) funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
+			.html('This module shows a list of all Facebook Page(s) funded by: <span style="background: #fff651;">' + funder + '</span> for the selected date range.')
+		
+		d3.select('#tiptext-timeline')
+			.html('This chart shows the total number of active ads funded by: <span style="background: #fff651;">' + funder + '</span> for each day of the selected date range.')
 
 		d3.select('#tiptext-active')
 			.html('This chart shows the total number of active ads funded by: <span style="color: #facc15;">' + funder + '</span> for each day of the selected date range.<br><br>Hover over any data point on the chart to see the total number of ads funded by this advertiser on that day.')
 
 		d3.select('#tiptext-demographic')
-			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.')
+			.html('This module shows the demographics (gender and age) of people who were shown ads funded by: <span style="background: #fff651;">' + funder + '</span> for the selected date range.')
 		
 		d3.select('#tiptext-wordcloud')
-			.html('This module shows the top 100 most frequently-used phrases in the ad copy (aka… primary text field) of ads funded by: <span style="color: #facc15;">' + funder + '</span> for the selected date range.<br><br>In the word cloud, the larger the text, the more frequently it appeared in ads funded by this advertiser.')
+			.html('This module shows the top 100 most frequently-used phrases in the ad copy (aka… primary text field) of ads funded by: <span style="background: #fff651;">' + funder + '</span> for the selected date range.<br><br>In the word cloud, the larger the text, the more frequently it appeared in ads funded by this advertiser.')
 		
 		d3.select('#tiptext-frequency')
-			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="color: #facc15;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
+			.html('This module shows the top 100 most frequently-used ad copies used by: <span style="background: #fff651;">' + funder + '</span> in their ads for the selected date range. It also shows the estimated number of ads where this particular ad copy appeared.')
 		
 		// Scroll to the funder, if mobile
 		if (isMobile) {

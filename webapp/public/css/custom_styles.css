@@ -987,6 +987,12 @@ h3.widget-title, h4.summary_subtitle {
     cursor: pointer;
 }
 
+.dropdown-navigation-btn {
+	background-color: #6c6c6c !important;
+	display: flex;
+	align-items: center;
+}
+
 /* Dropdown content */
 .dropdown-content {
     display: block;
@@ -1238,4 +1244,13 @@ hr {
 .country-select .selected-flag .arrow {
 	right: none;
 	left: 36px;
+}
+
+.info-icon {
+	vertical-align: middle;
+}
+
+.info-icon img {
+	width: 1.2em;
+	height: 1.2em;
 }

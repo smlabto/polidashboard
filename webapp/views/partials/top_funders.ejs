@@ -40,16 +40,24 @@
 			<div class="dropdown-content">
 			
 				<div id="funder_table">
-					<div class="dropdown" style="z-index: 15; margin-bottom: 10px;">
-						<button style="background-color: #6c6c6c" class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp;Navigation Instructions</button>
-						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+					<div class="dropdown" style="z-index: 15;">
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px; margin-bottom: 0;">
 							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p>This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.</p>
 								<ul>
+									<li>For privacy and competitive reasons, Meta only reports ad spend - the cost of an ad -  as a range with a minima and maxima for each ad.</li>
 									<li>
 										Click on any advertiser to see:
 										<ul>
 											<li>What Facebook page(s) they are funding</li>
-											<li>The ads they are running</li>
+											<li>What ads they are running</li>
+											<li>How much money they are spending on ads per Facebook page</li>
+											<li>How many ads they are running each day</li>
 											<li>Where geographically their ads are being shown</li>
 											<li>What demographic groups they are targeting</li>
 											<li>What is being said in their ads</li>
@@ -60,15 +68,8 @@
 								</ul>
 							</div>
 						</div>
-					</div>	
-					<div style="font-size: 16px">
-						<div class="tip" style="padding-bottom: 21px;">
-							<img src="/images/info.png">
-							<div class="tiptext">
-								This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.
-							</div>
-						</div>
 					</div>
+					<br>
 					<div>
 						<form id="heatmap_filter_form" onsubmit="return false">
 							<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
