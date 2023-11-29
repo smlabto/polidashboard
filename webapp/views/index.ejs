@@ -24,7 +24,7 @@
 	<script src="/js/countrySelect.min.js"></script>
     <script type="text/javascript" src="/js/moment.min.js"></script>
     <script type="text/javascript" src="/js/daterangepicker.min.js"></script>
-
+	
 	<!-- icons -->
 	<script src="https://kit.fontawesome.com/44a34ac94f.js"></script>
 
@@ -38,14 +38,27 @@
     <link href="/css/custom_styles.css" media="screen" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/css/daterangepicker.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/c3.min.css" />
-
+	
 	<!-- General Scripts -->
     <script src="/js/general.js"></script>
 
+	<!-- DataTables -->
+	<script src="/js/jquery.dataTables.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	-->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<!-- <script src="https://cdn.datatables.net/1.11.6/js/dataTables.bootstrap.min.js"></script> -->
+	
 	<!-- Responsive Menu -->
 	<script src="/js/jquery.slicknav.min.js"></script>
+	<script src="https://unpkg.com/topojson@3"></script>
     <script src="/js/d3.v5.min.js"></script>
     <script src="/js/c3.min.js"></script>
+	<!-- <script src="https://raw.githubusercontent.com/timdream/wordcloud2.js/gh-pages/src/wordcloud2.js"></script> -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.2/wordcloud2.min.js" integrity="sha512-f1TzI0EVjfhwKkLEFZnu8AgzzzuUBE9X4YY61EoQJhjH8m+25VKdWmEfTJjmtnm0TEP8q9h+J061kCHvx3NJDA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.7/d3.layout.cloud.min.js" integrity="sha512-hStpcyoo0rWEs2cG9t9yrzAXWstzZOjOvufYbBCIMvX4YG8kw7pU6/yUIrLup1COQQalrxels1cbJ/+X7GdYEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<!-- <script src="https://cdn.ssjsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script> -->
 
 	<script>
 	  
@@ -121,33 +134,31 @@
 </head>
 
 <body>
-	<div class="body-wrap">
+	<div class="body-wrap" style="background-color: #212121;">
 		<!--container-->
-		<div class="container">
-			<div class="content">
-				<header>
+		<nav class="navbar" style="background-color: #121212;">
+			<header>
+				<div class="navbar-header">
 					<a href="https://polidashboard.com/">
 						<img alt="polidashboard" src="/images/main-logo.png" id="main-logo">
 					</a>
-				</header>
-				
-				<!--menu-->
-				<div class="row">
-						<div class="col-sm-12">
-							<div class="menu boxed">
-								<ul class="pull-left">
-									<li>
-										<a href="https://ads.polidashboard.com/facebook_ads_v2"><span>An Election Transparency Initiative</span></a>
-									</li>
-								</ul>
-								<ul class="pull-right">
-									<li>
-										<a href="https://polidashboard.com/about/"><span>About</span></a>
-									</li>
-								</ul>
-							</div>
-						</div>
 				</div>
+				<div class="navbar-collapse" id="nav-items" style="align-self: center;">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a class="navbar-item" href="https://polidashboard.com/about/" target="_blank"><i class="fas fa-receipt"></i> <span>About</span></a>
+						</li>
+						<li>
+							<a class="navbar-item" href="https://github.com/smlabto/polidashboard" target="_blank"><i class="fab fa-github"></i> Open Source</a>
+						</li>
+					</ul>
+				</div>
+			</header>
+		</nav>
+		
+		<div class="container">
+			<div class="content" style="padding-top: 0px;">
+				
 				
 				<%- include(child) %>
 

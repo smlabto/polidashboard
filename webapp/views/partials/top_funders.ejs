@@ -1,105 +1,148 @@
 <div class="widget-container boxed" style="overflow-y: auto;">
 	<div class="inner">
-
-		<div class="facebook_nav_light p-tip">
-			<span class="facebook_date">
-			</span>
-			<div class="tiptext">
-				Click to edit time frame
-			</div>
-		</div>
-		<h3 class="widget-title">
-			Political Ads across Meta's Platforms
-			<div class="tip">
-				<img src="/images/info.png">
-				<div class="tiptext">
-					This module shows the most active advertisers (individuals or organizations) currently running ads about social issues, elections or politics across Facebook products for the selected country.
+		<div style="text-align: center;">
+			<div id="inner_country_select"></div>
+			<br />
+			<div style="display: inline-block" id="date-dropdown">
+				<div class="date_picker time-select" style="display: flex;" >
+					<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+						<div style="display: flex; margin: 10px; margin-right: 5px;">
+							<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+						</div>
+					</div>
+					<span class="facebook_date"></span>
 				</div>
 			</div>
-		</h3>
-		<div class="navigation-instructions" id="left-navigation-instructions">
-			<button class="exit-button" onclick="d3.select('#left-navigation-instructions').remove()"><i class="fas fa-times"></i></button>
-			<strong>Navigation Instructions</strong>
-			<ul>
-				<li>Best viewed on a desktop browser like Chrome or Firefox.</li>
-				<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
-				<li>
-					Click on a funding entity in the list to see:
-					<ul>
-						<li>What Facebook pages they fund</li>
-						<li>The ads that they are running</li>
-						<li>Where their ads are being shown and to whom</li>
-					</ul>
-				</li>
-			</ul>
 		</div>
-		<div class="row p-0">
-			<div class="col-sm-6">
-			  <div class="row">
-				<div class="infographic_box">
-				  <h3>
+
+		<br>
+
+		<div style="display: flex;">
+			<div class="infographic_box">
+				<h3>
 					<i class="fas fa-users red"></i>
 					<span class="total_advertisers_replace"></span>
-				  </h3>
-				  <p>Total Advertisers</p>
-				</div>
-			  </div>
+				</h3>
+				<p>Total # of Advertisers</p>
 			</div>
-			<div class="col-sm-6">
-				<div class="row">
-				  <div class="infographic_box">
-					<h3>
-						<i class="fas fa-layer-group red"></i>
-					  	<span class="total_advertisements_replace"></span>
-					</h3>
-					<p>Total Advertisements</p>
-				  </div>
+			<div class="infographic_box">
+				<h3>
+					<i class="fas fa-layer-group red"></i>
+					<span class="total_advertisements_replace"></span>
+				</h3>
+				<p style="padding-right: 10px;">Total # of Advertisements</p>
+			</div>
+		</div>
+		
+		<br>
+		<div class="dropdown" style="z-index: 15;">
+			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
+			<div class="dropdown-content">
+			
+				<div id="funder_table">
+					<div class="dropdown" style="z-index: 15;">
+						<button class="dropdown-btn dropdown-navigation-btn widget-title">
+							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+						</button>
+						
+						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px; margin-bottom: 0;">
+							<div class="navigation-instructions" id="right-navigation-instructions">
+								<p>This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.</p>
+								<ul>
+									<li>For privacy and competitive reasons, Meta only reports ad spend - the cost of an ad -  as a range with a minima and maxima for each ad.</li>
+									<li>
+										Click on any advertiser to see:
+										<ul>
+											<li>What Facebook page(s) they are funding</li>
+											<li>What ads they are running</li>
+											<li>How much money they are spending on ads per Facebook page</li>
+											<li>How many ads they are running each day</li>
+											<li>Where geographically their ads are being shown</li>
+											<li>What demographic groups they are targeting</li>
+											<li>What is being said in their ads</li>
+										</ul>
+									</li>
+									<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
+									<li>Best viewed on a desktop browser or as a desktop site on mobile.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<br>
+					<div>
+						<form id="heatmap_filter_form" onsubmit="return false">
+							<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
+						</form>
+					</div>
+					<div class="second-thead">
+						Ads Spending Range (<%= currency %>) 
+					</div>
+					<table id="top_funders" class="heatmap">
+						<colgroup>
+							<col  />
+							<col style="width:28px" />
+							<col class="box_width" />
+							<col class="box_width" />
+							<col class="box_width" />
+							<col class="box_width" />
+							<col class="box_width" />
+						</colgroup>
+						<thead>
+							<tr id="top_funders_legend">
+								<th class="key" colspan="2">Advertisers</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+					</table>
+					<div class="loader red" id="top_funders_loader">
+						<div class="lds-grid">
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+						</div>
+					</div>
 				</div>
-			  </div>
-		</div>
-		<form id="heatmap_filter_form" onsubmit="return false">
-			<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
-		</form>
-		<div class="second-thead">
-			Ad Spend Range (<%= currency %>)
-		</div>
-		<table id="top_funders" class="heatmap">
-			<colgroup>
-				<col  />
-				<col style="width:28px" />
-				<col class="box_width" />
-				<col class="box_width" />
-				<col class="box_width" />
-				<col class="box_width" />
-				<col class="box_width" />
-			</colgroup>
-			<thead>
-				<tr id="top_funders_legend">
-					<th class="key" colspan="2">Funding Entities</th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-		<div class="loader red" id="top_funders_loader">
-			<div class="lds-grid">
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
+				<h3 id="funder_error" style="text-align: center"></h3>
 			</div>
 		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
+	// Create the duplicate dropdown
+	d3.select('#inner_country_select')
+		.style('text-align', 'center')
+		// .append('div')
+		// .attr('class', 'country-select')
+		.append('input')
+			.attr('type', 'text')
+			.attr('id', 'duplicateCountry')
+			.style('border', '1px solid black') // Border style
+    		.style('border-radius', '5px')
+			.style('font-size', '14px');
 
+
+	$('#duplicateCountry').countrySelect({
+		onlyCountries: <%- JSON.stringify(validCountries) %>,
+		responsiveDropdown: true,
+		preferredCountries: [],		
+		defaultCountry: country
+	})
+
+	$('#duplicateCountry').change(c => {
+		console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
+		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
+	})
+	
 
 	const fbStartDay = <%- JSON.stringify(fbStartDay) %>
 	const fbEndDay = <%- JSON.stringify(fbEndDay) %>
@@ -126,7 +169,8 @@
 				// Organize the list of spend ranges into the 2D matrix for the heatmap
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].funding_entity == null) {
-						data[i].funding_entity = 'No funding entity given'
+						continue;
+						// data[i].funding_entity = 'No funding entity given'
 					}
 					var row = [data[i].funding_entity, 0, 0, 0, 0, 0, 0]
 					for (var j = 0; j < data[i].spends.length; j++) {
@@ -147,9 +191,17 @@
 				d3.select('.total_advertisements_replace')
 					.text(d3.format(',')(grandTotal))
 				
-				var heatmap = new Heatmap(cleaned, colorSchemes.red, 'top_funders', spendRanges)
+				try {
+					var heatmap = new Heatmap(cleaned, colorSchemes.red, 'top_funders', spendRanges);
+					$('#top_funders_loader').remove()
+					d3.select('#funder_table').style('display', 'block');
+					d3.select('#funder_error').style('display', 'none');
+				} catch (error) {
+					d3.select('#funder_table').style('display', 'none')
+					d3.select('#funder_error').style('display', 'block');
+					d3.select('#funder_error').text('No data available for this country + date range.')
+				}	
 
-				$('#top_funders_loader').remove()
 			}
 		)
 	}
@@ -186,7 +238,7 @@
 		var minDate = moment(<%- JSON.stringify(firstDay) %>, 'DD-MM-YYYY')
 
 		$(function() {
-			$('.facebook_date').daterangepicker({
+			$('.date_picker').daterangepicker({
 				opens: 'right',
 				startDate: startDate,
 				endDate: endDate,
