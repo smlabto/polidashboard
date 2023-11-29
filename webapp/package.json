@@ -1,9 +1,15 @@
 {
   "dependencies": {
+    "d3-composite-projections": "^1.4.0",
+    "datatables.net": "^1.13.6",
+    "datatables.net-dt": "^1.13.6",
+    "dotenv": "^16.3.1",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "mongoose": "^6.0.7",
+    "node-fetch": "^3.3.2",
     "nodemon": "^2.0.12",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "wordcloud": "^1.2.2"
   }
 }

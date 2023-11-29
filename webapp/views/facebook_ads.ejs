@@ -32,22 +32,43 @@
 
 	const country = <%- JSON.stringify(country) %>
 
-	d3.select('header')
-		.append('input')
-		.attr('type', 'text')
-		.attr('id', 'country')
+	// d3.select('header')
+	// 	.append('input')
+	// 	.attr('type', 'text')
+	// 	.attr('id', 'country')
 
-	$('#country').countrySelect({
+	// $('#country').countrySelect({
+	// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
+	// 	responsiveDropdown: true,
+	// 	preferredCountries: [],		
+	// 	defaultCountry: country
+	// })
+	
+	// $('#country').change(c => {
+	// 	window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
+	// })
+
+    // Create the duplicate dropdown
+    d3.select('#inner_country_select')
+		// .append('div')
+		// .attr('class', 'country-select')
+		.append('input')
+			.attr('type', 'text')
+			.attr('id', 'duplicateCountry');
+			// .on('change', duplicateDropdownChange);
+
+	$('#duplicateCountry').countrySelect({
 		onlyCountries: <%- JSON.stringify(validCountries) %>,
 		responsiveDropdown: true,
 		preferredCountries: [],		
 		defaultCountry: country
 	})
-	
-	$('#country').change(c => {
-		window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
+
+	$('#duplicateCountry').change(c => {
+		console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
+		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
 	})
-	
+
 </script>
 
 
@@ -57,24 +78,18 @@
 
 <div class="row">
 	<div class="col-sm-6">
-		<% if (fs.existsSync("views/partials/lang/" + country + "_top_funders.ejs")) { %>
+		<%- include('partials/top_funders') %>
+		<!-- <% if (fs.existsSync("views/partials/lang/" + country + "_top_funders.ejs")) { %>
 			<%- include("partials/lang/" + country + "_top_funders"); %>
 		<% } else { %>
 			<%- include('partials/top_funders') %>
-		<% } %>
-	</div>
-	<div class="col-sm-6">
-		<% if (fs.existsSync("views/partials/lang/" + country + "_summary.ejs")) { %>
-			<%- include("partials/lang/" + country + "_summary"); %>
-		<% } else { %>
-			<%- include('partials/summary') %>
-		<% } %>
-
-		<% if (fs.existsSync("views/partials/footnotes/" + country + ".ejs")) { %>
-			<%- include("partials/footnotes/" + country); %>
-		<% } %>
+		<% } %> -->
 	</div>
 	<%- include('partials/heatmap') %>
+	<div class="col-sm-6">
+		<%- include('partials/statemap') %> 
+		<%- include('partials/summary') %>
+	</div>
 </div>
 
 <script>

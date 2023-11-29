@@ -1,7 +1,15 @@
+import os
 from fb_ads_library_api import FbAdsLibraryTraversal
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import pymongo
+from time import sleep
 import sys
+
+api_key = os.environ.get("FACEBOOK_API_KEY")
+
+if not api_key:
+    print("API key not set. Please set the FACEBOOK_API_KEY environment variable.")
+    sys.exit(1)
 
 to_dt = lambda text: datetime.strptime(
         text,
@@ -11,7 +19,6 @@ to_dt = lambda text: datetime.strptime(
 db = pymongo.MongoClient()['polidashboard']
 
 def update_ad(ad, country):
-
     doc = {
         '_id': ad['id'],
         'creation_time': to_dt(ad['ad_creation_time'])
@@ -48,6 +55,15 @@ def update_ad(ad, country):
         'latest_collected': datetime.now()
     }
 
+    # delivery_by_region won't always exist within the document, so we need to check for it
+    delivery_by_region = {}
+    if 'delivery_by_region' in ad:
+        for reg in ad['delivery_by_region']:
+            delivery_by_region[reg['region']] = float(reg['percentage'])
+        doc['delivery_by_region'] = delivery_by_region
+    else:
+        doc['delivery_by_region'] = None
+        
     db['facebook_ads_' + country].update_one({
         '_id': doc['_id']
     }, {
@@ -70,16 +86,37 @@ def update_audiences(ad, country):
     if 'demographic_distribution' in ad:
         for audience in ad['demographic_distribution']:
             db['facebook_audiences_' + country].update_one({
-                '_id': {
-                    'age': audience['age'],
-                    'gender': audience['gender'],
-                    'ad': ad['id']
-                },
+                '_id': ad['id'],
             }, {
-                '$set': {
-                    'percentage': float(audience['percentage'])
+                '$addToSet' : { 
+                    'audience' : {
+                        '_id': { # It is important for these fields to be in this exact order
+                            'ad': ad['id'],
+                            'age': audience['age'],
+                            'gender': audience['gender']
+                        },
+                        'percentage': float(audience['percentage'])
+                    }
                 }
             }, upsert=True)
+
+            # update the audience values in case they have been updated
+            filter_criteria = {
+                '_id': ad['id'],
+                'audience._id': {
+                    'ad': ad['id'],
+                    'age': audience['age'],
+                    'gender': audience['gender']
+                }
+            }
+
+            update_data = {
+                '$set': {
+                    'audience.$.percentage': float(audience['percentage'])
+                }
+            }
+
+            db['facebook_audiences_' + country].update_one(filter_criteria, update_data, upsert=True)
 
 def update_regions(ad, country):
     if 'delivery_by_region' in ad:
@@ -104,7 +141,7 @@ def update_page(ad, country):
         }
     }, upsert=True)
 
-def ensure_indices(countr):
+def ensure_indices(country):
     db['facebook_timestamps_' + country].create_index('_id.timestamp')
     db['facebook_audiences_' + country].create_index('_id.ad')
     db['facebook_regions_'  + country].create_index('_id.ad')
@@ -120,22 +157,28 @@ if __name__=="__main__":
 
     print('Running ', country, datetime.now())
     
+    after_date = datetime.now() - timedelta(days=3) # Only get ads from the last 3 days
+    after_date = after_date.strftime('%Y-%m-%d')
+
     collector = FbAdsLibraryTraversal(
-        "[FACEBOOK_API_ADsLibrary_KEY_HERE]",
-        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend",
+        api_key,
+        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages,estimated_audience_size",
         ".",
         country,
-        api_version="v13.0"
+        after_date=after_date,
+        api_version="v18.0" # Current version as of August 2023
     )
 
     n = 0
     for ads in collector.generate_ad_archives():
         for ad in ads:
+            print(ad)
+            sleep(1)
             update_ad(ad, country)
             update_audiences(ad, country)
             update_page(ad, country)
             update_timestamp(ad, country)
-            update_regions(ad, country)
+            # update_regions(ad, country)
             n += 1
 
     print(f'Got {n} ads')
