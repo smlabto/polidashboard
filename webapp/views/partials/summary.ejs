@@ -1459,6 +1459,8 @@
 			var ad_demographics = data[i].demographics[0]
 			if (!ad_demographics) { continue; }
 
+			var unknownPercent = 0.0;
+
 			for (var g = 0; g < genders.length; g++) {
     			var currentGender = genders[g];
 				if (!ad_demographics.hasOwnProperty(currentGender)) { continue; }
@@ -1468,27 +1470,41 @@
 					var ageRange = ageRanges[a];
 					var percentage = ad_demographics[currentGender][ageRange];
 					var demo = getDemographicLabel({"age": ageRange, "gender": currentGender});
-					if (yDomain.includes(demo)) {
-						cleanedData.push({
-							demographic: demo,
-							percentage: percentage,
-							ad: _id,
-							url: `https://www.facebook.com/ads/library/?id=${_id}`,
-							spend: rangeToLabel(data[i].spend),
-							impressions: rangeToLabel(data[i].impressions)
-						})
-
-						foundDemos.push(demo)
-
-						if (demo.includes('13')) {
-							foundUnderage = true
-						}
+					if (currentGender === 'unknown') {
+						unknownPercent += percentage;
 					} else {
-						console.log("NOT IN DOMAIN")
-						console.log(demo)
+						if (yDomain.includes(demo)) {
+							cleanedData.push({
+								demographic: demo,
+								percentage: percentage,
+								ad: _id,
+								url: `https://www.facebook.com/ads/library/?id=${_id}`,
+								spend: rangeToLabel(data[i].spend),
+								impressions: rangeToLabel(data[i].impressions)
+							})
+
+							foundDemos.push(demo)
+
+							if (demo.includes('13')) {
+								foundUnderage = true
+							}
+						} else {
+							console.log("NOT IN DOMAIN")
+							console.log(demo)
+						}
 					}
 				}
 			}
+
+			cleanedData.push({
+				demographic: '? 18-65+',
+				percentage: unknownPercent,
+				ad: _id,
+				url: `https://www.facebook.com/ads/library/?id=${_id}`,
+				spend: rangeToLabel(data[i].spend),
+				impressions: rangeToLabel(data[i].impressions)
+			})
+			foundDemos.push('? 18-65+')
 
 			// Demograph Chart for old db structure
 			// for (var j = 0; j < data[i].demographics.length; j++) {
@@ -1516,6 +1532,7 @@
 			// 	}
 			// }
 
+			// If some demographics are missing for points we already plotted, then default them to 0
 			for (var j = 0; j < yDomain.length-1; j++) {
 				if (!foundDemos.includes(yDomain[j])) {
 					cleanedData.push({
