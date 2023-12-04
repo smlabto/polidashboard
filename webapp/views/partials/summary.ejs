@@ -650,6 +650,7 @@
 		});
 
 		performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
+			console.log(data);
 			const filteredDemographics = pageFilter(data);
 			drawDemographics(filteredDemographics);
 			demographicsData = data;
@@ -671,6 +672,9 @@
 		// summaryTable = null;
 
 		// CALL PHRASECLOUD
+		d3.select("#new-wordcloud-test")
+			.selectAll("svg")
+			.remove();
 		performRequest('/facebook_ads_v2/funder_word', cloudInput, data => {
 			wordcloudData = data;
 			drawWordcloud(data);
@@ -889,6 +893,9 @@
 
 			try {
 				commonData.page_id = p.page_id;
+				d3.select("#new-wordcloud-test")
+					.selectAll("svg")
+					.remove();
 				performRequest('/facebook_ads_v2/funder_word', commonData, data => {
 					console.log(data.result);
 					drawWordcloud(data); 
@@ -965,6 +972,9 @@
 		try {
 			drawWordcloud(wordcloudData);
 		} catch (err) {
+			d3.select("#new-wordcloud-test")
+				.selectAll("svg")
+				.remove();
 			performRequest('/facebook_ads_v2/funder_word', commonData, data => {
 				console.log(data.result);
 				drawWordcloud(data); 
@@ -1442,33 +1452,69 @@
 		// but sometimes there is underage engagement that needs to be shown.
 		console.log("DATA");
 		console.log(data);
+		var genders = ['female', 'male', 'unknown']
 		for (var i = 0; i < data.length; i++) {
+			var _id = data[i]._id
 			var foundDemos = []
+			var ad_demographics = data[i].demographics[0]
+			if (!ad_demographics) { continue; }
 
-			for (var j = 0; j < data[i].demographics.length; j++) {
-				var point = data[i].demographics[j]
-				var demo = getDemographicLabel(point._id)
+			for (var g = 0; g < genders.length; g++) {
+    			var currentGender = genders[g];
+				if (!ad_demographics.hasOwnProperty(currentGender)) { continue; }
+				var ageRanges = Object.keys(ad_demographics[currentGender]) 
 
-				if (yDomain.includes(demo)) {
-					cleanedData.push({
-						demographic: demo,
-						percentage: point.percentage,
-						ad: data[i]._id,
-						url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
-						spend: rangeToLabel(data[i].spend),
-						impressions: rangeToLabel(data[i].impressions)
-					})
+				for (var a = 0; a < ageRanges.length; a++) {
+					var ageRange = ageRanges[a];
+					var percentage = ad_demographics[currentGender][ageRange];
+					var demo = getDemographicLabel({"age": ageRange, "gender": currentGender});
+					if (yDomain.includes(demo)) {
+						cleanedData.push({
+							demographic: demo,
+							percentage: percentage,
+							ad: _id,
+							url: `https://www.facebook.com/ads/library/?id=${_id}`,
+							spend: rangeToLabel(data[i].spend),
+							impressions: rangeToLabel(data[i].impressions)
+						})
 
-					foundDemos.push(demo)
+						foundDemos.push(demo)
 
-					if (demo.includes('13')) {
-						foundUnderage = true
+						if (demo.includes('13')) {
+							foundUnderage = true
+						}
+					} else {
+						console.log("NOT IN DOMAIN")
+						console.log(demo)
 					}
-				} else {
-					console.log("NOT IN DOMAIN")
-					console.log(point)
 				}
 			}
+
+			// Demograph Chart for old db structure
+			// for (var j = 0; j < data[i].demographics.length; j++) {
+			// 	var point = data[i].demographics[j]
+			// 	var demo = getDemographicLabel(point._id)
+
+			// 	if (yDomain.includes(demo)) {
+			// 		cleanedData.push({
+			// 			demographic: demo,
+			// 			percentage: point.percentage,
+			// 			ad: data[i]._id,
+			// 			url: `https://www.facebook.com/ads/library/?id=${data[i]._id}`,
+			// 			spend: rangeToLabel(data[i].spend),
+			// 			impressions: rangeToLabel(data[i].impressions)
+			// 		})
+
+			// 		foundDemos.push(demo)
+
+			// 		if (demo.includes('13')) {
+			// 			foundUnderage = true
+			// 		}
+			// 	} else {
+			// 		console.log("NOT IN DOMAIN")
+			// 		console.log(point)
+			// 	}
+			// }
 
 			for (var j = 0; j < yDomain.length-1; j++) {
 				if (!foundDemos.includes(yDomain[j])) {
@@ -1483,7 +1529,7 @@
 				}
 			}
 		}
-
+		console.log(cleanedData)
 		// Remove the underage demographics if they are all zero
 		if (!foundUnderage) {
 			yDomain.splice(0, 2)
@@ -1570,7 +1616,11 @@
 				.style('visibility', 'visible');
 		}
 
+		var selected_dot = null;
+
 		// Function to be called when you mouse out of a dot
+		var selected_dot = null;
+
 		var doNotHighlight = function(d) {
 			d3.selectAll('.demo_dot')
 				.transition()
@@ -1584,7 +1634,15 @@
 
 		// Function to be called when you click a dot
 		var viewAd = function(d) {
-			window.open(d.url, '_blank')
+			if (!isMobile) {
+				window.open(d.url, '_blank')
+			} else {
+				if (selected_dot === d.ad) {
+					window.open(d.url, '_blank')
+				} else {
+					selected_dot = d.ad;
+				}
+			}
 		}
 
 		// console.log(cleanedData)

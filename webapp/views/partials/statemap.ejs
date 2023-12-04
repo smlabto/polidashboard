@@ -194,9 +194,6 @@
             var tooltipPinned = false;
 
             function updateTooltipContent() {
-                // console.log("UPDATE TOOLTIP CONTENT")
-                // console.log(this.pageName)
-                // console.log(this.funder)
                 tooltip.html(tooltipContentTemplate
                     .replace("{stateName}", currentStateData.name)
                     .replace("{statePercentage}", (currentStateData.value * 100).toFixed(2))
@@ -217,7 +214,6 @@
                             d3.select('#map-close').style("visibility", "hidden");
                         });
                 }
-                
             }
 
             this.fetchTopoData().then(mapDataset => {
@@ -270,10 +266,12 @@
                 }
 
                 d3.select('#map_loader').style('display', 'none');
-                // console.log(mapDataset);
                 
                 var topo_data = null;
-                if (country === 'us') { // Or old germany
+                // ########################################################
+                // ### CHANGE WHICH VARIABLE IS USED FOR topo_data HERE ###
+                // ########################################################
+                if (country === 'us') {
                     topo_data = mapDataset.objects.states;
                 } else if (country === 'es') {
                     for (let i = 70; i <= 79; i++) { // Move canary islands closer to mainland
@@ -287,22 +285,9 @@
                 } else {
                     topo_data = mapDataset.objects.default;
                 }
+                console.log(topo_data);
 
                 var filteredData = topojson.feature(mapDataset, topo_data).features;
-                // console.log(filteredData);
-                // d3.select(document).on("click", function (event) {
-                //     // Check if the clicked element is inside the 'g' element  
-                //     console.log(event)
-                //     if (!event) {
-                //         return null;
-                //     }
-                //     const isInsideGElement = d3.select(event.target).classed('county');
-                    
-                //     if (!isInsideGElement) {
-                //         // Call the pinMapTooltip function when the user clicks anywhere outside the 'g' element
-                //         pinMapTooltip(false);
-                //     }
-                // });
 
                 const states = g.append("g")
                     .attr("cursor", "pointer")

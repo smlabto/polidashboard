@@ -381,19 +381,12 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
         },
         {
             '$lookup': {
-                'from': 'facebook_audiences_' + country,
+                'from': 'facebook_demographics_' + country,
                 'localField': '_id',
                 'foreignField': '_id',
                 'as': 'demographics'
             }
         },
-        {
-            '$addFields': {
-              'demographics': {
-                '$arrayElemAt': [ "$demographics.audience", 0 ],
-              }
-            }
-        }
     ]
     if (country != 'us') {
         query.push(
@@ -410,7 +403,7 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
                     'spend': 1,
                     'impressions': 1,
                     'demographics': { $ifNull: [ "$demographics", [] ] },
-                    'regions': 1, //{ $ifNull: [ "$delivery_by_region", [] ] },,
+                    'regions': 1, 
                     'snapshot_url': 1,
                     'titles': '$creative_link_titles',
                     'page_id': 1
@@ -434,8 +427,33 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
     
     db.collection('facebook_ads_' + country)
             .aggregate(query)
+            
             .toArray((err, data) => {
                 // console.log(data);
+                // var transformedDemographics = [];
+
+                // data.forEach(function (doc) {
+                //     // Extract _id and iterate through gender-age groups
+                //     for (var gender in doc.demographics) {
+                //       for (var age in doc.demographics[gender]) {
+                //         // Create a new object for each gender-age group
+                //         var resultObject = {
+                //           'id': {
+                //             'age': age,
+                //             'gender': gender,
+                //             'ad': doc.demographics._id
+                //           },
+                //           'percentage': doc.demographics[gender][age]
+                //         };
+                  
+                //         // Push the new object to the result array
+                //         transformedDemographics.push(resultObject);
+                //       }
+                //     }
+
+                //     doc.demographics = transformedDemographics;
+                // });
+
                 if (res !== null) {
                     res.send(data)
                 }       
@@ -704,6 +722,9 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             }
 
             const creativeBodyEncoded = encodeURIComponent(removeEmojis(shortenedBody).replace(/['"“”]/g, ""));
+
+            shortenedBody = shortenedBody.replace(/#/g, ''); // Remove hashtags, it breaks the URL search
+
             console.log(creativeBodyEncoded)
 
             const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
