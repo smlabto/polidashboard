@@ -43,7 +43,7 @@
 					<div class="dropdown" style="z-index: 15;">
 						<button class="dropdown-btn dropdown-navigation-btn widget-title">
 							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
-							&nbsp;&nbsp;<span class="info-icon"><img src="/images/info.png"></span>&nbsp;&nbsp;+&nbsp; Navigation Instructions
+							&nbsp;&nbsp;Learn More
 						</button>
 						
 						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px; margin-bottom: 0;">
@@ -70,10 +70,13 @@
 						</div>
 					</div>
 					<br>
-					<div>
-						<form id="heatmap_filter_form" onsubmit="return false">
-							<input type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
+					<div style="display: flex;">
+						<form id="heatmap_filter_form" onsubmit="return false" style="width: 100%">
+							<input id="search-input" type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
 						</form>
+						<button id="search-clear" class="btn-warning" style="width: 60px; height: 38px; margin-left: 10px;">
+							Clear
+						</button>
 					</div>
 					<div class="second-thead">
 						Ads Spending Range (<%= currency %>) 
@@ -118,6 +121,23 @@
 </div>
 
 <script type="text/javascript">
+
+	var searchInput = document.getElementById('search-input');
+    var searchClearButton = document.getElementById('search-clear');
+
+    searchClearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        searchClearButton.style.display = 'none';
+		heatmaps[0].filter('')
+    });
+
+    searchInput.addEventListener('input', function() {
+        searchClearButton.style.display = searchInput.value.trim() === '' ? 'none' : 'inline-block';
+    });
+
+    // Initially set the visibility based on the input's initial value
+    searchClearButton.style.display = searchInput.value.trim() === '' ? 'none' : 'inline-block';
+
 	// Create the duplicate dropdown
 	d3.select('#inner_country_select')
 		.style('text-align', 'center')
