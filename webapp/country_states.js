@@ -5,6 +5,9 @@ Description:
     We receive them as numerical codes, this file acts as a key-value pair to convert
     The respective state names to their numerical codes
 
+    If you want to add them yourself:
+    The first value should be the exact string that Facebooks API uses, and the second should be the id that the TopoJSON uses.
+
     All codes refer to id's found in TopoJsons gathered from https://code.highcharts.com/mapdata/
 
     For Spain, the map is taken from unpkg (https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json)
@@ -179,6 +182,45 @@ const dk = new Map([
     ["Region of Southern Denmark", "DK.3564"],
 ]);
 
+
+const ind = new Map([
+    ["Unknown", "N/A"],
+    ["Puducherry", "IN.PY"],
+    ["Lakshadweep", "IN.LD"],
+    ["Andaman and Nicobar Islands", "IN.AN"],
+    ["West Bengal", "IN.WB"],
+    ["Odisha", "IN.OR"],
+    ["Bihar", "IN.BR"], 
+    ["Sikkim", "IN.SK"],
+    ["Chhattisgarh", "IN.CT"],
+    ["Tamil Nadu", "IN.TN"],
+    ["Madhya Pradesh", "IN.MP"],
+    ["Gujarat", "IN.2984"],
+    ["Goa", "IN.GA"],
+    ["Nagaland", "IN.NL"],
+    ["Manipur", "IN.MN"],
+    ["Arunachal Pradesh", "IN.AR"],
+    ["Mizoram", "IN.MZ"],
+    ["Tripura", "IN.TR"],
+    ["Delhi", "IN.DL"],
+    ["Haryana", "IN.HR"],
+    ["Chandigarh", "IN.CH"],
+    ["Himachal Pradesh", "IN.HP"],
+    ["Jammu and Kashmir", "IN.JK"],
+    ["Kerala", "IN.KL"],
+    ["Karnataka", "IN.KA"],
+    ["Dadra and Nagar Haveli", "IN.DN"],
+    ["Maharashtra", "IN.MH"],
+    ["Assam", "IN.AS"],
+    ["Andhra Pradesh", "IN.AP"],
+    ["Meghalaya", "IN.ML"],
+    ["Punjab", "IN.PB"],
+    ["Rajasthan", "IN.RJ"],
+    ["Uttar Pradesh", "IN.UP"],
+    ["Uttarakhand", "IN.UT"],
+    ["Jharkhand", "IN.JH"],
+]);
+
 const gb = new Map([
     ["Unknown", "N/A"],
     ["England", "GB.ENG"],
@@ -195,6 +237,7 @@ const maps = {
     'de': de,
     'au': au,
     'gb': gb,
+    'in': ind,
     'br': br,
     'es': es,
     'dk': dk,

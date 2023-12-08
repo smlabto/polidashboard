@@ -94,6 +94,8 @@
 									<li>By default, the dashboard will show ads statistics for all social issues, elections or politics related ads from every Facebook page(s) funded by an advertiser.</li>
 									<li>If you want to see stats from a specific Facebook page funded by an advertiser, click on the “Filter by”icon.</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">page_id, page_name, spend, impressions</span></span>
 							</div>
 						</div>
 					</div>	
@@ -150,6 +152,8 @@
 								<ul>
 									<li>Hover over any bar on the chart to see the total number of ads funded by this advertiser on that day.</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">page_id, ad_delivery_start_time, spend</span></span>
 							</div>
 						</div>
 					</div>	
@@ -263,6 +267,8 @@
 										</ul>
 									</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">page_name, spend, delivery_by_region</span></span>
 							</div>
 						</div>
 						
@@ -333,6 +339,8 @@
 									<li>Click on any dot to see the actual ad and additional stats about that specific ad (Link will open in a new tab and will take you to Meta’s Ad Library)</li>
 									<li>Note: If more than 1000 ads are visible, the interactive  box plot chart will be hidden and replaced with a violin plot to save computing resources. If you want to see individual ads from this advertiser, select a shorter time frame or use the “Filter by” feature.</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">demographic_distribution, spend</span></span>
 							</div>
 						</div>
 					</div>	
@@ -400,6 +408,8 @@
 								<ul>
 									<li>The size of the font in the word cloud corresponds to the number of ads by this advertiser that uses the phrase  in the selected date range.</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">creative_bodies</span></span>
 							</div>
 						</div>
 					</div>	
@@ -466,6 +476,8 @@
 									<li>Click on the links in the table to view examples of ads funded by this advertiser that uses this ad copy. (Link will open in a new tab and will launch a search in Meta's Ad Library for ads that contain the given ad copy.)</li>
 									<li>Note: the number of ads shown in the table is approximate and might be lower/higher than what might appear in Meta’s Ad Library.</li>
 								</ul>
+								<br>
+								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">id, creative_bodies</span></span>
 							</div>
 						</div>
 					</div>	
@@ -591,7 +603,6 @@
 			'pageLength',
 		],
 		ordering: true,
-		
 		columnDefs: [
 			{  orderDataType: "dom-text-numeric" , targets: [1] },
 		],
@@ -1867,19 +1878,9 @@
 			if (phraseObj.creative_bodies === "") {
 				continue;
 			} 
-			// const cleanedUrl = phraseObj.snapshot_url.replace(/[^\x00-\x7F]/g, "");
-			const cleanedUrl = phraseObj.snapshot_url;
-
-			// Replace single and double quotes in snapshot_url
-			const snapshotUrl = cleanedUrl.replace(/'/g, "\\'");
-			// const snapshotUrl = cleanedUrl.replace(/['"]/g, "");
-			let startDateFilter = `${startDay.getFullYear()}-${(startDay.getMonth() + 1).toString().padStart(2, '0')}-${startDay.getDate().toString().padStart(2, '0')}`;
-			let endDateFilter = `${end.getFullYear()}-${(end.getMonth() + 1).toString().padStart(2, '0')}-${end.getDate().toString().padStart(2, '0')}`;
-
-			let fullFilter = `&start_date[min]=${startDateFilter}&start_date[max]=${endDateFilter}`
 			
 			const freqValue = phraseObj.freq; // Extract the numerical value
-        	var freqObj = `<a style="cursor: pointer;" onclick="window.open('${snapshotUrl + fullFilter}', '_blank')" data-value="${freqValue}">${freqValue}<i class="fas fa-link" style="margin-left: 5px;"></i></a>`;
+        	var freqObj = `${freqValue} times <br><a style="cursor: pointer;" onclick="window.open('${phraseObj.snapshot_url}', '_blank')" data-value="Click to see a sample ad.">See a sample ad <i class="fas fa-link"></i></a>`;
 			
 			let truncatedCreativeBodies = phraseObj.creative_bodies;
 			let creativeBodiesArray = truncatedCreativeBodies.split(' ');
