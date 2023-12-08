@@ -714,6 +714,8 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             country = country.toUpperCase();
             
             let shortenedBody = ad.creative_bodies;
+            let adId = ad._id;
+            console.log(adId)
             shortenedBody = shortenedBody.replace(/\n/g, ' ');
             const words = shortenedBody.split(/\s+/);
             
@@ -727,8 +729,9 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
 
             console.log(creativeBodyEncoded)
 
-            const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
-            
+            // const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
+            const snapshotUrl = `https://www.facebook.com/ads/library/?id=${adId}`                
+
             adsSummaryTable.push({
                 creative_bodies: ad.creative_bodies,
                 freq: 1,
