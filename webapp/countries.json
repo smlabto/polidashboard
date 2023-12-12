@@ -83,7 +83,15 @@
         "currency": "DKK",
         "currency symbol": "Kr.",
         "regions": {}
-    }, 
+    },
+    {
+        "name": "France",
+        "code": "fr",
+        "first date": "15-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
     {
         "name": "Germany",
         "code": "de",
@@ -108,13 +116,45 @@
             "Schleswig-Holstein":"Schleswig-Holstein",
             "Thuringia":"Thuringia"
         }
-    }, 
+    },
     {
         "name": "India",
         "code": "in",
         "first date": "15-10-2023",
         "currency": "INR",
         "currency symbol": "₹",
+        "regions": {}
+    },
+    {
+        "name": "Indonesia",
+        "code": "id",
+        "first date": "15-10-2023",
+        "currency": "IDR",
+        "currency symbol": "Rp",
+        "regions": {}
+    },
+    {
+        "name": "Italy",
+        "code": "it",
+        "first date": "15-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Philippines",
+        "code": "ph",
+        "first date": "15-10-2023",
+        "currency": "PHP",
+        "currency symbol": "₱",
+        "regions": {}
+    },
+    {
+        "name": "Poland",
+        "code": "pl",
+        "first date": "15-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
         "regions": {}
     },
     {
