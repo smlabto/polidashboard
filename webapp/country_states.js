@@ -185,7 +185,7 @@ const es = new Map([
     ["Unknown", "N/A"],
     ["Andalusia", "01"], 
     ["Aragón", "02"],
-    ["Asturias", "03"],
+    ["Principality of Asturias", "03"],
     ["Balearic Islands", "04"],
     ["Islas Canarias", "05"],
     ["Cantabria", "06"],
