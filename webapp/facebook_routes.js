@@ -429,31 +429,6 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
             .aggregate(query)
             
             .toArray((err, data) => {
-                // console.log(data);
-                // var transformedDemographics = [];
-
-                // data.forEach(function (doc) {
-                //     // Extract _id and iterate through gender-age groups
-                //     for (var gender in doc.demographics) {
-                //       for (var age in doc.demographics[gender]) {
-                //         // Create a new object for each gender-age group
-                //         var resultObject = {
-                //           'id': {
-                //             'age': age,
-                //             'gender': gender,
-                //             'ad': doc.demographics._id
-                //           },
-                //           'percentage': doc.demographics[gender][age]
-                //         };
-                  
-                //         // Push the new object to the result array
-                //         transformedDemographics.push(resultObject);
-                //       }
-                //     }
-
-                //     doc.demographics = transformedDemographics;
-                // });
-
                 if (res !== null) {
                     res.send(data)
                 }       
@@ -497,7 +472,8 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
         {
             '$match': {
                 ...quickDateFilter(start, end),
-                'funding_entity': funder
+                'funding_entity': funder,
+                'delivery_by_region': { '$ne': null }
             }
         },
         {
@@ -771,11 +747,6 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
         ads = mergePageNameWithAssociatedAds(ads, pageName);
     }
 
-    // ads = await fetchAds(db, country, funder, page_id, start, end);
-
-    // if (page_id !== null) {
-    //     ads = mergePageNameWithAssociatedAds(ads, pageName);
-    // }
     const adsSummary = createAdsSummaryTable(ads, country);
     const resultDict = { summary_table: adsSummary };
     return res.json(resultDict);
