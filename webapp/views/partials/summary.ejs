@@ -498,6 +498,7 @@
 								<tr>
 									<th>Ad Copy/Primary Text</th>
 									<th>#Ads</th>
+									<th>Preview</th>
 								</tr>
 							</thead>
 							<tbdody>
@@ -652,8 +653,6 @@
 			rawMap = new Statemap(data, "chart-container", country, mainFunder); // TO DO
 			prevRawMap = rawMap;
 		});
-		// if (country === 'us' || country === 'ca') {
-		// }
 
 		performRequest('/facebook_ads_v2/frequency_table', commonData, data => {
 			summaryTable = data
@@ -1880,8 +1879,8 @@
 			} 
 			
 			const freqValue = phraseObj.freq; // Extract the numerical value
-        	var freqObj = `${freqValue} times <br><a style="cursor: pointer;" onclick="window.open('${phraseObj.snapshot_url}', '_blank')" data-value="Click to see a sample ad.">See a sample ad <i class="fas fa-link"></i></a>`;
-			
+        	var freqObj = `${freqValue}`;
+			var sampleAd = `<a style="cursor: pointer;" onclick="window.open('${phraseObj.snapshot_url}', '_blank')" data-value="Click to see a sample ad.">Sample ad <i class="fas fa-link"></i></a>`;
 			let truncatedCreativeBodies = phraseObj.creative_bodies;
 			let creativeBodiesArray = truncatedCreativeBodies.split(' ');
 			if (creativeBodiesArray.length > 100) {
@@ -1891,7 +1890,8 @@
 			// Add data to the DataTable
 			cloudTable.row.add([
 				truncatedCreativeBodies,
-				freqObj
+				freqObj,
+				sampleAd
 			]).draw(false);
 		}
 		cloudTable.draw(true);
