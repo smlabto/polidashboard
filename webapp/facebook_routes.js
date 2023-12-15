@@ -537,9 +537,8 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 deliveryAmount = deliveryByRegion[state];
 
                 stateId = stateName;
-                if (stateName) {
-                    stateId = stateName;
-                } else {
+
+                if (!stateTotals.has(stateId)) { // If it is a region that isn't one of the defined countries regions, set it to "Unknown"
                     stateId = "Unknown";
                 }
 
@@ -548,6 +547,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 } else {
                     stateTotals.set(stateId, deliveryAmount);
                 }
+
                 if (spendLowerBound > 0) { // it's possible for this to be 0
                     let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
                     minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
@@ -555,21 +555,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
                 maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
             }
-        } else {
-            totalCount++;
-            if (stateTotals.has(stateId)) {
-                stateTotals.set(stateId, stateTotals.get(stateId) + deliveryAmount);
-            } else {
-                stateTotals.set(stateId, deliveryAmount);
-            }
-            if (spendLowerBound > 0) { // it's possible for this to be 0
-                let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
-                minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
-            }
-            let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
-            maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
         }
-
     });
 
     stateTotals.forEach((value, stateName) => {
