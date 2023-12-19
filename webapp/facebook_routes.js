@@ -381,19 +381,12 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
         },
         {
             '$lookup': {
-                'from': 'facebook_audiences_' + country,
+                'from': 'facebook_demographics_' + country,
                 'localField': '_id',
                 'foreignField': '_id',
                 'as': 'demographics'
             }
         },
-        {
-            '$addFields': {
-              'demographics': {
-                '$arrayElemAt': [ "$demographics.audience", 0 ],
-              }
-            }
-        }
     ]
     if (country != 'us') {
         query.push(
@@ -410,7 +403,7 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
                     'spend': 1,
                     'impressions': 1,
                     'demographics': { $ifNull: [ "$demographics", [] ] },
-                    'regions': 1, //{ $ifNull: [ "$delivery_by_region", [] ] },,
+                    'regions': 1, 
                     'snapshot_url': 1,
                     'titles': '$creative_link_titles',
                     'page_id': 1
@@ -434,8 +427,8 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
     
     db.collection('facebook_ads_' + country)
             .aggregate(query)
+            
             .toArray((err, data) => {
-                // console.log(data);
                 if (res !== null) {
                     res.send(data)
                 }       
@@ -479,7 +472,8 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
         {
             '$match': {
                 ...quickDateFilter(start, end),
-                'funding_entity': funder
+                'funding_entity': funder,
+                'delivery_by_region': { '$ne': null }
             }
         },
         {
@@ -543,9 +537,8 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 deliveryAmount = deliveryByRegion[state];
 
                 stateId = stateName;
-                if (stateName) {
-                    stateId = stateName;
-                } else {
+
+                if (!stateTotals.has(stateId)) { // If it is a region that isn't one of the defined countries regions, set it to "Unknown"
                     stateId = "Unknown";
                 }
 
@@ -554,6 +547,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 } else {
                     stateTotals.set(stateId, deliveryAmount);
                 }
+
                 if (spendLowerBound > 0) { // it's possible for this to be 0
                     let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
                     minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
@@ -561,21 +555,7 @@ async function generateFunderMap(start, end, funder, country, page_id, res) {
                 let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
                 maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
             }
-        } else {
-            totalCount++;
-            if (stateTotals.has(stateId)) {
-                stateTotals.set(stateId, stateTotals.get(stateId) + deliveryAmount);
-            } else {
-                stateTotals.set(stateId, deliveryAmount);
-            }
-            if (spendLowerBound > 0) { // it's possible for this to be 0
-                let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
-                minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
-            }
-            let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
-            maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
         }
-
     });
 
     stateTotals.forEach((value, stateName) => {
@@ -696,6 +676,8 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             country = country.toUpperCase();
             
             let shortenedBody = ad.creative_bodies;
+            let adId = ad._id;
+            console.log(adId)
             shortenedBody = shortenedBody.replace(/\n/g, ' ');
             const words = shortenedBody.split(/\s+/);
             
@@ -704,10 +686,14 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             }
 
             const creativeBodyEncoded = encodeURIComponent(removeEmojis(shortenedBody).replace(/['"“”]/g, ""));
+
+            shortenedBody = shortenedBody.replace(/#/g, ''); // Remove hashtags, it breaks the URL search
+
             console.log(creativeBodyEncoded)
 
-            const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
-            
+            // const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
+            const snapshotUrl = `https://www.facebook.com/ads/library/?id=${adId}`                
+
             adsSummaryTable.push({
                 creative_bodies: ad.creative_bodies,
                 freq: 1,
@@ -747,11 +733,6 @@ async function generateFreqTable(start, end, funder, country, page_id = null, re
         ads = mergePageNameWithAssociatedAds(ads, pageName);
     }
 
-    // ads = await fetchAds(db, country, funder, page_id, start, end);
-
-    // if (page_id !== null) {
-    //     ads = mergePageNameWithAssociatedAds(ads, pageName);
-    // }
     const adsSummary = createAdsSummaryTable(ads, country);
     const resultDict = { summary_table: adsSummary };
     return res.json(resultDict);
