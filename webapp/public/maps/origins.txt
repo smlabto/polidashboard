@@ -1,0 +1,16 @@
+This file describes where the original GeoJSON/TopoJSON came from for each country
+Some maps were modifying using https://mapshaper.org/
+
+US: https://d3js.org/us-10m.v1.json
+DE: https://code.highcharts.com/mapdata/countries/de/de-all.topo.json
+BR: https://code.highcharts.com/mapdata/countries/br/br-all.topo.json
+AU: https://code.highcharts.com/mapdata/countries/au/au-all.topo.json
+ES: https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json
+IT: https://github.com/openpolis/geojson-italy/blob/master/topojson/limits_IT_regions.topo.json
+PH: https://github.com/macoymejia/geojsonph/blob/master/Regions/Regions.50m.json
+GB: https://code.highcharts.com/mapdata/countries/gb/custom/gb-countries.topo.json
+DK: https://code.highcharts.com/mapdata/countries/dk/dk-all.topo.json
+IN: https://code.highcharts.com/mapdata/countries/in/custom/in-all-andaman-and-nicobar.topo.json
+ID: https://code.highcharts.com/mapdata/countries/id/id-all.topo.json
+CA: https://code.highcharts.com/mapdata/countries/ca/ca-all.topo.json
+PL: https://code.highcharts.com/mapdata/countries/pl/pl-all.topo.json

@@ -5,6 +5,9 @@ Description:
     We receive them as numerical codes, this file acts as a key-value pair to convert
     The respective state names to their numerical codes
 
+    If you want to add them yourself:
+    The first value should be the exact string that Facebooks API uses, and the second should be the id that the TopoJSON uses.
+
     All codes refer to id's found in TopoJsons gathered from https://code.highcharts.com/mapdata/
 
     For Spain, the map is taken from unpkg (https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json)
@@ -134,6 +137,37 @@ const de = new Map([
     ["Thüringen", "DE.TH"]
 ]);
 
+const fr = new Map([
+    ["Unknown", "N/A"],
+    ["Poitou-Charentes", "FR.T"],
+    ["Corse", "FR.H"],
+    ["Bretagne", "FR.E"],
+    ["Pays de la Loire", "FR.R"],
+    ["Provence-Alpes-Côte d'Azur", "FR.U"],
+    ["Midi-Pyrénées", "FR.N"],
+    ["Basse-Normandie", "FR.P"],
+    ["Nord-Pas-de-Calais", "FR.O"],
+    ["Rhône-Alpes", "FR.V"],
+    ["Picardie", "FR.S"],
+    ["Champagne-Ardenne", "FR.G"],
+    ["Languedoc-Roussillon", "FR.K"],
+    ["Alsace", "FR.A"],
+    ["Auvergne", "FR.C"],
+    ["Centre", "FR.F"],
+    ["Limousin", "FR.L"],
+    ["Bourgogne", "FR.D"],
+    ["Aquitaine", "FR.B"],
+    ["Franche-Comté", "FR.I"],
+    ["Haute-Normandie", "FR.Q"],
+    ["Île-de-France", "FR.J"],
+    ["Lorraine", "FR.M"],
+    ["Réunion", "FR.RE"],
+    ["Mayotte", "FR.YT"],
+    ["French Guiana", "FR.GF"],
+    ["Martinique", "FR.MQ"],
+    ["Guadeloupe", "FR.GP"],
+]);
+
 const au = new Map([
     ["Unknown", "N/A"],
     ["New South Wales", "AU.NSW"], 
@@ -151,7 +185,7 @@ const es = new Map([
     ["Unknown", "N/A"],
     ["Andalusia", "01"], 
     ["Aragón", "02"],
-    ["Asturias", "03"],
+    ["Principality of Asturias", "03"],
     ["Balearic Islands", "04"],
     ["Islas Canarias", "05"],
     ["Cantabria", "06"],
@@ -172,11 +206,152 @@ const es = new Map([
 
 const dk = new Map([
     ["Unknown", "N/A"],
-    ["Capital Region of Denmark", "DK.6325"],
+    ["Capital Region of Denmark", "DK.6325"], 
     ["Central Denmark Region", "DK.6326"],
     ["North Denmark Region", "DK.3568"],
     ["Zealand Region", "DK.3563"],
     ["Region of Southern Denmark", "DK.3564"],
+]);
+
+const id = new Map([ 
+    ["Unknown", "N/A"],
+    ["Aceh", "ID.AC"], // #1 (In GeometryCollection object)
+    ["Bali", "ID.BA"], // #7
+    ["Bangka–Belitung Islands", "ID.BB"], // #6
+    ["Banten", "ID.BT"], // #4
+    ["Bengkulu", "ID.BE"], // #3
+    ["Central Java", "ID.JT"], // #2
+    ["Central Kalimantan", "ID.KT"], // #34
+    ["Central Sulawesi", "ID.ST"], // #23
+    ["East Java", "ID.JI"], // #8
+    ["East Kalimantan", "ID.KI"], // #26
+    ["East Nusa Tenggara", "ID.NT"], // #10
+    ["Gorontalo", "ID.GO"], // #30
+    ["Jakarta", "ID.JK"], // #28
+    ["Jambi", "ID.JA"], // #33
+    ["Lampung", "ID.1024"], // #33
+    ["Maluku", "ID.MA"], // #20
+    ["North Kalimantan", "ID.KU"], // #17
+    ["North Maluku", "ID.LA"], // #18
+    ["North Sulawesi", "ID.SW"], // #16
+    ["North Sumatra", "ID.SU"], // #14
+    ["Papua (province)", "ID.PA"], // #24
+    ["Riau Islands Province", "ID.KR"], // #12
+    ["Riau", "ID.RI"], // #15
+    ["South Kalimantan", "ID.KS"], // #9
+    ["South Sulawesi", "ID.SE"], // #11
+    ["South Sumatra", "ID.SL"], // #31
+    ["Southeast Sulawesi", "ID.SG"], // #22
+    ["Special Region of Yogyakarta", "ID.YO"], // #31
+    ["West Java", "ID.JR"], // #25
+    ["West Kalimantan", "ID.KB"], // #5
+    ["West Nusa Tenggara", "ID.NB"], // #21
+    ["West Papua", "ID.IB"], // #13
+    ["West Sulawesi", "ID.SR"], // #32
+    ["West Sumatra", "ID.SB"], // #19
+]);
+
+const ind = new Map([
+    ["Unknown", "N/A"],
+    ["Puducherry", "IN.PY"],
+    ["Lakshadweep", "IN.LD"],
+    ["Andaman and Nicobar Islands", "IN.AN"],
+    ["West Bengal", "IN.WB"],
+    ["Odisha", "IN.OR"],
+    ["Bihar", "IN.BR"], 
+    ["Sikkim", "IN.SK"],
+    ["Chhattisgarh", "IN.CT"],
+    ["Tamil Nadu", "IN.TN"],
+    ["Madhya Pradesh", "IN.MP"],
+    ["Gujarat", "IN.2984"],
+    ["Goa", "IN.GA"],
+    ["Nagaland", "IN.NL"],
+    ["Manipur", "IN.MN"],
+    ["Arunachal Pradesh", "IN.AR"],
+    ["Mizoram", "IN.MZ"],
+    ["Tripura", "IN.TR"],
+    ["Delhi", "IN.DL"],
+    ["Haryana", "IN.HR"],
+    ["Chandigarh", "IN.CH"],
+    ["Himachal Pradesh", "IN.HP"],
+    ["Jammu and Kashmir", "IN.JK"],
+    ["Kerala", "IN.KL"],
+    ["Karnataka", "IN.KA"],
+    ["Dadra and Nagar Haveli", "IN.DN"],
+    ["Maharashtra", "IN.MH"],
+    ["Assam", "IN.AS"],
+    ["Andhra Pradesh", "IN.AP"],
+    ["Meghalaya", "IN.ML"],
+    ["Punjab region", "IN.PB"],
+    ["Rajasthan", "IN.RJ"],
+    ["Uttar Pradesh", "IN.UP"],
+    ["Uttarakhand", "IN.UT"],
+    ["Jharkhand", "IN.JH"],
+]);
+
+const it = new Map([
+    ["Unknown", "N/A"],
+    ["Piedmont", 1], // C
+    ["Aosta Valley", 2],
+    ["Lombardia", 3],
+    ["Trentino-Alto Adige", 4], // C
+    ["Veneto", 5],
+    ["Friuli-Venezia Giulia", 6],
+    ["Liguria", 7],
+    ["Emilia-Romagna", 8],
+    ["Tuscany", 9], // C
+    ["Umbria", 10],
+    ["Marche", 11],
+    ["Lazio", 12],
+    ["Abruzzo", 13],
+    ["Molise", 14],
+    ["Campania", 15],
+    ["Puglia", 16],
+    ["Basilicata", 17],
+    ["Calabria", 18],
+    ["Sicilia", 19],
+    ["Sardinia", 20], // C
+]);
+
+const ph = new Map([ 
+    ["Unknown", "N/A"],
+    ["Davao Region", 11],
+    ["Central Visayas", 7],
+    ["Eastern Visayas", 8],
+    ["Western Visayas", 6],
+    ["Bicol Region", 5],
+    ["Calabarzon", 4],
+    ["Autonomous Region in Muslim Mindanao", 19],
+    ["Central Luzon", 3],
+    ["Mimaropa", 17],
+    ["Cagayan Valley", 2],
+    ["Soccsksargen", 12],
+    ["Northern Mindanao", 10],
+    ["Ilocos Region", 1],
+    ["Cordillera Administrative Region", 14],
+    ["Metro Manila", 13],
+    ["Zamboanga Peninsula", 9],
+    ["Caraga", 16],
+]);
+
+const pl = new Map([ 
+    ["Unknown", "N/A"],
+    ["Łódź Voivodeship", 'PL.LD'],
+    ["Masovian Voivodeship", 'PL.MZ'],
+    ["Świętokrzyskie Voivodeship", 'PL.SK'],
+    ["Podlaskie Voivodeship", 'PL.PD'],
+    ["Lublin Voivodeship", 'PL.LU'],
+    ["Podkarpackie Voivodeship", 'PL.PK'],
+    ["Opole Voivodeship", 'PL.OP'],
+    ["Lesser Poland Voivodeship", 'PL.MA'],
+    ["Warmian-Masurian Voivodeship", 'PL.WN'],
+    ["Pomeranian Voivodeship", 'PL.PM'],
+    ["Lower Silesian Voivodeship", 'PL.DS'],
+    ["West Pomeranian Voivodeship", 'PL.ZP'],
+    ["Lubusz Voivodeship", 'PL.LB'],
+    ["Greater Poland Voivodeship", 'PL.WP'],
+    ["Kuyavian-Pomeranian Voivodeship", 'PL.KP'],
+    ["Silesian Voivodeship", 'PL.SL'],
 ]);
 
 const gb = new Map([
@@ -195,6 +370,12 @@ const maps = {
     'de': de,
     'au': au,
     'gb': gb,
+    'fr': fr,
+    'id': id,
+    'in': ind,
+    'it': it,
+    'ph': ph,
+    'pl': pl,
     'br': br,
     'es': es,
     'dk': dk,

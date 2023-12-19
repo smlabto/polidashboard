@@ -16,40 +16,40 @@
 		}
 
         async fetchTopoData() {
-            // Future work, rather than fetching the topo data from a URL, we can store the topo data in local files and fetch it from there
+            // Philippines taken from: https://github.com/macoymejia/geojsonph
+            // Italy map taken from: https://github.com/openpolis/geojson-italy/
+            // Spain map taken from: https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json
+
+            // All other maps taken from: https://code.highcharts.com/mapdata/
             try {
                 let mapDataset = null;
-                if (country === 'us') {
-                    mapDataset = await d3.json("https://d3js.org/us-10m.v1.json");
-                } else if (country === 'de') {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/de/de-all.topo.json");
-                    mapDataset.transform.scale=[0.05, -0.063]
-                    mapDataset.transform.translate=[225, 620]
-                } else if (country === 'br') {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/br/br-all.topo.json");
-                    mapDataset.transform.scale=[0.062, -0.063]
-                    mapDataset.transform.translate=[165, 620]
-                } else if (country === 'au') {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/au/au-all.topo.json");
-                    mapDataset.transform.scale=[0.08, -0.06]
-                    mapDataset.transform.translate=[63, 600]
-                } else if (country == "es") { 
-                    mapDataset = await d3.json("https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json");
-                    mapDataset.transform.scale=[0.115, -0.105]
-                    mapDataset.transform.translate=[-200, 1050]
-                } else if (country === "gb") {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/gb/custom/gb-countries.topo.json");
-                    mapDataset.transform.scale=[0.041, -0.061]
-                    mapDataset.transform.translate=[280, 610]
-                } else if (country === "dk") {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/dk/dk-all.topo.json");
-                    mapDataset.transform.scale=[0.074, -0.064]
-                    mapDataset.transform.translate=[180, 630]
-                } else {
-                    mapDataset = await d3.json("https://code.highcharts.com/mapdata/countries/ca/ca-all.topo.json");
-                    mapDataset.transform.scale=[0.081, -0.061]
-                    mapDataset.transform.translate=[40, 610]
+
+                const response = await fetch('maps/' + country + '.json');
+                mapDataset = await response.json();
+
+                const transformations = {
+                    'us': null,
+                    'de': { scale: [0.05, -0.063], translate: [225, 620] },
+                    'br': { scale: [0.062, -0.063], translate: [165, 620] },
+                    'au': { scale: [0.08, -0.06], translate: [63, 600] },
+                    'es': { scale: [0.115, -0.105], translate: [-200, 1050] },
+                    'gb': { scale: [0.041, -0.061], translate: [280, 610] },
+                    'dk': { scale: [0.074, -0.064], translate: [180, 630] },
+                    'in': { scale: [0.064, -0.064], translate: [180, 630] },
+                    'id': { scale: [0.08, -0.04], translate: [40, 500] },
+                    'fr': { scale: [0.047, -0.047], translate: [160, 600] },
+                    'it': { scale: [0.0088, -0.0078], translate: [180, 680] },
+                    'ph': { scale: [0.0046, -0.0046], translate: [220, 620] },
+                    'pl': { scale: [0.064, -0.062], translate: [143, 620] },
+                    'ca': { scale: [0.081, -0.061], translate: [40, 610] },
+                };
+
+                const transformation = transformations[country] || null;
+
+                if (transformation) {
+                    Object.assign(mapDataset.transform || (mapDataset.transform = {}), transformation);
                 }
+                
                 return mapDataset;
             } catch (error) {
                 console.error("Error fetching map data:", error);
@@ -87,17 +87,6 @@
                     </div>
                 `;
             }
-            /*
-            tooltipContentTemplate = `
-                <span class='tooltip-emoji' style='top: 1px; position: absolute; right: 3px;'>◥</span>
-                <div class='maptip-title'>Avg. % of the ad audience for this advertiser that came from this location for the selected date range:</div>
-                <hr style='margin-top: 0; margin-bottom: 10px'>
-                <div class='maptip-content'>
-                    <p class='maptip-text'><span class='maptip-label'>Location:</span> {stateName} <span class='maptip-label' style='color: #facc15;'>&nbsp;&nbsp;{statePercentage}%</span></p>
-                    <p class='maptip-text'><span class='maptip-label'>Estimated Cost for Reaching Audience:</span></p>
-                    <p class='maptip-text'>{costRange}</p>
-                </div>`;
-            */
             
             if (isMobile) {
                 tooltipContentTemplate = tooltipContentTemplate + `
@@ -194,9 +183,6 @@
             var tooltipPinned = false;
 
             function updateTooltipContent() {
-                // console.log("UPDATE TOOLTIP CONTENT")
-                // console.log(this.pageName)
-                // console.log(this.funder)
                 tooltip.html(tooltipContentTemplate
                     .replace("{stateName}", currentStateData.name)
                     .replace("{statePercentage}", (currentStateData.value * 100).toFixed(2))
@@ -217,7 +203,6 @@
                             d3.select('#map-close').style("visibility", "hidden");
                         });
                 }
-                
             }
 
             this.fetchTopoData().then(mapDataset => {
@@ -270,10 +255,12 @@
                 }
 
                 d3.select('#map_loader').style('display', 'none');
-                // console.log(mapDataset);
                 
                 var topo_data = null;
-                if (country === 'us') { // Or old germany
+                // ########################################################
+                // ### CHANGE WHICH VARIABLE IS USED FOR topo_data HERE ###
+                // ########################################################
+                if (country === 'us') {
                     topo_data = mapDataset.objects.states;
                 } else if (country === 'es') {
                     for (let i = 70; i <= 79; i++) { // Move canary islands closer to mainland
@@ -284,25 +271,20 @@
                 } else if (country === 'dk') {
                     mapDataset.arcs[19][0][0] -= 2000; // Move danish isle closer to mainland
                     topo_data = mapDataset.objects.default;
-                } else {
+                } else if (country === 'in') {
+                    console.log(mapDataset.arcs)
+                    for (let i = 9; i <= 16; i++) {
+                        mapDataset.arcs[i][0][0] -= 100; // Move 
+                        mapDataset.arcs[i][0][1] += 500; // Move 
+                    }
                     topo_data = mapDataset.objects.default;
                 }
+                else {
+                    topo_data = mapDataset.objects.default;
+                }
+                console.log(topo_data);
 
                 var filteredData = topojson.feature(mapDataset, topo_data).features;
-                // console.log(filteredData);
-                // d3.select(document).on("click", function (event) {
-                //     // Check if the clicked element is inside the 'g' element  
-                //     console.log(event)
-                //     if (!event) {
-                //         return null;
-                //     }
-                //     const isInsideGElement = d3.select(event.target).classed('county');
-                    
-                //     if (!isInsideGElement) {
-                //         // Call the pinMapTooltip function when the user clicks anywhere outside the 'g' element
-                //         pinMapTooltip(false);
-                //     }
-                // });
 
                 const states = g.append("g")
                     .attr("cursor", "pointer")
@@ -327,13 +309,7 @@
                         handleMouseMove(hoveredData.id)
                     })
                     .on("mouseout", handleMouseOut)
-                    // .on("click", function (e, d) {
-                    //     pinMapTooltip(true);
-                    // });
-                   
-                // Add a square box pointing to a territory that might be too difficult to highlight with the mouse
-                // const width = 970;
-                // const height = 610;
+
                 const smallTerritoryBoxes = [
                     {
                         country: 'ca',
@@ -394,8 +370,7 @@
                         lineYOffset: 30,
                         lineXEnd: 435,
                         lineYEnd: 110,
-                    }
-                    ,
+                    },
                     {
                         country: 'de',
                         id: 'DE.HB',
@@ -407,16 +382,85 @@
                         lineYOffset: 30,
                         lineXEnd: 379,
                         lineYEnd: 146,
-                    }
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.LD',
+                        name: 'Lakshadweep',
+                        squareSize: 60,
+                        squareX: 130,
+                        squareY: 500,
+                        lineXOffset: 59,
+                        lineYOffset: 59,
+                        lineXEnd: 268,
+                        lineYEnd: 590,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.PY',
+                        name: 'Puducherry',
+                        squareSize: 40,
+                        squareX: 500,
+                        squareY: 520,
+                        lineXOffset: 0,
+                        lineYOffset: 18,
+                        lineXEnd: 435,
+                        lineYEnd: 538,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.CH',
+                        name: 'Chandigarh',
+                        squareSize: 60,
+                        squareX: 130,
+                        squareY: 40,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 358,
+                        lineYEnd: 95,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.DN',
+                        name: 'Dadra and Nagar Haveli',
+                        squareSize: 60,
+                        squareX: 110,
+                        squareY: 300,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 277,
+                        lineYEnd: 332,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.DL',
+                        name: 'Delhi',
+                        squareSize: 60,
+                        squareX: 550,
+                        squareY: 60,
+                        lineXOffset: 1,
+                        lineYOffset: 59,
+                        lineXEnd: 389,
+                        lineYEnd: 135,
+                    },
+                    {
+                        country: 'id',
+                        id: 'ID.JK',
+                        name: 'Jakarta',
+                        squareSize: 40,
+                        squareX: 150,
+                        squareY: 480,
+                        lineXOffset: 20,
+                        lineYOffset: 0,
+                        lineXEnd: 240,
+                        lineYEnd: 394,
+                    },
                 ]
 
                 function createSmallTerritoryBox(box) {
                     if (box.country !== country) {
                         return;
                     }
-
-                    // const squareX = width - box.squareSize - box.squareX; // Position it at the top right
-                    // const squareY = height - box.squareSize - box.squareYOffset;
                     const lineXStart = box.squareX + box.lineXOffset;
                     const lineYStart = box.squareY + box.lineYOffset;
                     const lineData = [
@@ -428,6 +472,16 @@
                         .attr("d", path({ type: "LineString", coordinates: lineData }))
                         .attr("stroke", "black")
                         .attr("stroke-width", 1);
+                    if (box.id === 'IN.PY') {
+                        g.append("path")
+                            .attr("d", path({ type: "LineString", coordinates: [[500, 530], [435, 515]] }))
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 1);
+                        g.append("path")
+                            .attr("d", path({ type: "LineString", coordinates: [[510, 520], [490, 405]] }))
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 1);
+                    }
                         
                     const territorySquare = g.append("rect")
                         .attr("x", box.squareX)
@@ -459,12 +513,21 @@
                         });
                     
                     // Add the territory label so user will know what territory the box is pointing to
-                    g.append("text")
-                        .attr("x", box.squareX + box.squareSize / 2)
-                        .attr("y", box.squareY + box.squareSize + 15) // Adjust the vertical position as needed
-                        .attr("text-anchor", "middle")
-                        .style("font-size", "14px")
-                        .text(box.name);
+                    if (box.id === 'IN.LD' || box.id === 'IN.DL') {
+                        g.append("text")
+                            .attr("x", box.squareX + box.squareSize / 2)
+                            .attr("y", box.squareY - 15) // Adjust the vertical position as needed
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "16px")
+                            .text(box.name);
+                    } else {
+                        g.append("text")
+                            .attr("x", box.squareX + box.squareSize / 2)
+                            .attr("y", box.squareY + box.squareSize + 15) // Adjust the vertical position as needed
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "16px")
+                            .text(box.name);
+                    }
                 }
                         
                 smallTerritoryBoxes.forEach(box => {
@@ -490,6 +553,16 @@
                         width: 200,
                         height: 80,
                         transform: "rotate(-38 " + (770 + 200 / 2) + " " + (240 + 80 / 2) + ")"
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.AN',
+                        x: 680,
+                        y: 420,
+                        width: 80,
+                        height: 200,
+                        transform: "",
+                        stroke: 'black'
                     }
                 ]
 
@@ -503,7 +576,7 @@
                         .attr("width", box.width)
                         .attr("height", box.height)
                         .attr("fill", "none")
-                        .attr("stroke", "none")
+                        .attr("stroke", box.stroke)
                         .attr("pointer-events", "all")
                         .attr("transform", box.transform)
                         .attr("data-fips", d => { return box.id })
@@ -554,6 +627,24 @@
                         .attr("stroke-width", 1)
                         .attr("fill", "none"); // Set the fill to "none" to make it an outline
                 }
+                
+                function addCircle(g, cx, cy, r) {
+                    g.append("circle")
+                        .attr("cx", cx).attr("cy", cy).attr("r", r)
+                        .attr("stroke", "black").attr("stroke-width", 1).attr("fill", "none");
+                }
+
+                // Create circles to show where very small regions are
+                if (country === 'in') { // India
+                    addCircle(g, 287, 596, 20); // Lakshadweep
+                    addCircle(g, 368, 96, 10); // Chandigarh
+                    addCircle(g, 375, 142, 15); // Delhi
+                    addCircle(g, 287, 332, 10); // Dadra and Nagar Haveli
+                }
+
+                if (country === "id") { // Indonesia
+                    addCircle(g, 244, 388, 7);
+                }
 
                 g.append("path")
                     .attr("fill", "none")
@@ -570,13 +661,13 @@
                 // var mapTextNote = $("#tipnote-map"); 
                 let unknownStateData = _d.find(item => item.name === "Unknown");
                 this.unknownAudience = (unknownStateData.value * 100).toFixed(2);
-                // console.log("FUNDER")
-                // console.log(funder)
+
+                console.log(unknownStateData.value) // debug
                 mapTextTip
                     .html(`
                         This module shows the locations where ads funded by: <span style="background-color: #fff651;">${this.funder}</span> were shown for the selected date range...
                     ` +
-                    (unknownStateData ? `<br>NOTE: <span style="background-color: #fff651;">${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
+                    (unknownStateData && unknownStateData.value > 0.0049 ? `<br>NOTE: <span style="background-color: #fff651;">${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
                         <br>
                         NOTE: The estimated total ads spend on people from regions that were either unidentifiable or located outside the selected country was between: <span style="background-color: #fff651;">${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.
                         </span>

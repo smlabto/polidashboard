@@ -115,8 +115,15 @@ def update_audiences(ad, country):
                     'audience.$.percentage': float(audience['percentage'])
                 }
             }
-
             db['facebook_audiences_' + country].update_one(filter_criteria, update_data, upsert=True)
+
+            db['facebook_demographics_' + country].update_one({
+                '_id': ad['id'],
+            }, {
+                '$set': {
+                    f'{audience["gender"]}.{audience["age"]}': float(audience['percentage'])
+                }
+            }, upsert=True)
 
 def update_regions(ad, country):
     if 'delivery_by_region' in ad:
