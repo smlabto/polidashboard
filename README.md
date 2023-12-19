@@ -22,11 +22,11 @@ The dashboard consists of:
     
 3.  A front end, written in vanilla javascript with EJS and D3.js | `/webapp`
     
-4.  An API built on FastAPI that handles processing of wordcloud data | `/keywords_extractor`
+4.  A FastAPI module that creates a wordcloud based on ads creatives | `/keywords_extractor`
 
-5.  A Mongo database
+5.  A MongoDB database
 
-## ❇️ Running the App
+## ❇️ Installing and Running the App
 
 Install npm dependencies and run node application:
 `npm i` > `node webapp/app.js`
