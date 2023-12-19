@@ -1,12 +1,10 @@
 webapp/node_modules/*
 collector/__pycache__/*
 webapp/package-lock.json
-collector/fb_ads_library_api.py
-
+collector/fb_ads_library_api*
 .idea/
-
 topic_extraction/__pycache__/
-
+temp/
 topic_extraction/republican_ads.json
 *.pyc
 .env
