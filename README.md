@@ -8,9 +8,9 @@
 
 ## ❔About
 
-PoliDashboard is a data visualization tool designed to help voters, journalists, and campaign staffers to learn about the political and social issue ads that are being shown to users on Facebook and its various other products including Instagram.
+PoliDashboard is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics.
 
-The dashboard is developed by the Social Media Lab at Toronto Metropolitan University as part of an international election transparency initiative. Country-specific modules are presented in partnership with various academic and civic partners in countries where the Facebook Ad Library is available. The open source code of Polidashboard is now available on GitHub.
+The dashboard is developed by the Social Media Lab at Toronto Metropolitan University as part of an international election transparency initiative.
 
 ## ❇️ Overview
 
@@ -31,6 +31,7 @@ The dashboard consists of:
 Install npm dependencies and run node application:
 `npm i` > `node webapp/app.js`
 
+### ➕ Setting up Wordcloud Generator [OPTIONAL]
 Run a web server using FastAPI inside of `/keywords_extractor`, to service the wordcloud functionality. Uvicorn has been tested and works (other solutions may work), the command to do so (replacing port_number): 
 `cd keywords_extractor` > `python -m uvicorn api_service:app --host 0.0.0.0 --port [port_number]`
 
@@ -38,6 +39,13 @@ Currently the `keywords_extractor` API is being accessed by the `generateWordMap
 This function reads WORDCLOUD_API_URL from your environment variables, so make sure to set it.
 
 `export WORDCLOUD_API_URL=0.0.0.0:[port_number]`
+
+## ❇️ Collector
+
+The important part of the collector is in collector/collect.py (the other files in the collector module are provided by Facebook). 
+"collect.py" accepts the country code (i.e. ca, us) as an argument, and has a method to update each of the five Mongo collections for each ad.
+
+You can learn more about the fields [Facebooks Ad Library API provides here](https://www.facebook.com/ads/library/api/)
 
 ## ❇️ Adding New Countries
 
@@ -57,9 +65,7 @@ Add the following relevant data on the new country to `webapp/countries.json`. A
 6.  If you need a footnote (i.e. the “Partner Institution” box), place it in node/views/partials/footnotes/[country code].ejs - see au.ejs as an example. Whatever you place in this file will automatically be added below the summary tab, and you can put any country-specific CSS in here as well
 
 ### ➕ Adding Country Map
-In v2. of PoliDashboard, the region module got upgraded from a chart to a map, which has made the process more involved if you also want to add a map for a country.
-
-PoliDashboard uses TopoJSON files to render the map modules. The generation of the map is handled in the `Statemap` class, located at `webapp/views/partials/statemap.ejs`, the TopoJSON data is loaded from `webapp/public/maps/` by the `fetchTopoData()` function. 
+PoliDashboard makes use of TopoJSON files to render the map modules. The generation of the map is handled in the `Statemap` class, located at `webapp/views/partials/statemap.ejs`, the TopoJSON data is loaded from `webapp/public/maps/` by the `fetchTopoData()` function. 
 
 The TopoJsons need to be cut up in a way that it matches the states/regions of the data Facebooks API provides us from the `delivery_by_region` field. We primarily get these from [https://code.highcharts.com/mapdata/](https://code.highcharts.com/mapdata/). However, sometimes the data Facebooks API gives us does not match up nicely with the TopoJsons provided by Highcharts (ex. this happened with Spain, as Facebook gave us the `delivery_by_region` data based on Spains autonomous regions, and Highchart did not have a map of Spain cut up by its autonomous regions. So if this happens, you will have to find a map that matches.) The TopoJSON should have a unique id for each region. Polidashboard associates the name of a region (given by facebooks `delivery_by_region` field) with the unique id of that region on the TopoJSON. This association needs to be manually created inside of `webapp/country_states.js` as a Map object of an array of `["Region Name from Facebook", "TopoJson ID"]` pairs for the country you want to add (It is also necessary to add an "Unknown" region, you can see each country has this region, it is for the Learn More section).
 
@@ -80,15 +86,7 @@ Here is the general order of steps you should follow to add a country map:
 ## ❇️ Updating API Keys
 
 The Meta Ad Library API key needs to be updated every two months. To do this, update or get new keys got to GRAPH API explore from [https://developers.facebook.com/tools/explorer/](https://developers.facebook.com/tools/explorer/)
-
-and paste it into `~/facebook_dashboards/collector/collect.py` inside of the `FbAdsLibraryTraversal()` object, or set it to the environment variable `FACEBOOK_API_KEY`. You don’t need to restart anything - the new key will be used automatically next time the collector’s CRON job runs.
-
-## ❇️ Collector
-
-The important part of the collector is in collector/collect.py (the other files in the collector module are provided by Facebook). 
-"collect.py" accepts the country code (i.e. ca, us) as an argument, and has a method to update each of the five Mongo collections for each ad.
-
-You can learn more about the fields [Facebooks Ad Library API provides here](https://www.facebook.com/ads/library/api/)
+and set it to the environment variable `FACEBOOK_API_KEY` (you may also paste it into `~/facebook_dashboards/collector/collect.py` inside of the `FbAdsLibraryTraversal()` object). You don’t need to restart anything - the new key will be used automatically next time the collector’s CRON job runs.
 
 ### ➕ Logging
 
