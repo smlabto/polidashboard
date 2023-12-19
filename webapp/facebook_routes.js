@@ -290,9 +290,18 @@ function quickDateFilter(start, end) {
                     }
                 ]
             }, {
-                'latest_collected': {
-                    '$lte': endTime
-                }
+                '$or': [
+                    {
+                        'delivery_start_time': {
+                            '$lte': endTime
+                        }
+                    },
+                    {
+                        'first_collected': {
+                            '$lte': endTime
+                        }
+                    }
+                ]
             }
         ]
     }
