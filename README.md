@@ -51,7 +51,8 @@ You can learn more about the fields [Facebooks Ad Library API provides here](htt
 
 ### ➕ Data Collector
 
-1.  Create a cron job to run the `collect.py` script to collect ads every day. This will automatically generate all of the necessary database collections and indexes the first time it is run.
+1.  Follow the instructions inside of the `collector/fb_ads_library_api.py` file, replacing that file with the one provided in the download link
+2.  Create a cron job to run the `collect.py` script to collect ads every day. This will automatically generate all of the necessary database collections and indexes the first time it is run.
     `python collector/collect.py [two-letter country code]`
 
 ### ➕ Frontend
