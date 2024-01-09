@@ -38,9 +38,10 @@ def update_ad(ad, country):
         'currency': ad['currency']
             if 'currency' in ad else None,
         'impressions': {
-            'lower_bound': int(ad['impressions']['lower_bound']),
+            'lower_bound': int(ad['impressions']['lower_bound'])
+                if 'impressions' in ad and 'lower_bound' in ad['impressions'] else None,
             'upper_bound': int(ad['impressions']['upper_bound'])
-                if 'upper_bound' in ad['impressions'] else None
+                if 'impressions' in ad and 'upper_bound' in ad['impressions'] else None
         },
         'languages': ad['languages']
             if 'languages' in ad else None,
@@ -48,9 +49,10 @@ def update_ad(ad, country):
         'funding_entity': ad['bylines']
             if 'bylines' in ad else None,
         'spend': {
-            'lower_bound': int(ad['spend']['lower_bound']),
+            'lower_bound': int(ad['spend']['lower_bound'])
+                if 'spend' in ad and 'lower_bound' in ad['impressions'] else None,
             'upper_bound': int(ad['spend']['upper_bound'])
-                if 'upper_bound' in ad['spend'] else None
+                if 'spend' in ad and 'upper_bound' in ad['impressions'] else None
         },
         'latest_collected': datetime.now()
     }
