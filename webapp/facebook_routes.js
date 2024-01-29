@@ -297,7 +297,12 @@ function quickDateFilter(start, end) {
                         }
                     },
                     {
-                        'first_collected': {
+                        'delivery_stop_time': {
+                            '$lte': endTime
+                        }
+                    },
+                    {
+                        'latest_collected': {
                             '$lte': endTime
                         }
                     }

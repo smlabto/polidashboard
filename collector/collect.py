@@ -33,6 +33,8 @@ def update_ad(ad, country):
             if 'ad_creative_link_titles' in ad else None,
         'delivery_start_time': to_dt(ad['ad_delivery_start_time'])
             if 'ad_delivery_start_time' in ad else None,
+        'delivery_stop_time': to_dt(ad['ad_delivery_stop_time'])
+            if 'ad_delivery_stop_time' in ad else None,
         'snapshot_url': ad['ad_snapshot_url']
             if 'ad_snapshot_url' in ad else None,
         'currency': ad['currency']

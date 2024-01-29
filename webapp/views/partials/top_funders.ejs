@@ -275,10 +275,12 @@
 				var newEndDate = today.diff(end, 'days')
 				var newStartDate = today.diff(start, 'days')
 
-				if ((newStartDate - newEndDate) >= 8 && country=='us') {
-					alert('Due the large volume of data from the US, we are unable to show time ranges greater than one week. Please select a shorter range to continue.')
-				} else 
-					window.location.href = `/facebook_ads_v2?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
+				// Impose a one week limit to US data, not needed due to optimizations in DB
+				// if ((newStartDate - newEndDate) >= 8 && country=='us') {
+				// 	alert('Due the large volume of data from the US, we are unable to show time ranges greater than one week. Please select a shorter range to continue.')
+				// } else 
+
+				window.location.href = `/facebook_ads_v2?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
 
 			});
 		});
