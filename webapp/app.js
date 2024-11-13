@@ -30,5 +30,5 @@ mongoose.connection.once('open', function() {
     var httpsServer = https.createServer(app); //options, app);
     httpsServer.listen(port)
 
-    console.log('listening')
+    console.log(`listening on ${port}`)
 })

@@ -813,6 +813,7 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
     queryParams.append("end_time", end_time.toISOString());
     
     const fullUrl = apiUrl + "?" + queryParams.toString();
+    
     try {
         // Parse the URL
         const url = new URL(fullUrl);
