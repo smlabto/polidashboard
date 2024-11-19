@@ -4,7 +4,9 @@
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
+# LICENSE file found here https://github.com/facebookresearch/Ad-Library-API-Script-Repository/blob/main/LICENSE
+
+# This file has been modified for the Polidashboard application
 
 import json
 import re
