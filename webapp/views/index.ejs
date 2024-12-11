@@ -6,15 +6,30 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="author" content="Ryerson University Social Media Lab">
-	<meta name="keywords" content="twitter, dashboard, #cdnpoli">
+	<title>PoliDashboard</title>
+	<meta name="author" content="Toronto Metropolitan University - Social Media Lab">
+	<meta name="keywords" content="Polidashboard Political Targeted Ads Meta Facebook Instagram">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="cache-control" content="public">
 	<meta http-equiv="cache-control" content="max-age=86400">
-
 	<title>PoliDashboard</title>
 	<link rel="icon" type="image/png" href="/images/PD.png">
-	
+	<meta property="og:locale" content="en_US">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta property="og:description" content="PoliDashboard is developed by the Social Media Lab at Toronto Metropolitan University.">
+	<meta property="og:url" content="https://polidashboard.org/">
+	<meta property="og:site_name" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta property="article:modified_time" content="2024-05-01T17:50:32+00:00">
+	<meta property="og:image" content="https://app.polidashboard.org/images/main-logo.png">
+	<meta property="og:image:width" content="200">
+	<meta property="og:image:height" content="26">
+	<meta property="og:image:type" content="image/png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta name="twitter:description" content="PoliDashboard is developed by the Social Media Lab at Toronto Metropolitan University as part of an international." >
+	<meta name="twitter:image" content="https://app.polidashboard.org/images/main-logo.png">
+	<meta name="twitter:site" content="polidashboard">
 	<!-- main JS libs -->
 	<script src="/js/modernizr.min.js"></script>
 	<script src="/js/jquery-1.10.2.min.js"></script>
@@ -26,7 +41,7 @@
     <script type="text/javascript" src="/js/daterangepicker.min.js"></script>
 	
 	<!-- icons -->
-	<script src="https://kit.fontawesome.com/44a34ac94f.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Font -->
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
@@ -66,9 +81,9 @@
       $('.menu').slicknav();
     });
 
-    $("#filter_date_in, #filter_date_out").datepicker({
+    $("#filter_date_in, #filter_date_out").daterangepicker({
         dateFormat: 'MM dd, yy',
-        minDate: 0,
+    	minDate: "10/10/2023",
         showOtherMonths: true
 	});
 	
@@ -146,10 +161,13 @@
 				<div class="navbar-collapse" id="nav-items" style="align-self: center;">
 					<ul class="nav navbar-nav navbar-right">
 						<li>
-							<a class="navbar-item" href="https://polidashboard.com/about/" target="_blank"><i class="fas fa-receipt"></i> <span>About</span></a>
+							<a class="navbar-item" href="https://app.polidashboard.org/status"><i class="fa-solid fa-tower-broadcast"></i>&nbsp; <span>Status</span></a>
 						</li>
 						<li>
-							<a class="navbar-item" href="https://github.com/smlabto/polidashboard" target="_blank"><i class="fab fa-github"></i> Open Source</a>
+							<a class="navbar-item" href="https://polidashboard.com/about/" target="_blank"><i class="fa-solid fa-receipt"></i>&nbsp; <span>About</span></a>
+						</li>
+						<li>
+							<a class="navbar-item" href="https://github.com/smlabto/polidashboard" target="_blank"><i class="fa-brands fa-github">&nbsp; </i>Open Source</a>
 						</li>
 					</ul>
 				</div>

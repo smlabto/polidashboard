@@ -7,6 +7,8 @@ var countries = require('./countries.json');
 var countryStates = require('./country_states.js');
 const https = require("http") //https
 const path = require('path');
+const cors = require('cors');
+const moment = require('moment');
 
 var db = mongoose.connection.db
 
@@ -14,6 +16,7 @@ router.get('/', function(req, res) {
     res.redirect('/facebook_ads_v2?country=ca')
 })
 
+router.use(require("./polidashboard_routes"));
 
 const jsonFilePath = path.join(__dirname, 'countries.json');
 let countryCurrencyMap = {};
@@ -29,7 +32,6 @@ try {
     }
   });
 
-  console.log(countryCurrencyMap); // Output for testing
 } catch (err) {
   console.error('Error reading the JSON file:', err);
 }
@@ -37,12 +39,45 @@ try {
 // countryCurrencyMap is now accessible globally
 module.exports = countryCurrencyMap;
 
-router.get('/facebook_ads_v2', function (req, res) {
-    var start = parseInt(req.query.startDay)
-    var end = parseInt(req.query.endDay)
+function validateStartEnd(s, e) {
+    function isValidDateFormat(dateString) {
+		const regex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-(\d{4})$/;
+		return regex.test(dateString);
+	}
 
-    if (isNaN(start)) start = 7;
-    if (isNaN(end)) end = 0;
+    var start = s;
+    var end = e;
+    const dateFormat = 'MM-DD-YYYY'
+    const today = moment();
+    if (start === undefined || end === undefined || !isValidDateFormat(start) || !isValidDateFormat(end)) {
+        end = today.format(dateFormat);
+        const lastWeek = today.subtract(7, 'days');
+        start = lastWeek.format(dateFormat)
+    } else {
+        var startDay = moment(start, dateFormat)
+        var endDay = moment(end, dateFormat)
+        if (startDay.isAfter(endDay) || endDay.isAfter(today) | startDay.isBefore(moment('10-10-2023', dateFormat))) {
+            end = today.format(dateFormat);
+            const lastWeek = today.subtract(7, 'days');
+            start = lastWeek.format(dateFormat)
+        } else {
+            start = startDay.format(dateFormat);
+            end = endDay.format(dateFormat);
+        }
+    }
+
+    return [start, end]
+}
+
+router.get('/facebook_ads_v2', function (req, res) {
+    var dates = validateStartEnd(req.query.startDay, req.query.endDay);
+    var start = dates[0];
+    var end = dates[1];
+
+    var requested_advertiser = decodeURI(req.query.advertiser);
+    if (requested_advertiser == undefined) {
+        requested_advertiser = "";
+    }
 
     var country = req.query.country
     if (country == null) {
@@ -70,12 +105,13 @@ router.get('/facebook_ads_v2', function (req, res) {
             days: start-end,
             child: 'facebook_ads',
             country: country,
+            requested_advertiser: requested_advertiser,
             validCountries: validCountries,
             regions: regions,
             fs: fs,
             firstDay: firstDay,
             currency: currency,
-            currencySymbol: currencySymbol
+            currencySymbol: currencySymbol,
         }
     );
 })
@@ -96,12 +132,18 @@ router.get('/status', function (req, res) {
 
 router.post('/status/country', function(req, res) {
     var country = req.body.country
-    //console.log(country)
+
     if (!countries.some(c=> {return c.code==country})){
         res.send(null)
         return
     }
     db.collection('facebook_ads_' + country).aggregate([
+        {
+            '$match': {'currency': countryCurrencyMap[country]}, 
+        },
+        {
+            '$match': {'funding_entity': {'$ne': null}}
+        },
         {
             '$sort': {
                 'latest_collected': -1
@@ -113,40 +155,41 @@ router.post('/status/country', function(req, res) {
         try {
             var timestamp = data[0].latest_collected
 
-            db.collection('facebook_ads_' + country).countDocuments().then(n => {
+            db.collection('facebook_ads_' + country).countDocuments({'currency': countryCurrencyMap[country], 'funding_entity': {'$ne': null}}).then(n => {
                 res.send({
                     timestamp: timestamp,
                     total_ads: n
                 })
             })
         } catch(e) {
-            console.log(e);
-            // [Error: Uh oh!]
         }
     })
 })
 
 router.post('/facebook_ads_v2/heatmap', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
+    console.log(dates);
     var country = req.body.country
-    //console.log(country)
     generateHeatmap(start, end, country, res)
 });
 
 router.post('/facebook_ads_v2/funder_pages', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
+    console.log(dates);
     var funder = req.body.funder
     var country = req.body.country
     if (funder == '') funder = null;
-    //console.log('/facebook_ads_v2/funder_pages')
     generateFunderPages(start, end, funder, country, res)
 });
 
 router.post('/facebook_ads_v2/funder_demographics', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
     var funder = req.body.funder
     var country = req.body.country
     if (funder == '') funder = null;
@@ -154,8 +197,9 @@ router.post('/facebook_ads_v2/funder_demographics', (req, res) => {
 });
 
 router.post('/facebook_ads_v2/funder_timeline', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
     var funder = req.body.funder
     var country = req.body.country
     if (funder == '') funder = null;
@@ -164,20 +208,21 @@ router.post('/facebook_ads_v2/funder_timeline', (req, res) => {
 
 router.post('/facebook_ads_v2/funder_map', (req, res) => {
     console.log("RECEIVED MAP REQUEST")
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
     var funder = req.body.funder
     var country = req.body.country
     var page_id = req.body.page_id
     if (page_id == '') page_id = null;
     if (funder == '') funder = null;
-    // console.log(req.body)
     generateFunderMap(start, end, funder, country, page_id, res)
 });
 
 router.post('/facebook_ads_v2/frequency_table', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
     var funder = req.body.funder
     var country = req.body.country
     var page_id = req.body.page_id
@@ -187,8 +232,9 @@ router.post('/facebook_ads_v2/frequency_table', (req, res) => {
 });
 
 router.post('/facebook_ads_v2/funder_word', (req, res) => {
-    var start = parseInt(req.body.startDay)
-    var end = parseInt(req.body.endDay)
+    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
+    var start = dates[0];
+    var end = dates[1];
     var funder = req.body.funder
     var country = req.body.country
     var page_id = req.body.page_id
@@ -202,7 +248,6 @@ module.exports = router
 var heatmapData = {};
 
 function generateHeatmap(start, end, country, res=null) {
-    console.log('Generating Heatmap')
     var query = [
         {
             '$match': quickDateFilter(start, end), 
@@ -260,7 +305,6 @@ function generateHeatmap(start, end, country, res=null) {
         db.collection('facebook_ads_' + country)
             .aggregate(query)
             .toArray((err, data) => {
-                // console.log(country)
                 heatmapData[heatmapCode] = {
                     data: data,
                     timestamp: Date.now()
@@ -281,12 +325,8 @@ function getDateFilter(start, end) {
 	// include ad if it was collected at any time during the timeframe
 	var lessThan = new Date( new Date() - end*60*60*24*1000)
 	lessThan.setHours( 23, 59, 59)
-    console.log('Less than:')
-    console.log(lessThan)
 	var greaterThan = new Date( new Date() - start*60*60*24*1000)
 	greaterThan.setHours( 0, 0, 0)
-    console.log('Greater than:')
-    console.log(greaterThan)
 	
 	return {
 		'_id.timestamp': {
@@ -297,49 +337,30 @@ function getDateFilter(start, end) {
 }
 
 function quickDateFilter(start, end) {
-    var endTime = new Date( new Date() - end*60*60*24*1000)
-    var startTime = new Date( new Date() - start*60*60*24*1000)
+    var endTime = moment(end, 'MM-DD-YYYY').toDate();
+    var startTime = moment(start, 'MM-DD-YYYY').toDate();
 
     return {
-        '$and': [
-            {
-                '$or': [
-                    {
-                        'delivery_start_time': {
-                            '$gte': startTime
-                        }
-                    },
-                    {
-                        'first_collected': {
-                            '$gte': startTime
-                        }
-                    }
-                ]
-            }, {
-                '$or': [
-                    {
-                        'delivery_start_time': {
-                            '$lte': endTime
-                        }
-                    },
-                    {
-                        'delivery_stop_time': {
-                            '$lte': endTime
-                        }
-                    },
-                    {
-                        'latest_collected': {
-                            '$lte': endTime
-                        }
-                    }
-                ]
-            }
-        ]
+      '$or': [
+        { 
+          '$and': [
+            { 'delivery_stop_time': { '$in': [null,''] } },
+            { 'latest_collected': { '$gte': startTime } },
+            { 'delivery_start_time': { '$lte': endTime } }
+          ]
+        },
+        { 
+          '$and': [
+            { 'delivery_stop_time': { '$exists': true } },
+            { 'delivery_stop_time': { '$gte': startTime } },
+            { 'delivery_start_time': { '$lte': endTime } }
+          ]
+        }
+      ]
     }
 }
-
+ 
 function generateFunderPages(start, end, funder, country, res=null) {
-    console.log("Generating funder pages: " + country);
     var query = [
         {
           '$match': quickDateFilter(start, end)
@@ -411,7 +432,6 @@ function generateFunderPages(start, end, funder, country, res=null) {
 }
 
 function generateFunderDemographics(start, end, funder, country, res=null) {
-    console.log("Generating funder demographics: " + country);
     const query = [
         {
             '$match': {
@@ -481,7 +501,6 @@ function generateFunderDemographics(start, end, funder, country, res=null) {
 }
 
 function generateFunderTimeline(start, end, funder, country, res) {
-    console.log("Generating funder timeline: " + country);
     var query = [
         {
             '$match': quickDateFilter(start, end)
@@ -493,8 +512,9 @@ function generateFunderTimeline(start, end, funder, country, res) {
             }
         }, {
             '$project': {
-                'spend': 1, 
-                'first_collected': '$delivery_start_time', 
+                'spend': 1,
+                'first_collected': '$delivery_start_time',
+                'delivery_stop_time': 1,
                 'latest_collected': 1,
                 'page_id': 1
             }
@@ -511,7 +531,6 @@ function generateFunderTimeline(start, end, funder, country, res) {
 }
 
 async function generateFunderMap(start, end, funder, country, page_id, res) {
-    console.log("Generating funder map: " + country);
     if (funder === "No funding entity given") {
         funder = null;
     }
@@ -690,7 +709,6 @@ async function mergeMultipleCreativeBodies(ads) {
             for (const creativeBody of ad.creative_bodies) {
                 if (creativeBodiesCombined === "") {
                     creativeBodiesCombined = creativeBody;
-                    console.log(creativeBody);
                 }
             }
             ad.creative_bodies = creativeBodiesCombined;
@@ -732,7 +750,6 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
             
             let shortenedBody = ad.creative_bodies;
             let adId = ad._id;
-            console.log(adId)
             shortenedBody = shortenedBody.replace(/\n/g, ' ');
             const words = shortenedBody.split(/\s+/);
             
@@ -744,7 +761,6 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
 
             shortenedBody = shortenedBody.replace(/#/g, ''); // Remove hashtags, it breaks the URL search
 
-            console.log(creativeBodyEncoded)
 
             // const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
             const snapshotUrl = `https://www.facebook.com/ads/library/?id=${adId}`                
@@ -769,7 +785,6 @@ function createAdsSummaryTable(ads, country, maxTableLength = 100) {
 }
 
 async function generateFreqTable(start, end, funder, country, page_id = null, res) {
-    console.log("Generating frequency table: " + country);
 
     // Only add the page name to the ads if pageId is provided
     let pageName = '';
@@ -799,8 +814,8 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
     // Replace with the appropriate query parameters
     // Currently using temporary parameters
     const _country = country;
-    const start_time = new Date( new Date() - start*60*60*24*1000)
-    const end_time = new Date( new Date() - end*60*60*24*1000)
+    var start_time = moment(start, 'MM-DD-YYYY').toDate();
+    var end_time = moment(end, 'MM-DD-YYYY').toDate();
     
     const queryParams = new URLSearchParams();
     if (page_id != null) {
@@ -813,7 +828,6 @@ async function generateWordMap(start, end, funder, country, is_wordcloud = false
     queryParams.append("end_time", end_time.toISOString());
     
     const fullUrl = apiUrl + "?" + queryParams.toString();
-    
     try {
         // Parse the URL
         const url = new URL(fullUrl);

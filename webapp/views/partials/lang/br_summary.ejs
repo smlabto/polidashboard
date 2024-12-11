@@ -356,8 +356,8 @@
 	function getRegionLabel(id) {
 		code = regionCodes[id.region]
 		if (code == undefined) {
-			console.log("Region not found (adding to 'other'):")
-			console.log(id.region)
+			//console.log("Region not found (adding to 'other'):")
+			//console.log(id.region)
 			return 'Other'
 		}
 		return code
@@ -502,14 +502,14 @@
 		}
 
 		// Fill rows based on data
-		console.log("timeline data")
-		console.log(data)
+		//console.log("timeline data")
+		//console.log(data)
 		data.forEach(ad => {
 			var row = rows.map(el => el[0]).indexOf(rangeToLabel(ad.spend))
 			for (var c = 1; c < rows[0].length; c++) {
-				//console.log("rows[0][c] = ", rows[0][c])
-				//console.log("ad.first_collected = ", ad.first_collected, "; ad.latest_collected = ", ad.latest_collected)
-				//console.log("Date.parse(ad.first_collected) = ", Date.parse(ad.first_collected), ";  Date.parse(ad.latest_collected) = ",  Date.parse(ad.latest_collected))
+				////console.log("rows[0][c] = ", rows[0][c])
+				////console.log("ad.first_collected = ", ad.first_collected, "; ad.latest_collected = ", ad.latest_collected)
+				////console.log("Date.parse(ad.first_collected) = ", Date.parse(ad.first_collected), ";  Date.parse(ad.latest_collected) = ",  Date.parse(ad.latest_collected))
 				if (rows[0][c] > Date.parse(ad.first_collected) && rows[0][c] < Date.parse(ad.latest_collected)) {
 					rows[row][c]++;
 				}
@@ -627,8 +627,8 @@
 						foundUnderage = true
 					}
 				} else {
-					console.log("NOT IN DOMAIN")
-					console.log(point)
+					//console.log("NOT IN DOMAIN")
+					//console.log(point)
 				}
 			}
 
@@ -691,7 +691,7 @@
 			window.open(d.url, '_blank')
 		}
 
-		console.log(cleanedData)
+		//console.log(cleanedData)
 		if (data.length < 1000) {
 			// Draw and style each of the dots
 			svg.append('g')

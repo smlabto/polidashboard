@@ -2,9 +2,17 @@
 	<div class="col-sm-6">
 		<div class="widget-container boxed">
             <div class="inner">
-                <h3 class="widget-title">
-                    Collectors
-                </h3>
+                <div class="navbar-header">
+                    <h3>Collectors</h3>
+                </div>
+                <div class="navbar-collapse" id="nav-items" style="align-self: center;">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a class="navbar-item" style="color: black; border: 1px solid #a6a6a6" href="https://polidashboard.statuspage.io/" target="_blank"><i class="fa-solid fa-up-right-from-square"></i>&nbsp; <span>View Data Collection Overtime</span></a>
+                        </li>
+                    </ul>
+                </div>
+                <hr style="margin: 8px;">
                 <table id="collector-table">
                     <thead>
                         <tr>
@@ -47,8 +55,16 @@ countries = <%- JSON.stringify(countries) %>
 countries.forEach(c => {
     var row = d3.select('#collector-table tbody')
         .append('tr')
+    
+    row.append('td')
+        .text(c.name)
+
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true);
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true);
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true).style('width', '24px');
+
     $.post('/status/country', {country: c.code}, data => {
-        console.log(data)
+        row.html('');
         row.append('td')
             .text(c.name)
         row.append('td')
@@ -69,7 +85,27 @@ countries.forEach(c => {
             .attr('class', status)
 
     })
-
-    
 })
 </script>
+
+<style>
+    /* HTML: <div class="loader"></div> */
+    .status-loader {
+        border-radius: 5px;
+        width: 60px;
+        height: 11px;
+        background: 
+            linear-gradient(90deg,#0001 33%,#0005 50%,#0001 66%)
+            #f2f2f2;
+        background-size:300% 100%;
+        animation: l1 1s infinite linear;
+    }
+    @keyframes l1 {
+        0% {background-position: right}
+    }
+
+    .loading-cell {
+        justify-items: right;
+        padding: 0;
+    }
+</style>

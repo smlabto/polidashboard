@@ -4,6 +4,8 @@ from datetime import date, datetime, timedelta
 import pymongo
 from time import sleep
 import sys
+import requests
+import json
 
 api_key = os.environ.get("FACEBOOK_API_KEY")
 
@@ -52,10 +54,20 @@ def update_ad(ad, country):
             if 'bylines' in ad else None,
         'spend': {
             'lower_bound': int(ad['spend']['lower_bound'])
-                if 'spend' in ad and 'lower_bound' in ad['impressions'] else None,
+                if 'spend' in ad and 'lower_bound' in ad['spend'] else None,
             'upper_bound': int(ad['spend']['upper_bound'])
-                if 'spend' in ad and 'upper_bound' in ad['impressions'] else None
+                if 'spend' in ad and 'upper_bound' in ad['spend'] else None
         },
+        'publisher_platforms': ad['publisher_platforms']
+            if 'publisher_platforms' in ad else None,
+        'target_locations': ad['target_locations']
+            if 'target_locations' in ad else None,
+        'target_gender': ad['target_gender']
+            if 'target_gender' in ad else None,   
+        'target_ages': ad['target_ages']
+            if 'target_ages' in ad else None,  
+        'estimated_audience_size': ad['estimated_audience_size']
+            if 'estimated_audience_size' in ad else None,
         'latest_collected': datetime.now()
     }
 
@@ -144,12 +156,16 @@ def update_regions(ad, country):
             }, upsert=True)
 
 def update_page(ad, country):
+    page_name = ad.get('page_name', '')
+    data_to_set = {
+        'name': page_name
+    }
+    if page_name == '':
+        data_to_set['is_empty'] = True
     db['facebook_pages_' + country].update_one({
         '_id': ad['page_id']
     }, {
-        '$set': {
-            'name': ad['page_name']
-        }
+        '$set': data_to_set
     }, upsert=True)
 
 def ensure_indices(country):
@@ -157,7 +173,18 @@ def ensure_indices(country):
     db['facebook_audiences_' + country].create_index('_id.ad')
     db['facebook_regions_'  + country].create_index('_id.ad')
     db['facebook_ads_'  + country].create_index('funding_entity')
+    db['facebook_ads_'  + country].create_index('currency')    
     db['facebook_ads_' + country].create_index([('first_collected', pymongo.ASCENDING), ('latest_collected', pymongo.ASCENDING)])
+    db['facebook_ads_' + country].create_index([
+        ('delivery_stop_time', pymongo.ASCENDING),
+        ('latest_collected', pymongo.ASCENDING),
+        ('delivery_start_time', pymongo.ASCENDING)
+    ])
+    db['facebook_ads_' + country].create_index([
+        ('delivery_stop_time', pymongo.ASCENDING),
+        ('delivery_start_time', pymongo.ASCENDING)
+    ])
+
 
 if __name__=="__main__":
     try:
@@ -167,32 +194,36 @@ if __name__=="__main__":
         exit()
 
     print('Running ', country, datetime.now())
+
+    page_limit = 100
     
-    after_date = datetime.now() - timedelta(days=3) # Only get ads from the last 3 days
+    after_date = datetime.now() - timedelta(days=2) # Only get ads from the last 2 days
     after_date = after_date.strftime('%Y-%m-%d')
 
+    n = 0
     collector = FbAdsLibraryTraversal(
         api_key,
         "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages,estimated_audience_size",
         ".",
+        # "''",
         country,
         after_date=after_date,
-        api_version="v18.0" # Current version as of August 2023
+        # cutoff_after_date=after_date,
+        page_limit=page_limit,
+        api_version="v21.0" # Current version as of Oct 2024
     )
 
     n = 0
     for ads in collector.generate_ad_archives():
         for ad in ads:
             print(ad)
-            sleep(1)
             update_ad(ad, country)
             update_audiences(ad, country)
             update_page(ad, country)
             update_timestamp(ad, country)
-            # update_regions(ad, country)
             n += 1
-
-    print(f'Got {n} ads')
+    
+    print(f'Got {n} ads | on {str(datetime.now())}')
 
     ensure_indices(country)
     print('Done')

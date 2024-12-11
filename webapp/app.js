@@ -7,15 +7,10 @@ const https = require("http") //https
 
 require('dotenv').config();
 
-mongoose.connect("mongodb://localhost/polidashboard")
-mongoose.connection.once('open', function() {
-    var port = 8000; //443;
+mongoose.connect("mongodb://localhost:27017/polidashboard");
 
-    // you need to provide these files for the  ssl certificate if you use https/port:443
-    // const options = {
-    //     key: fs.readFileSync("./ssl-key.pem"),
-    //     cert: fs.readFileSync("./ssl-cert.pem")
-    // };
+mongoose.connection.once('open', function() {
+    var port = 8080; // Or set to any open port of your choice;
 
     var app = express()
 
@@ -27,8 +22,7 @@ mongoose.connection.once('open', function() {
     var facebookRouter = require('./facebook_routes.js')
     app.use('/', facebookRouter)
     
-    var httpsServer = https.createServer(app); //options, app);
-    httpsServer.listen(port)
-
-    console.log(`listening on ${port}`)
+    app.listen(port, '127.0.0.1', () => {
+        console.log('Node.js app is running on port ' + port); // DEBUG
+    });
 })

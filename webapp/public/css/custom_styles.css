@@ -1254,3 +1254,30 @@ hr {
 	width: 1.2em;
 	height: 1.2em;
 }
+
+.funder-radio {
+	width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: rgb(218 218 218);
+	border: 1px rgb(191 191 191) solid;
+}
+
+.funder-radio:hover {
+    background-color: rgb(195 195 195);
+}
+
+.funder-radio-container {
+	margin: 13px;
+	padding: 4px;
+	max-width: 80px;
+}
+
+.funder-radio-container input:checked ~ .funder-radio {
+	background-color: #2196F3;
+}
+
+input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus {
+	outline: 1px rgb(138, 138, 138) solid;
+}

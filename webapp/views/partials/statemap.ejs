@@ -83,7 +83,6 @@
         }
 
         drawBackup() {
-            console.log("BACKUP!")
             let _d = this.data
             let _pageName = this.pageName
             let _funder = this.funder
@@ -115,7 +114,7 @@
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x).tickFormat(d3.format(".0%"))) // Format as percentage
             
-            // wrap functino taken from: https://gist.github.com/mbostock/7555321
+            // wrap function taken from: https://gist.github.com/mbostock/7555321
             function wrap(text, width) {
                 text.each(function() {
                     var text = d3.select(this),
@@ -201,7 +200,7 @@
                 .style("visibility", "visible")
                 .style("display", "flex");
 
-            d3.select("#learnmore-map li:first-child").html("<b style='font-weight: bold;'>Map is unavailable for this country</b>, the same data is reflected in the lollipop chart below.");
+            d3.select("#learnmore-map li:first-child").html("<b style='font-weight: bold;'>A map is unavailable for this country</b>, so as a workaround, we are using a lollipop chart to visualize the data.");
         }
 
         draw() {  
@@ -310,7 +309,6 @@
                 
                 if (isMobile) {
                     // Set xPos and yPos to (0, 0)
-                    console.log("IS MOBILE")
                     xPos = 20;
                     yPos = 20;
                 }
@@ -419,7 +417,6 @@
                     mapDataset.arcs[19][0][0] -= 2000; // Move danish isle closer to mainland
                     topo_data = mapDataset.objects.default;
                 } else if (country === 'in') {
-                    console.log(mapDataset.arcs)
                     for (let i = 9; i <= 16; i++) {
                         mapDataset.arcs[i][0][0] -= 100; // Move 
                         mapDataset.arcs[i][0][1] += 500; // Move 
@@ -429,7 +426,6 @@
                 else {
                     topo_data = mapDataset.objects.default;
                 }
-                console.log(topo_data);
 
                 var filteredData = topojson.feature(mapDataset, topo_data).features;
 
@@ -885,7 +881,6 @@
                 let unknownStateData = _d.find(item => item.name === "Unknown");
                 this.unknownAudience = (unknownStateData.value * 100).toFixed(2);
 
-                console.log(unknownStateData.value) // debug
                 mapTextTip
                     .html(`
                         This module shows the locations where ads funded by: <span style="background-color: #fff651;">${this.funder}</span> were shown for the selected date range...

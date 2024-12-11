@@ -1,4 +1,8 @@
 <div class="widget-container boxed">
+	<div id="filter-loading-overlay" style="display: none;">
+		<div class="filter-loader"></div>
+	</div>
+
 	<div class="inner" id="summary">
 		<div id="summary-home">
 			<h3 class="widget-title" id="top_10_title">
@@ -80,9 +84,10 @@
 								<p id="tiptext-pages"></p>
 								<!-- <hr style="border-top: 1px solid #6c6c6c"> -->
 								<ul>
-									<li>To advertise on Meta platforms, advertisers must first create at least one Facebook Page. Meta’s advertisers can set up and control multiple Facebook Pages.</li>
-									<li>By default, the dashboard will show ads statistics for all social issues, elections or politics related ads from every Facebook page(s) funded by an advertiser.</li>
-									<li>If you want to see stats from a specific Facebook page funded by an advertiser, click on the “Filter by”icon.</li>
+									<li>Meta’s advertisers can create and manage multiple Facebook Pages.</li>
+									<li>Advertisers must have at least one Facebook Page to run ads on Meta platforms.</li>
+									<li>By default, the dashboard displays statistics for all social issues, elections, or politics-related ads from all Facebook Pages funded by the advertiser.</li>
+									<li>Select the page (if there's more than one) from the list below to see statistics for all ads from a specific Facebook Page.</li>
 								</ul>
 								<br>
 								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">page_id, page_name, spend, impressions</span></span>
@@ -413,7 +418,50 @@
 
 		</div>
 	</div>
+	
 </div>
+
+<style>
+	#filter-loading-overlay {
+		padding-top: 300px;
+		background-color: #35353552;
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		z-index: 2000;
+		justify-items: center;
+	}
+	/* HTML: <div class="loader"></div> */
+	.filter-loader {
+		width: 100px;
+		aspect-ratio: 1;
+		display: grid;
+		border: 4px solid #0000;
+		border-radius: 50%;
+		border-color: #fff #0000;
+		animation: l16 1s infinite linear;
+	}
+	.filter-loader::before,
+	.filter-loader::after {    
+	content: "";
+	grid-area: 1/1;
+	margin: 2px;
+	border: inherit;
+	border-radius: 50%;
+	}
+	.filter-loader::before {
+	border-color: #f03355 #0000;
+	animation: inherit; 
+	animation-duration: .5s;
+	animation-direction: reverse;
+	}
+	.filter-loader::after {
+	margin: 8px;
+	}
+	@keyframes l16 { 
+	100%{transform: rotate(1turn)}
+	}
+</style>
 
 <script type="text/javascript">
 	// JavaScript to toggle the dropdown content
@@ -502,7 +550,6 @@
 	let requestCount = 0; // Track the number of requests made
 
 	function performRequest(url, requestData, successCallback, requestType='base') {
-		console.log("Request requested: " + url + " " + requestType);
 		activeRequests.filter(req => req.url === url && req.requestType === requestType).forEach(req => req.request.abort());
 
 		const request = $.post(url, requestData)
@@ -546,7 +593,7 @@
 		});
 
 		performRequest('/facebook_ads_v2/funder_demographics', commonData, data => {
-			console.log(data);
+			// console.log(data);
 			const filteredDemographics = pageFilter(data);
 			drawDemographics(filteredDemographics);
 			demographicsData = data;
@@ -650,7 +697,7 @@
 		chosenPage = null;
 		d3.selectAll('.page_name')
 			.style('color', "#AAAAAA")
-			.html('<i class="fas fa-filter"></i>&nbsp;No page filter selected')
+			.html('<i class="fas fa-filter"></i>&nbsp;Show Stats For All Pages')
 
 		d3.select("#chart-container").style("display", "flex");
 		d3.select('#summary-home').style('display', 'none');
@@ -722,6 +769,7 @@
 
 	function showPage(p) {
 		// Highlight statistics on a specific page
+		d3.select("#filter-loading-overlay").style("display", "block");
 		d3.select('#demographics_loader').style('display', 'block')
 		d3.select('#demographics').html('')
 		d3.select('#timeline_loader').style('display', 'block')
@@ -731,17 +779,13 @@
 		d3.select('#chart-container').html('<div id="map-tooltip"><div id="map-close"></div></div>');
 		d3.select('#regions_loader').style('display', 'block')
 		
-		$([document.documentElement, document.body]).animate({
-			scrollTop: $("#page-scroll").offset().top - 30
-		}, 500);
-
 		chosenPage = p.page_id
 		setTimeout(() => {
 			// Add the "Posted by" subtitles
 			d3.selectAll('.page_name')
 				.style('display', 'block')
 				.style('color', "#000000")
-				.html(`<i class="fas fa-filter"></i>&nbsp;Ads Posted by: "${p.page_name}" Page`)
+				.html(`<i class="fas fa-filter"></i>&nbsp;Show Stats For "${p.page_name}" Page`)
 				.append('button')
 				.attr('class', 'page_exit_button')
 				.html('<i class="fas fa-times-circle fa-lg" style="color: #CC4444;" title="Remove page filter"></i>')
@@ -758,7 +802,7 @@
 			try {
 				drawTimeline(pageFilter(timelineData))
 			} catch (err) {
-				console.log(err)
+				// console.log(err)
 			}
 			try {
 				drawDemographics(pageFilter(demographicsData))
@@ -775,7 +819,7 @@
 					rawMap = new Statemap(data, "chart-container", country, mainFunder, p.page_name);
 				});
 			} catch (err) {
-				console.log(err);
+				// console.log(err);
 			}
 
 			try {
@@ -784,11 +828,11 @@
 					.selectAll("svg")
 					.remove();
 				performRequest('/facebook_ads_v2/funder_word', commonData, data => {
-					console.log(data.result);
+					// console.log(data.result);
 					drawWordcloud(data); 
 				});
 			} catch (err) {
-				console.log(err)
+				// console.log(err)
 			}
 
 			try {
@@ -797,21 +841,27 @@
 					drawSummaryTable(data); 
 				});
 			} catch (err) {
-				console.log(err)
+				// console.log(err)
 			}
 			
-		}, 10)
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $("#page-scroll").offset().top - 30
+			}, 1000, function() {
+				d3.select("#filter-loading-overlay").style("display", "none");
+			});
+
+		}, 1)
 
 	}
 
 	function revertPage() {
 		// Remove a selected page and redraw charts
-		console.log("REVERTING")
 		chosenPage = null;
+
 		d3.selectAll('.page_name')
 			// .style('display', 'none')
 			.style('color', "#AAAAAA")
-			.html('<i class="fas fa-filter"></i>&nbsp;No page filter selected')
+			.html('<i class="fas fa-filter"></i>&nbsp;Show Stats For All Pages')
 		
 		const commonData = {
 			startDay: fbStartDay,
@@ -825,7 +875,7 @@
 		try {
 			drawTimeline(pageFilter(timelineData))
 		} catch (err) {
-			console.log(err)
+			// console.log(err)
 		}
 		try {
 			drawDemographics(pageFilter(demographicsData))
@@ -863,7 +913,7 @@
 				.selectAll("svg")
 				.remove();
 			performRequest('/facebook_ads_v2/funder_word', commonData, data => {
-				console.log(data.result);
+				// console.log(data.result);
 				drawWordcloud(data); 
 			});
 		}
@@ -877,7 +927,9 @@
 			});	
 		}
 
-
+		// Clear css for radio buttons
+		d3.selectAll('.funder-radio').style('background-color', 'rgb(218 218 218)');
+		d3.select('#all-radio-button').style('background-color', '#006ebe');
 	}
 
 	function pageFilter(d) {
@@ -920,8 +972,6 @@
 	function getRegionLabel(id) {
 		code = regionCodes[id.region]
 		if (code == undefined) {
-			console.log("Region not found (adding to 'other'):")
-			console.log(id.region)
 			return 'Other'
 		}
 		return code
@@ -1002,25 +1052,54 @@
 			d3.select(anchor) // Add a summary
 				.html("")
 
+			// Add title and horizontal line
+			d3.select('#funder_pages').append('h3').style('margin', '13px 20px').html('Filter Results By (Select an option from the list below.)');
+			d3.select('#funder_pages').append('div').style('place-items', 'center').append('hr').style('border', '1px solid lightgrey').style('margin-bottom', '0').style('width', '92%');
+
+			var allContainer = d3.select('#funder_pages').append('div').attr('class', 'page-container').style('padding', 0);
+			
+			allContainer.append('label')
+				.attr('class', 'page-left funder-radio-container page-filter-button')
+				.style("type", "radio")
+				.append('input')
+					.attr('id', 'all-radio-button')
+					.attr('type', 'radio')
+					.attr('name', 'filter')  // Use name attribute to make it a true radio button group
+					.attr('class', 'funder-radio')
+					.style('background-color', '#006ebe')
+					.on('click', function () {
+						revertPage();
+						d3.select(this).style('background-color', '#006ebe');
+					});
+
+			allContainer.append('div')
+				.attr('class', 'page-right')
+				.style('display', 'flex')
+				.style('align-items', 'center')
+				.html(`<h3 style='margin: 0;'>All Pages (Default)</h3>`);
+			
+			// Define the page containers to hold the facebook pages
 			pageContainers = d3.select(anchor)
 				.selectAll('pageContainers')
 				.data(data)
 				.enter()
 				.append('div')
 					.attr('class', 'page-container')
-					
-			// Create the left column (with the filter button)
-			var pageLefts = pageContainers.append('div')
-				.attr('class', 'page-left')
-				.style('max-wdith', '90px')
-				.append('button')
-					.style('margin', '5px')
-					.style('padding', '4px')
-					.html('<p>Filter by</p><i class="fas fa-filter fa-lg"></i>')
-					.attr('class', 'page-filter-button')
-					.on('click', d => {
-						showPage(d)
-					})
+			
+			// Create the left column (with the radio button)
+			var pageLefts = pageContainers.append('label')
+				.attr('class', 'page-left funder-radio-container page-filter-button')
+				.style("type", "radio")
+				.append('input')
+					.attr('type', 'radio')
+					.attr('name', 'filter')  // Use name attribute to make it a true radio button group
+					.attr('class', 'funder-radio')
+					.on('click', function (d) {
+						showPage(d);
+						d3.selectAll('.funder-radio').style('background-color', 'rgb(218 218 218)');
+						d3.select(this).style('background-color', '#006ebe');
+					});
+
 		} else {
 			pageContainers = d3.select(anchor)
 				.html("")
@@ -1047,7 +1126,7 @@
 		// Create the page's name and link
 		pageRights.append('p')
 			.text(function (d) {
-				if (data.length > 1) return (data.indexOf(d) + 1) + '. '
+				if (data.length > 1) return 'Page #' + (data.indexOf(d) + 1) + '. '
 				else return ''
 			})
 			.append('a')
@@ -1084,11 +1163,8 @@
 
 	updateFacebookTimestamps();
 	function updateFacebookTimestamps() {
-		end = new Date();
-		end.setDate(end.getDate() - fbEndDay);
-
-		startDay = new Date();
-		startDay.setDate(startDay.getDate() - fbStartDay);
+		startDay = moment(fbStartDay, 'MM-DD-YYYY');
+		end = moment(fbEndDay, 'MM-DD-YYYY');
 		
 		format = d3.timeFormat('%b %d, %Y');
 
@@ -1103,10 +1179,8 @@
 		d3.select('#timeline_loader').style('display', 'none')
 
 		// Get the start and end dates
-		var end = new Date()
-		end.setDate(end.getDate() - fbEndDay)
-		var start = new Date()
-		start.setDate(start.getDate() - fbStartDay)
+		start = moment(fbStartDay, 'MM-DD-YYYY').toDate();
+		end = moment(fbEndDay, 'MM-DD-YYYY').toDate();
 
 		var rows = [
 			['date'],
@@ -1141,9 +1215,10 @@
 			}
 		}
 		data.forEach(ad => {
-			var row = rows.map(el => el[0]).indexOf(timelineRangeToLabel(ad.spend))
+			var row = rows.map(el => el[0]).indexOf(timelineRangeToLabel(ad.spend));
+                        const stopTime = ad.delivery_stop_time && ad.delivery_stop_time.length > 0 ? Date.parse(ad.delivery_stop_time) : Date.parse(ad.latest_collected);
 			for (var c = 1; c < rows[0].length; c++) {
-				if (rows[0][c] > Date.parse(ad.first_collected) && rows[0][c] < Date.parse(ad.latest_collected)) {
+				if (rows[0][c] > Date.parse(ad.first_collected) && rows[0][c] <= stopTime ) {
 					rows[row][c]++;
 				}
 			}
@@ -1202,7 +1277,6 @@
 			}
 		});
 		const firstElements = rows.map(row => row[0]).slice(1);
-		console.log(firstElements)
 		chart.groups([firstElements]);
 	}
 
@@ -1257,8 +1331,6 @@
 		var cleanedData = [] // The cleaned data will be a list of objects corresponding to each dot
 		var foundUnderage = false // Most of the time we only show engagement for users 18+,
 		// but sometimes there is underage engagement that needs to be shown.
-		console.log("DATA");
-		console.log(data);
 		var genders = ['female', 'male', 'unknown']
 		for (var i = 0; i < data.length; i++) {
 			var _id = data[i]._id
@@ -1297,7 +1369,6 @@
 							}
 						} else {
 							console.log("NOT IN DOMAIN")
-							console.log(demo)
 						}
 					}
 				}
@@ -1328,7 +1399,6 @@
 				}
 			}
 		}
-		console.log(cleanedData)
 		// Remove the underage demographics if they are all zero
 		if (!foundUnderage) {
 			yDomain.splice(0, 2)
@@ -1404,8 +1474,8 @@
 			var offsetX = childRect.left - parentRect.left;
 			var offsetY = childRect.top - parentRect.top;
 
-			// console.log("OffsetX:", offsetX); // debug
-			// console.log("OffsetY:", offsetY);
+			// //console.log("OffsetX:", offsetX); // debug
+			// //console.log("OffsetY:", offsetY);
 
 			tooltip.html(tooltipText)
 				.style("left", (xPos + offsetX) + "px")     
@@ -1442,7 +1512,7 @@
 			}
 		}
 
-		// console.log(cleanedData)
+		// //console.log(cleanedData)
 		if (data.length < 1000) {
 			// Draw and style each of the dots
 			svg.append('g')

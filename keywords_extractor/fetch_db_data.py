@@ -22,13 +22,16 @@ def fetch_ads(db, country, funding_entity, page_id, start_time, end_time):
     ads_collection = db[f"facebook_ads_{country}"]
     ads = None
     if page_id is not None and funding_entity is None:
-        ads = ads_collection.find({"page_id": page_id,
-                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
-                                   "latest_collected": {"$lte": end_time}})
+        ads = ads_collection.find({"page_id": page_id, "$or": [{"$and": [{'delivery_stop_time': {'$in': [None, '']}}, {'latest_collected': {'$gte': start_time}}, {'delivery_start_time': {'$lte': end_time}}]}, {"$and": [{'delivery_stop_time': {'$exists': True}}, {'delivery_stop_time': {'$gte': start_time}}, {'delivery_start_time': {'$lte': end_time}}]}]})
+#        ads = ads_collection.find({"page_id": page_id,
+#                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
+#                                   "latest_collected": {"$lte": end_time}})
     if page_id is None and funding_entity is not None:
-        ads = ads_collection.find({"funding_entity": funding_entity,
-                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
-                                   "latest_collected": {"$lte": end_time}})
+        ads = ads_collection.find({"funding_entity": funding_entity, "$or": [{"$and": [{'delivery_stop_time': {'$in': [None, '']}}, {'latest_collected': {'$gte': start_time}}, {'delivery_start_time': {'$lte': end_time}}]}, {"$and": [{'delivery_stop_time': {'$exists': True}}, {'delivery_stop_time': {'$gte': start_time}}, {'delivery_start_time': {'$lte': end_time}}]}]})
+#        ads = ads_collection.find({"funding_entity": funding_entity,
+#                                   "$or": [{"delivery_start_time": {"$gte": start_time}}, {"first_collected": {"$gte": start_time}}],
+#                                   "latest_collected": {"$lte": end_time}})
+
     # convert to a list of dictionaries
     ads = list(ads)
     # merge multiple creative_bodies into one
