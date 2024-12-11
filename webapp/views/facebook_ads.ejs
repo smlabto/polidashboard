@@ -31,22 +31,7 @@
 	}
 
 	const country = <%- JSON.stringify(country) %>
-
-	// d3.select('header')
-	// 	.append('input')
-	// 	.attr('type', 'text')
-	// 	.attr('id', 'country')
-
-	// $('#country').countrySelect({
-	// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
-	// 	responsiveDropdown: true,
-	// 	preferredCountries: [],		
-	// 	defaultCountry: country
-	// })
-	
-	// $('#country').change(c => {
-	// 	window.location.href = "/facebook_ads_v2?country="+$("#country").countrySelect("getSelectedCountryData").iso2
-	// })
+	const requested_advertiser = <%- JSON.stringify(requested_advertiser) %>
 
     // Create the duplicate dropdown
     d3.select('#inner_country_select')
@@ -65,7 +50,7 @@
 	})
 
 	$('#duplicateCountry').change(c => {
-		console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
+		//console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2) // DEBUG
 		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
 	})
 

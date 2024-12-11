@@ -36,7 +36,7 @@
 		
 		<br>
 		<div class="dropdown" style="z-index: 15;">
-			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Political Advertisers on Meta's Platforms</button>
+			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Meta Advertisers Running Ads About Social Issues, Elections, or Politics</button>
 			<div class="dropdown-content">
 			
 				<div id="funder_table">
@@ -161,7 +161,7 @@
 	})
 
 	$('#duplicateCountry').change(c => {
-		console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
+		//console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
 		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
 	})
 	
@@ -183,7 +183,6 @@
 				country: country
 			},
 			data => {
-				console.log(data)
 				var cleaned = []	
 				var spendRanges = ['0 - 99', '100 - 499', '500 - 999', '1000 - 4999', '5000+', 'Total']
 				var grandTotal = 0
@@ -255,8 +254,8 @@
 		// Create all of the date range pickers across the site
 
 		var today = moment()
-		var startDate = moment().subtract(fbStartDay, 'days')
-		var endDate = moment().subtract(fbEndDay, 'days')
+		var startDate = moment(fbStartDay, 'MM-DD-YYYY')
+		var endDate = moment(fbEndDay, 'MM-DD-YYYY')
 		var minDate = moment(<%- JSON.stringify(firstDay) %>, 'DD-MM-YYYY')
 
 		$(function() {
@@ -267,27 +266,16 @@
 				minDate: minDate,
 				maxDate: today
 			}, function(start, end, label) {
-				// Parse input and redirect to the new page
-				end = end.startOf('day')
-				start = start.startOf('day')
-				today = moment().startOf('day')
-
-				var newEndDate = today.diff(end, 'days')
-				var newStartDate = today.diff(start, 'days')
-
-				// Impose a one week limit to US data, not needed due to optimizations in DB
-				// if ((newStartDate - newEndDate) >= 8 && country=='us') {
-				// 	alert('Due the large volume of data from the US, we are unable to show time ranges greater than one week. Please select a shorter range to continue.')
-				// } else 
+				var newStartDate = start.format('MM-DD-YYYY');
+				var newEndDate = end.format('MM-DD-YYYY');
 
 				window.location.href = `/facebook_ads_v2?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
-
 			});
 		});
 	}
 
 
 function print(something) {
-	console.log(something);
+	//console.log(something);
 }
 </script>

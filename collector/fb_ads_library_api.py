@@ -4,9 +4,10 @@
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
-# LICENSE file found here https://github.com/facebookresearch/Ad-Library-API-Script-Repository/blob/main/LICENSE
-
-# This file has been modified for the Polidashboard application
+# LICENSE file in the root directory of the original source tree.
+# Found here: https://github.com/facebookresearch/Ad-Library-API-Script-Repository/tree/main
+#
+# Modified by the Social Media Lab to serve the Polidashboard application.
 
 import json
 import re
@@ -77,29 +78,20 @@ class FbAdsLibraryTraversal:
             self.after_date
         )
         return self.__class__._get_ad_archives_from_url(
-            next_page_url, cutoff_after_date = self.cutoff_after_date, country=self.country, retry_limit=self.retry_limit
+            next_page_url, cutoff_after_date = self.cutoff_after_date, retry_limit=self.retry_limit
         )
 
     @staticmethod
     def _get_ad_archives_from_url(
-        next_page_url, cutoff_after_date="2023-10-10", country="unknown", retry_limit=5
+        next_page_url, cutoff_after_date="2023-10-10", retry_limit=5
     ):
         last_error_url = None
         last_retry_count = 0
         start_time_cutoff_after = datetime.strptime(cutoff_after_date, "%Y-%m-%d").timestamp()
         time_to_regain_access = 0
-        print("inside _get_ad_archives_from_ur ")
         while next_page_url is not None:
-            if time_to_regain_access > 0:
-                print(f"sleeping inside of ad archive for: {time_to_regain_access} minutes")
-                sleep(time_to_regain_access * 60)
-            else:
-                if country == "us":
-                    print(f"sleeping inside of ad archive for just 120 seconds to catch some air!")
-                    sleep(120)
-                else:
-                    print(f"sleeping inside of ad archive for just 60 seconds to catch some air!")
-                    sleep(60)
+            print(f"Time to regain access: {time_to_regain_access + 1} minutes")
+            sleep((time_to_regain_access + 1) * 60)
 
             try:
                 response = requests.get(next_page_url)
@@ -110,63 +102,31 @@ class FbAdsLibraryTraversal:
                 sleep(60)
                 continue
 
-            print(f"TIME: {datetime.now()}")
-            print(f"RESPONSE HEADERS: {response.headers}")
-            # print(f"RESPONSE USAGE: {response.headers['x-business-use-case-usage']}")
-
             business_use_case_usage = response.headers.get('x-business-use-case-usage', '{}')
             estimated_time = 0
             try:
                 usage_data = json.loads(business_use_case_usage)
-                # Extract 'estimated_time_to_regain_access' (assuming you are targeting the first key and the first dictionary item)
                 key = next(iter(usage_data))  # Get the first key (e.g., '1651268252335870')
-                estimated_time = usage_data[key][0].get('estimated_time_to_regain_access', 30)
+                response_headers = usage_data[key][0]
+                estimated_time = response_headers.get('estimated_time_to_regain_access', 0)
             except (json.JSONDecodeError, KeyError, IndexError):
                 estimated_time = 0
             except StopIteration:
                 print("Ecountered Stop iteration error")
                 estimated_time = 0
-                
+            
             print("Estimated time: " + str(estimated_time))
             estimated_time = int(estimated_time)
             if estimated_time > 0:
                 sleep(int(estimated_time) * 60)
 
-            db_name = "api_log_primary_key"
-            if country == "us":
-                db_name = "api_log_secondary_key"
-            try:
-                usage_data = json.loads(business_use_case_usage)
-                # Extract 'estimated_time_to_regain_access' (assuming you are targeting the first key and the first dictionary item)
-                key = next(iter(usage_data))
-                response_headers = usage_data[key][0]
+            time_to_regain_access = estimated_time
+            if int(time_to_regain_access) == 0:
+                if int(response_headers['total_time']) > 100:
+                    time_to_regain_access = 60 # make it 60 minutes
 
-                db[db_name].insert_one({
-                    "country": country,
-                    "time_requested": datetime.now(),
-                    "call_count": response_headers.get('call_count', 'N/A'),
-                    "total_cputime": response_headers.get('total_cputime', 'N/A'),
-                    "total_time": response_headers.get('total_time', 'N/A'),
-                    "estimated_time_to_regain_access": response_headers.get('estimated_time_to_regain_access', 'N/A'),
-                    "next_page_url": next_page_url
-                })
-                time_to_regain_access = response_headers['estimated_time_to_regain_access']
-                if int(time_to_regain_access) == 0:
-                    if int(response_headers['total_time']) > 100:
-                        time_to_regain_access = 60 # make it 60 minutes
-
-                if int(time_to_regain_access) > 0:
-                    continue # Go straight to sleeping since we have hit regain access limit
-
-            except Exception as ex:
-                # reponse_headers
-                db[db_name].insert_one({
-                    "country": country,
-                    "time_requested": datetime.now(),
-                    "next_page_url": next_page_url,
-                    "failed_api_call": True,
-                    "error_msg": str(ex)
-                })
+            if int(time_to_regain_access) > 0:
+                continue # Go straight to sleeping since we have hit regain access limit
                             
             if "error" in response_data:
                 if next_page_url == last_error_url:

@@ -41,6 +41,16 @@
 					`)
 			}
 			this.draw()
+
+			if (requested_advertiser != "") {
+				let d = this.data
+				for (var x = 0; x < d.length; x++) {
+					if (requested_advertiser == d[x][0]) {
+						showFunder(d[x][0].trim());
+						break;
+					}
+				}
+			}
 		}
 
 		draw() {
@@ -52,7 +62,12 @@
 					.appendTo(table)
 					.css('height', boxSize)
 					.on('click', function() {
-						showFunder(this.getAttribute('data_funder'))
+						const advertiser = this.getAttribute('data_funder');
+						const url = new URL(window.location);
+						const params = url.searchParams;
+						params.set('advertiser', advertiser);
+						window.history.replaceState({}, '', `${url.pathname}?${params.toString()}`);
+						showFunder(advertiser);
 					})
 					.append(`
 						<td class="heatmap_name_cell" colspan="2">
@@ -79,12 +94,11 @@
 					.appendTo(table)
 					.css('height', boxSize)
 					.append(`
-							<td class="heatmap_button_cell" colspan="8" onclick="heatmaps[${this.index}].showMore()">
-								<button style="font-size: 18px">See More</button>
-							</td>
-						`)
-						}
-			
+						<td class="heatmap_button_cell" colspan="8" onclick="heatmaps[${this.index}].showMore()">
+							<button style="font-size: 18px">See More</button>
+						</td>
+					`)
+			}
 		}
 		
 		sort(i) {
@@ -92,8 +106,6 @@
 			$(`#${this.tableName}_filter_${i}`).addClass('selected')
 
 			//sorts data by the value of whatever's in the i index
-			console.log(this)
-			console.log('sorting')
 			var d = this.data
 			d.sort((a, b) => {return b[i] - a[i]})
 			this.draw()
@@ -105,7 +117,6 @@
 		}
 		
 		showMore() {
-			console.log(this.numberShown)
 			this.numberShown += 10
 			this.draw()
 		}

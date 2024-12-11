@@ -64,14 +64,6 @@
         "regions": {}
     },
     {
-        "name": "DR Congo",
-        "code": "cd",
-        "first date": "15-10-2023",
-        "currency": "USD",
-        "currency symbol": "$",
-        "regions": {}
-    },
-    {
         "name": "Czechia",
         "code": "cz",
         "first date": "10-10-2023",
@@ -98,7 +90,7 @@
     {
         "name": "Egypt",
         "code": "eg",
-        "first date": "15-10-2023",
+        "first date": "03-10-2024",
         "currency": "EGP",
         "currency symbol": "E£",
         "regions": {}
@@ -117,14 +109,6 @@
         "first date": "10-10-2023",
         "currency": "EUR",
         "currency symbol": "€",
-        "regions": {}
-    },
-    {
-        "name": "Georgia",
-        "code": "ge",
-        "first date": "10-10-2023",
-        "currency": "USD",
-        "currency symbol": "$",
         "regions": {}
     },
     {
@@ -218,7 +202,7 @@
     {
         "name": "Nigeria",
         "code": "ng",
-        "first date": "15-10-2023",
+        "first date": "03-10-2024",
         "currency": "NGN",
         "currency symbol": "₦",
         "regions": {}
@@ -264,14 +248,6 @@
         "regions": {}
     },
     {
-        "name": "Spain",
-        "code": "es",
-        "first date": "10-10-2023",
-        "currency": "EUR",
-        "currency symbol": "€",
-        "regions": {}
-    },
-    {
         "name": "Slovakia",
         "code": "sk",
         "first date": "10-10-2023",
@@ -288,9 +264,17 @@
         "regions": {}
     },
     {
+        "name": "Spain",
+        "code": "es",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
         "name": "South Africa",
         "code": "za",
-        "first date": "10-10-2023",
+        "first date": "03-10-2024",
         "currency": "ZAR",
         "currency symbol": "R",
         "regions": {}
