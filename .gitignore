@@ -8,3 +8,4 @@ temp/
 topic_extraction/republican_ads.json
 *.pyc
 .env
+keywords_extractor/venv/
