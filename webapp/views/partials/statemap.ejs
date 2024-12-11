@@ -1,0 +1,1025 @@
+<script type="text/javascript">
+    const width = 970;
+    const widthOffset = 45;
+    const height = 610;
+    const outlineColor = "#888888";
+
+	class Statemap {
+		constructor(data, mapName, country='us', funder='', pageName=null) {
+			this.data = data;
+			this.mapName = mapName;
+            this.country = country;
+            this.funder = funder;
+            this.pageName = pageName;
+
+			this.draw();
+		}
+
+        async fetchTopoData() {
+            // Philippines taken from: https://github.com/macoymejia/geojsonph
+            // Italy map taken from: https://github.com/openpolis/geojson-italy/
+            // Spain map taken from: https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json
+
+            // All other maps taken from: https://code.highcharts.com/mapdata/
+            try {
+                let mapDataset = null;
+
+                const response = await fetch('maps/' + country + '.json');
+                mapDataset = await response.json();
+
+                const transformations = {
+                    'at': { scale: [0.085, -0.044], translate: [35, 520] },
+                    'au': { scale: [0.08, -0.06], translate: [63, 600] },
+                    'be': { scale: [0.11, -0.09], translate: [50, 600] },
+                    'bg': { scale: [0.087, -0.054], translate: [40, 560] },
+                    'br': { scale: [0.062, -0.063], translate: [165, 620] },
+                    'ca': { scale: [0.081, -0.061], translate: [40, 610] },
+                    'cd': { scale: [0.061, -0.058], translate: [150, 590] },
+                    'cy': { scale: [0.24, -0.2], translate: [60, 570] },
+                    'cz': { scale: [0.08, -0.048], translate: [50, 540] },
+                    'de': { scale: [0.05, -0.063], translate: [225, 620] },
+                    'dk': { scale: [0.074, -0.064], translate: [180, 630] },
+                    'ee': { scale: [0.08, -0.048], translate: [50, 540] },
+                    'eg': { scale: [0.137, -0.127], translate: [110, 580] },
+                    'es': { scale: [0.115, -0.105], translate: [-200, 1050] },
+                    'fi': { scale: [0.029, -0.061], translate: [340, 600] },
+                    'fr': { scale: [0.047, -0.047], translate: [160, 600] },
+                    'ge': { scale: [0.08, -0.044], translate: [50, 510] },
+                    'gb': { scale: [0.041, -0.061], translate: [280, 610] },
+                    'gr': { scale: [0.063, -0.061], translate: [130, 610] },
+                    'hr': { scale: [0.063, -0.061], translate: [130, 610] },
+                    'hu': { scale: [0.00296, -0.00296], translate: [50, 580] },
+                    'ie': { scale: [0.03, -0.023], translate: [200, 620] },
+                    'id': { scale: [0.08, -0.04], translate: [40, 500] },
+                    'in': { scale: [0.064, -0.064], translate: [180, 630] },
+                    'it': { scale: [0.0088, -0.0078], translate: [180, 680] },
+                    'lt': { scale: [0.082, -0.056], translate: [60, 580] },
+                    'lu': { scale: [0.043, -0.056], translate: [260, 580] },
+                    'lv': { scale: [0.083, -0.083], translate: [70, 500] },
+                    'ng': { scale: [0.075, -0.059], translate: [130, 595] },
+                    'nl': { scale: [0.058, -0.059], translate: [160, 595] },
+                    'ph': { scale: [0.0046, -0.0046], translate: [220, 620] },
+                    'pl': { scale: [0.064, -0.062], translate: [143, 620] },
+                    'pt': { scale: [0.052, -0.049], translate: [130, 600] },
+                    'ro': { scale: [0.082, -0.054], translate: [30, 570] },
+                    'se': { scale: [0.032, -0.061], translate: [330, 610] },
+                    'si': { scale: [0.00145, -0.00125], translate: [50, 575] },
+                    'sk': { scale: [0.085, -0.04], translate: [60, 480] },
+                    'za': { scale: [0.068, -0.058], translate: [110, 590] },
+                    'us': null,
+                };
+
+                const transformation = transformations[country] || null;
+
+                if (transformation) {
+                    Object.assign(mapDataset.transform || (mapDataset.transform = {}), transformation);
+                }
+                
+                return mapDataset;
+            } catch (error) {
+                console.error("Error fetching map data:", error);
+                throw error;
+            }
+        }
+
+        drawBackup() {
+            let _d = this.data
+            let _pageName = this.pageName
+            let _funder = this.funder
+            let _mapName = this.mapName
+            
+            const margin = { top: 20, right: 40, bottom: 40, left: 100 };
+		    var height = 400 - margin.top - margin.bottom
+            const width = d3.select(`#${_mapName}`).node().getBoundingClientRect().width - margin.right - margin.left;
+            
+            d3.select(`#${_mapName}`).html("");
+
+            const svg = d3.select(`#${_mapName}`)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const x = d3.scaleLinear()
+                .domain([0, 1])  // scales [0 > 1] to [0% > 100%]
+                .range([0, width]);
+
+            const y = d3.scaleBand()
+                .domain(_d.map(d => d.name))
+                .range([0, height])
+                .padding(1);
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format(".0%"))) // Format as percentage
+            
+            // wrap function taken from: https://gist.github.com/mbostock/7555321
+            function wrap(text, width) {
+                text.each(function() {
+                    var text = d3.select(this),
+                        words = text.text().split(/\s+/).reverse(),
+                        word,
+                        line = [],
+                        lineNumber = 0,
+                        lineHeight = 1.1, // ems
+                        y = text.attr("y"),
+                        dy = parseFloat(text.attr("dy")),
+                        xOffset = -8,
+                        tspan = text.text(null).append("tspan").attr("x", xOffset).attr("y", y).attr("dy", dy + "em");
+                    while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan").attr("x", xOffset).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                    }
+                    }
+                });
+            }
+
+            svg.append("g")
+                .call(d3.axisLeft(y).tickFormat(function(d) { return d; }))
+                .selectAll(".tick text")
+                .call(wrap, margin.left); // Apply the wrap function for cases of large region names
+            
+            // Generate lines for the lollipops
+            svg.selectAll(".line")
+                .data(_d)
+                .enter()
+                .append("line")
+                .attr("class", "line")
+                .attr("x1", x(0))
+                .attr("x2", d => x(d.value))
+                .attr("y1", d => y(d.name))
+                .attr("y2", d => y(d.name))
+                .attr("stroke", "black") 
+                .attr("stroke-width", 1)
+                .attr("transform", "translate(0, 0.5)");
+
+            // Generate circles for the lollipop
+            svg.selectAll(".circle")
+                .data(_d)
+                .enter()
+                .append("circle")
+                .attr("class", "circle")
+                .attr("cx", d => x(d.value))
+                .attr("cy", d => y(d.name))
+                .attr("r", 5);
+
+            // Text labels for values, position at the circle of lollipop
+            svg.selectAll(".label")
+                .data(_d)
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .attr("x", function(d) {
+                    if (d.value > 0.9) {
+                        return x(d.value) - 10;
+                    }
+                    return x(d.value) + 10;
+                })  
+                .attr("y", function(d) {
+                    if (d.value > 0.9) {
+                        return y(d.name) - 10;
+                    }
+                    return y(d.name);
+                })
+                .text(d => (d.value * 100).toFixed(2) + "%");
+            
+            svg.append("text")
+                .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text("Averaged audience for ads, (in %)");
+
+            d3.select('#map_loader').style('display', 'none');
+
+            d3.select(`#${this.mapName}`)
+                .style("visibility", "visible")
+                .style("display", "flex");
+
+            d3.select("#learnmore-map li:first-child").html("<b style='font-weight: bold;'>A map is unavailable for this country</b>, so as a workaround, we are using a lollipop chart to visualize the data.");
+        }
+
+        draw() {  
+            let _d = this.data
+            let _pageName = this.pageName
+            let _funder = this.funder
+            let _mapName = this.mapName
+            const isMobile = (document.documentElement.clientWidth < 768);
+            var tooltipContentTemplate = ``;
+            if (_pageName === null) {
+                tooltipContentTemplate = `
+                    <div class='maptip-content'>
+                        <p class='maptip-text'> 
+                            On average, <span class="tip-yellow">{statePercentage}%</span> of the audience for ads funded by <span class="tip-yellow">{funderName}</span> came from <span class="tip-yellow">{stateName}</span>. 
+                        </p>
+                        <p class='maptip-text'> 
+                            The estimated cost for reaching this audience is somewhere between <span class="tip-yellow">{costRange}</span>.
+                        </p>
+                    </div>
+                `;
+            } else {
+                tooltipContentTemplate = `
+                    <div class='maptip-content'>
+                        <p class='maptip-text'> 
+                            On average, <span class="tip-yellow">{statePercentage}%</span> of the audience for ads posted on the <span class="tip-yellow">{pageName}</span> Facebook page (funded by <span class="tip-yellow">{funderName}</span>) came from <span class="tip-yellow">{stateName}</span>. 
+                        </p>
+                        <p class='maptip-text'> 
+                            The estimated cost for reaching this audience is somewhere between <span class="tip-yellow">{costRange}</span>.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            if (isMobile) {
+                tooltipContentTemplate = tooltipContentTemplate + `
+                    <div id="map-close"></div>
+                `;
+            }
+            
+            const customColorInterpolator = t => {
+                var _interpolateColor = function(color1, color2, factor) {
+                    if (arguments.length < 3) { factor = 0.5; }
+                    var result = color1.slice();
+                    for (var i=0;i<3;i++) {
+                        result[i] = Math.round(result[i] + factor*(color2[i]-color1[i]));
+                    }
+                    return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+                };
+
+                t = Math.min(1, Math.max(0, t));
+                if (t === 0) {
+                    return `rgb(255, 255, 255)`;
+                }
+
+                const firstColor = [255, 255, 255];
+                const secondColor = [0, 110, 189];
+                const logT = Math.log10(90 * t + 10) - 1;
+                return _interpolateColor(firstColor, secondColor, logT)
+            };
+
+            const domain = [0.0, 1.0];
+
+            let svg = d3.select(`#${this.mapName} svg`);
+            if (svg.empty()) {
+                svg = d3.select(`#${this.mapName}`)
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width + widthOffset, height])
+                    .attr("style", "max-width: 100%; height: 90%;");
+            } else {
+                svg.selectAll("g").remove(); // Remove existing map elements
+            }
+            
+            const country = this.country;
+            var path = d3.geoPath();
+            
+            const g = svg.append("g");
+            
+            var tooltip = d3.select(`#${this.mapName}`).select("#map-tooltip")
+                .attr("class", "maptip")
+                .attr("state", "None")
+                .attr("percent", "None")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("z-index", 100)
+                .style("background", "black")
+                .style("text-align", "left");
+
+            function moveMapTooltip() {
+                if (tooltipPinned) { return null; }
+                var parentElement = document.getElementById("map-dropdown"); 
+                var childElement = document.getElementById("chart-container");
+
+                // Get the bounding rectangles of both elements
+                var parentRect = parentElement.getBoundingClientRect();
+                var childRect = childElement.getBoundingClientRect();
+
+                // Calculate the offset of the child element relative to its parent
+                var offsetX = childRect.left - parentRect.left; // This is needed if the navigation dropdown is open
+                var offsetY = childRect.top - parentRect.top;
+
+                var coords = d3.mouse(document.getElementById("chart-container"));
+                var xPos = coords[0] - 220; 
+                var yPos = coords[1] + 50;
+                
+                if (isMobile) {
+                    // Set xPos and yPos to (0, 0)
+                    xPos = 20;
+                    yPos = 20;
+                }
+                tooltip
+                    .style("left", xPos + offsetX + "px")
+                    .style("top", yPos + offsetY + "px")
+                    .style("visibility", "hidden");
+            }
+
+            function pinMapTooltip(pin) {
+                tooltipPinned = pin;
+            }
+
+            let highlightedPath = null;
+            let currentStateData = null;
+            let stateSpend = {};
+            var tooltipPinned = false;
+
+            function updateTooltipContent() {
+                tooltip.html(tooltipContentTemplate
+                    .replace("{stateName}", currentStateData.name)
+                    .replace("{statePercentage}", (currentStateData.value * 100).toFixed(2))
+                    .replace("{costRange}", `${currencySymbol + (stateSpend.lower_bound < 1 ? '0' : d3.format('.4s')(stateSpend.lower_bound))} - ${currencySymbol + (stateSpend.upper_bound < 1 ? '0' : d3.format('.4s')(stateSpend.upper_bound))}`)
+                    .replace("{funderName}", _funder)
+                    .replace("{pageName}", _pageName)
+                );
+                if (isMobile) {
+                    d3.select(`#${_mapName}`).select("#map-tooltip").select("#map-close")
+                        .style("position", "absolute")
+                        .style("visibility", "visible")
+                        .style("top", "15px")
+                        .style("right", "15px")
+                        .style("scale", "1.5")
+                        .html(`<i class="far fa-times-circle"></i>`)
+                        .on("click", function() {
+                            tooltip.style("visibility", "hidden");
+                            d3.select('#map-close').style("visibility", "hidden");
+                        });
+                }
+            }
+
+            this.fetchTopoData().then(mapDataset => {
+
+                function handleMouseOver(id) {
+                    if (tooltipPinned) { return null; }
+                    tooltip.style("visibility", "visible");
+                    if (currentStateData === null) {
+                        currentStateData = _d.find(item => item.stateId === id);
+                        stateSpend = {
+                            lower_bound: currentStateData.minSpend,
+                            upper_bound: currentStateData.maxSpend,
+                        };
+                    }
+                    updateTooltipContent();
+                    highlightedPath = g.append("path")
+                        .attr("fill", "none")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 2)
+                        .attr("stroke-linejoin", "round")
+                        .attr("d", path(topojson.mesh(mapDataset, topo_data, (a, b) => a.id === id || b.id === id)))
+                        .attr("pointer-events", "none");
+                    moveMapTooltip();
+                }
+
+                function handleMouseMove(id) {
+                    if (tooltipPinned) { return null; }
+                    if (currentStateData === null) {
+                        currentStateData = _d.find(item => item.stateId === id);
+                        stateSpend = {
+                            lower_bound: currentStateData.minSpend,
+                            upper_bound: currentStateData.maxSpend,
+                        };
+                    }
+                    updateTooltipContent();
+                    moveMapTooltip();
+                    tooltip.style("visibility", "visible");
+                }
+
+                function handleMouseOut() {
+                    if (tooltipPinned) { return null; }
+                    if (!isMobile) {
+                        tooltip.style("visibility", "hidden");
+                    }
+                    currentStateData = null;
+                    if (highlightedPath) {
+                        highlightedPath.remove();
+                        highlightedPath = null;
+                    }
+                }
+
+                d3.select('#map_loader').style('display', 'none');
+                
+                var topo_data = null;
+                // ########################################################
+                // ### CHANGE WHICH VARIABLE IS USED FOR topo_data HERE ###
+                // ########################################################
+                if (country === 'us') {
+                    topo_data = mapDataset.objects.states;
+                } else if (country === 'es') {
+                    for (let i = 70; i <= 79; i++) { // Move canary islands closer to mainland
+                        mapDataset.arcs[i][0][0] += 2400;
+                        mapDataset.arcs[i][0][1] += 4300;
+                    }
+                    topo_data = mapDataset.objects.autonomous_regions;
+                } else if (country === 'dk') {
+                    mapDataset.arcs[19][0][0] -= 2000; // Move danish isle closer to mainland
+                    topo_data = mapDataset.objects.default;
+                } else if (country === 'in') {
+                    for (let i = 9; i <= 16; i++) {
+                        mapDataset.arcs[i][0][0] -= 100; // Move 
+                        mapDataset.arcs[i][0][1] += 500; // Move 
+                    }
+                    topo_data = mapDataset.objects.default;
+                }
+                else {
+                    topo_data = mapDataset.objects.default;
+                }
+
+                var filteredData = topojson.feature(mapDataset, topo_data).features;
+
+                const states = g.append("g")
+                    .attr("cursor", "pointer")
+                    .selectAll("path")
+                    .data(topojson.feature(mapDataset, topo_data).features)
+                    .enter().append("path")
+                    .attr("d", path)
+                    .attr("class", "county")
+                    .attr("data-fips", d => { return d.id })
+                    .attr("fill", d => {
+                        const stateData = _d.find(item => item.stateId === d.id);
+                        if (country == 'cy' && d.id == 'BOT') { return 'rgba(190, 190, 190, 0.6)' }
+                        return customColorInterpolator(stateData ? Number(stateData.value).toFixed(20) : 0);
+                    })
+                    .attr("cursor", d => {
+                        if (country === 'cy' && d.id === 'BOT') { return 'default'; }
+                        return 'pointer';
+                    })
+                    .on("mouseover", function(e,d) {
+                        const hoveredData = d3.select(this).data()[0]; // Get the data associated with the hovered element
+                        if (country === 'es' && (hoveredData.id === '04' || hoveredData.id === '05')) { return; }
+                        if (country == 'cy' && hoveredData.id == 'BOT') { return; }
+                        handleMouseOver(hoveredData.id);
+                    })
+                    .on("mousemove", function(e,d) {
+                        const hoveredData = d3.select(this).data()[0];
+                        if (country === 'es' && (hoveredData.id === '04' || hoveredData.id === '05')) { return; }
+                        if (country == 'cy' && hoveredData.id == 'BOT') { return; }
+                        handleMouseMove(hoveredData.id)
+                    })
+                    .on("mouseout", handleMouseOut)
+
+                const smallTerritoryBoxes = [
+                    {
+                        country: 'ca',
+                        id: 'CA.PE',
+                        name: 'P.E.I.',
+                        squareSize: 40,
+                        squareX: 820,
+                        squareY: 560,
+                        lineXOffset: 0,
+                        lineYOffset: 10,
+                        lineXEnd: 755,
+                        lineYEnd: 545,
+                    },
+                    {
+                        country: 'au',
+                        id: 'AU.ACT',
+                        name: 'A.C.T.',
+                        squareSize: 50,
+                        squareX: 780,
+                        squareY: 500,
+                        lineXOffset: 1,
+                        lineYOffset: 1,
+                        lineXEnd: 690,
+                        lineYEnd: 455,
+                    },
+                    {
+                        country: 'br',
+                        id: 'BR.DF',
+                        name: 'D.F.',
+                        squareSize: 50,
+                        squareX: 740,
+                        squareY: 495,
+                        lineXOffset: 1,
+                        lineYOffset: 1,
+                        lineXEnd: 583,
+                        lineYEnd: 335,
+                    },
+                    {
+                        country: 'de',
+                        id: 'DE.BE',
+                        name: 'Berlin',
+                        squareSize: 60,
+                        squareX: 764,
+                        squareY: 170,
+                        lineXOffset: 1,
+                        lineYOffset: 25,
+                        lineXEnd: 649,
+                        lineYEnd: 195,
+                    },
+                    {
+                        country: 'de',
+                        id: 'DE.HH',
+                        name: 'Hamburg',
+                        squareSize: 60,
+                        squareX: 150,
+                        squareY: 20,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 435,
+                        lineYEnd: 110,
+                    },
+                    {
+                        country: 'de',
+                        id: 'DE.HB',
+                        name: 'Bremen',
+                        squareSize: 60,
+                        squareX: 100,
+                        squareY: 160,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 379,
+                        lineYEnd: 146,
+                    },
+                    {
+                        country: 'eg',
+                        id: 'EG.UQ',
+                        name: 'Luxor Governorate',
+                        squareSize: 60,
+                        squareX: 760,
+                        squareY: 247,
+                        lineXOffset: 0,
+                        lineYOffset: 30,
+                        lineXEnd: 528,
+                        lineYEnd: 362,
+                    },
+                    {
+                        country: 'fi',
+                        id: 'FI.AI',
+                        name: 'Åland Islands',
+                        squareSize: 40,
+                        squareX: 270,
+                        squareY: 550,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.LD',
+                        name: 'Lakshadweep',
+                        squareSize: 60,
+                        squareX: 130,
+                        squareY: 500,
+                        lineXOffset: 59,
+                        lineYOffset: 59,
+                        lineXEnd: 268,
+                        lineYEnd: 590,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.PY',
+                        name: 'Puducherry',
+                        squareSize: 40,
+                        squareX: 500,
+                        squareY: 520,
+                        lineXOffset: 0,
+                        lineYOffset: 18,
+                        lineXEnd: 435,
+                        lineYEnd: 538,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.CH',
+                        name: 'Chandigarh',
+                        squareSize: 60,
+                        squareX: 130,
+                        squareY: 40,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 358,
+                        lineYEnd: 95,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.DN',
+                        name: 'Dadra and Nagar Haveli',
+                        squareSize: 60,
+                        squareX: 110,
+                        squareY: 300,
+                        lineXOffset: 60,
+                        lineYOffset: 30,
+                        lineXEnd: 277,
+                        lineYEnd: 332,
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.DL',
+                        name: 'Delhi',
+                        squareSize: 60,
+                        squareX: 550,
+                        squareY: 60,
+                        lineXOffset: 1,
+                        lineYOffset: 59,
+                        lineXEnd: 389,
+                        lineYEnd: 135,
+                    },
+                    {
+                        country: 'id',
+                        id: 'ID.JK',
+                        name: 'Jakarta',
+                        squareSize: 40,
+                        squareX: 150,
+                        squareY: 480,
+                        lineXOffset: 20,
+                        lineYOffset: 0,
+                        lineXEnd: 240,
+                        lineYEnd: 394,
+                    },
+                ]
+
+                function createSmallTerritoryBox(box) {
+                    if (box.country !== country) {
+                        return;
+                    }
+                    const lineXStart = box.squareX + box.lineXOffset;
+                    const lineYStart = box.squareY + box.lineYOffset;
+                    const lineData = [
+                        [lineXStart, lineYStart],
+                        [box.lineXEnd, box.lineYEnd]
+                    ];
+
+                    g.append("path")
+                        .attr("d", path({ type: "LineString", coordinates: lineData }))
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1);
+                    if (box.id === 'IN.PY') {
+                        g.append("path")
+                            .attr("d", path({ type: "LineString", coordinates: [[500, 530], [435, 515]] }))
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 1);
+                        g.append("path")
+                            .attr("d", path({ type: "LineString", coordinates: [[510, 520], [490, 405]] }))
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 1);
+                    }
+                        
+                    const territorySquare = g.append("rect")
+                        .attr("x", box.squareX)
+                        .attr("y", box.squareY)
+                        .attr("width", box.squareSize)
+                        .attr("height", box.squareSize)
+                        .attr("stroke", outlineColor)
+                        .attr("rx", 5) // Adjust the radius for rounded corners as needed
+                        .attr("ry", 5) // Adjust the radius for rounded corners as needed
+                        .attr("data-fips", d => { return box.id })
+                        .attr("fill", d => {
+                            const stateData = _d.find((item) => item.stateId === box.id);
+                            return customColorInterpolator(stateData ? Number(stateData.value).toFixed(20) : 0);
+                        }); // Set the square's fill color
+                    
+                    territorySquare
+                        .on("mouseover", function(e,d) {
+                            if (country === 'es' && (box.id === '04' || box.id === '05')) { return; }
+                            d3.select(this).attr("stroke", "black").attr("stroke-width", 2);
+                            handleMouseOver(box.id);
+                        })
+                        .on("mousemove", function(e,d) {
+                            if (country === 'es' && (box.id === '04' || box.id === '05')) { return; }
+                            handleMouseMove(box.id);
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this).attr("stroke", outlineColor);
+                            handleMouseOut();
+                        });
+                    
+                    // Add the territory label so user will know what territory the box is pointing to
+                    if (box.id === 'IN.LD' || box.id === 'IN.DL' || box.id === 'EG.UQ') {
+                        g.append("text")
+                            .attr("x", box.squareX + box.squareSize / 2)
+                            .attr("y", box.squareY - 15) // Adjust the vertical position as needed
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "16px")
+                            .text(box.name);
+                    } else {
+                        g.append("text")
+                            .attr("x", box.squareX + box.squareSize / 2)
+                            .attr("y", box.squareY + box.squareSize + 15) // Adjust the vertical position as needed
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "16px")
+                            .text(box.name);
+                    }
+                }
+                        
+                smallTerritoryBoxes.forEach(box => {
+                    createSmallTerritoryBox(box);
+                });
+                
+                // Add invisible square to smaller regions (islands) to make it easier to highlight them
+                const boxes = [
+                    {
+                        country: 'es',
+                        id: '05',
+                        x: 20,
+                        y: height - 150,
+                        width: 340,
+                        height: 150,
+                        transform: "" 
+                    },
+                    {
+                        country: 'es',
+                        id: '04',
+                        x: 770,
+                        y: 240,
+                        width: 200,
+                        height: 80,
+                        transform: "rotate(-38 " + (770 + 200 / 2) + " " + (240 + 80 / 2) + ")"
+                    },
+                    {
+                        country: 'pt',
+                        id: 'PT.AC',
+                        x: 130,
+                        y: 70,
+                        width: 350,
+                        height: 90,
+                        transform: "rotate(29 130 90)"
+                    },
+                    {
+                        country: 'pt',
+                        id: 'PT.MA',
+                        x: 310,
+                        y: 450,
+                        width: 120,
+                        height: 120,
+                        transform: "",
+                        stroke: 'black'
+                    },
+                    {
+                        country: 'in',
+                        id: 'IN.AN',
+                        x: 680,
+                        y: 420,
+                        width: 80,
+                        height: 200,
+                        transform: "",
+                        stroke: 'black'
+                    }
+                ]
+
+                function createInvisibleSquare(box) {
+                    if (box.country !== country) {
+                        return;
+                    }
+                    const islandSquare = g.append("rect")
+                        .attr("x", box.x)
+                        .attr("y", box.y)
+                        .attr("width", box.width)
+                        .attr("height", box.height)
+                        .attr("fill", "none")
+                        .attr("stroke", box.stroke)
+                        .attr("pointer-events", "all")
+                        .attr("transform", box.transform)
+                        .attr("data-fips", d => { return box.id })
+                        .on("mouseover", function(e, d) { handleMouseOver(box.id); })
+                        .on("mousemove", function(e, d) { handleMouseMove(box.id); })
+                        .on("mouseout", function() { handleMouseOut(); });
+                }
+
+                boxes.forEach(box => {
+                    createInvisibleSquare(box);
+                });
+
+
+                const lines = [
+                    {
+                        country: 'es',
+                        x1: 20,
+                        y1: height - 150,
+                        x2: 360,
+                        y2: height - 150, 
+                    },
+                    {
+                        country: 'es',
+                        x1: 360,
+                        y1: height - 150,
+                        x2: 360,
+                        y2: height, 
+                    },
+                    {
+                        country: 'pt',
+                        x1: 430,
+                        y1: 170,
+                        x2: 430,
+                        y2: 310,
+                    },
+                    {
+                        country: 'pt',
+                        x1: 130,
+                        y1: 310,
+                        x2: 430,
+                        y2: 310,
+                    }
+                ]
+
+                function createDivider(line) {
+                    if (line.country !== country) {
+                        return;
+                    }
+
+                    g.append("path")
+                        .attr("d", path({ type: "LineString", coordinates: [[line.x1, line.y1], [line.x2, line.y2]] }))
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1);
+                }
+
+                lines.forEach(line => {
+                    createDivider(line);
+                });
+
+                function addSquare(squareCoordinates) {
+                    g.append("path")
+                        .attr("d", d3.line()(squareCoordinates)) // Use d3.line() to create the path data
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1)
+                        .attr("fill", "none"); // Set the fill to "none" to make it an outline
+                }
+
+                // Create box line for Denmark island (special case as island is also part of a mainland section)
+                if (country === 'dk') {
+                    const squareCoordinates = [
+                        [705, 470], // Top-left corner
+                        [790, 470], // Top-right corner
+                        [790, 555], // Bottom-right corner
+                        [705, 555], // Bottom-left corner
+                        [705, 470], // Close the path by returning to the starting point
+                    ];
+
+                    // Create an SVG path element for the square
+                    addSquare(squareCoordinates);
+                }
+                
+                function addCircle(g, cx, cy, r) {
+                    g.append("circle")
+                        .attr("cx", cx).attr("cy", cy).attr("r", r)
+                        .attr("stroke", "black").attr("stroke-width", 1).attr("fill", "none");
+                }
+
+                // Create circles to show where very small regions are
+                if (country === 'in') { // India
+                    addCircle(g, 287, 596, 20); // Lakshadweep
+                    addCircle(g, 368, 96, 10); // Chandigarh
+                    addCircle(g, 375, 142, 15); // Delhi
+                    addCircle(g, 287, 332, 10); // Dadra and Nagar Haveli
+                }
+
+                if (country === "id") { // Indonesia
+                    addCircle(g, 244, 388, 7);
+                }
+
+                g.append("path")
+                    .attr("fill", "none")
+                    .attr("stroke", outlineColor)
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("pointer-events", "none")
+                    .attr("d", function(a, b) {
+                        return path(topojson.mesh(mapDataset, topo_data, (a, b) => true));
+                    });
+                
+
+                var mapTextTip = $("#tiptext-map");
+                // var mapTextNote = $("#tipnote-map"); 
+                let unknownStateData = _d.find(item => item.name === "Unknown");
+                this.unknownAudience = (unknownStateData.value * 100).toFixed(2);
+
+                mapTextTip
+                    .html(`
+                        This module shows the locations where ads funded by: <span style="background-color: #fff651;">${this.funder}</span> were shown for the selected date range...
+                    ` +
+                    (unknownStateData && unknownStateData.value > 0.0049 ? `<br>NOTE: <span style="background-color: #fff651;">${(unknownStateData.value * 100).toFixed(2)}%</span> of the audience of ads funded by ${this.funder} for the selected date range came from regions that were either unidentifiable or outside the selected country, and are not included in the visualization.
+                        <br>
+                        NOTE: The estimated total ads spend on people from regions that were either unidentifiable or located outside the selected country was between: <span style="background-color: #fff651;">${currencySymbol + (unknownStateData.minSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.minSpend))} and ${currencySymbol + (unknownStateData.maxSpend < 1 ? '0' : d3.format('.4s')(unknownStateData.maxSpend))}.
+                        </span>
+                        ` : "" )
+                    );
+                
+                // Make tooltip smoother (tooltip won't freeze if the user hovers over it)
+                if (!isMobile) {
+                    tooltip
+                        .on("mouseover", function() {
+                            if (tooltipPinned) { return null; }
+                            moveMapTooltip();
+                            tooltip
+                                .style("visibility", "hidden");
+                        })
+                        .on("mousemove", function() {
+                            if (tooltipPinned) { return null; }
+                            moveMapTooltip();
+                            tooltip
+                                .style("visibility", "hidden");
+                        })
+                }
+
+                d3.select(`#${this.mapName}`)
+                    .style("visibility", "visible")
+                    .style("display", "flex");
+
+            }).catch(error => {
+                // Should a map not be present, default to drawing a Lollipop graph, handled in drawBackup()
+                console.error("Error fetching topo data:", error);
+                this.drawBackup();
+                return;
+            });;
+
+            ////////////////////////////////////////
+            // -- FINISHED PROCESSING MAP DATA -- //
+            // ---- BEGIN LEGEND GENERATION! ---- //
+            
+            const margin = 40;
+            const yOffset = 300;
+            const xOffset = 30;
+
+            const gradientScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, 1]);
+
+            const grad = svg.append('defs')
+                .append('linearGradient')
+                .attr('id', 'grad')
+                .attr('x1', '0%')
+                .attr('x2', '0%')
+                .attr('y1', '0%')
+                .attr('y2', '100%');
+
+            grad.selectAll('stop')
+            .data([0, 0.1, 0.25, 1]) // Add 0.1 and 0.25 to the data array
+            .enter()
+            .append('stop')
+            .attr('offset', d => 100 * gradientScale(d) + '%')
+            .style('stop-color', d => customColorInterpolator(1 - d));
+
+            // Checking if the rect element exists, and either append it or change its visibility
+            let rect = svg.select('rect');
+            if (rect.empty()) {
+            rect = svg.append('rect')
+                .attr('x', width - xOffset)
+                .attr('y', margin + yOffset)
+                .attr('width', widthOffset - 10)
+                .attr('height', height / 2 - 2 * margin)
+                .style('outline-style', 'solid')
+                .style('outline-color', 'black')
+                .style('outline-width', '2px')
+                .style('fill', 'url(#grad)');
+            } 
+
+            // Checking if the text elements exist, and either append them or change their visibility
+            let text0 = svg.select('.text0');
+            let text10 = svg.select('.text10'); // Added text10
+            let text25 = svg.select('.text25'); // Added text25
+            let text100 = svg.select('.text100');
+            let legendTitle = svg.select('.legendTitle');
+
+            if (text0.empty()) {
+                text0 = svg.append('text')
+                    .attr('x', width + 2 - xOffset)
+                    .attr('y', height / 2 - margin + 20 + yOffset)
+                    .text('0%')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'start')
+                    .attr('class', 'text0');
+            }
+
+            if (text10.empty()) {
+                text10 = svg.append('text')
+                    .attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+                    .attr('y', height / 2 + yOffset / 2)
+                    .text('10% -')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'middle') // Center align the text
+                    .attr('class', 'text10');
+            }
+
+            if (text25.empty()) {
+                text25 = svg.append('text')
+                    .attr('x', width - 30 - xOffset) // Adjust the x-coordinate for 25%
+                    .attr('y', height / 2 + yOffset / 3)
+                    .text('25% -')
+                    .style('font-size', '20px')
+                    .attr('text-anchor', 'middle') // Center align the text
+                    .attr('class', 'text25');
+            }
+
+            if (text100.empty()) {
+                text100 = svg.append('text')
+                    .attr('x', width - 8 - xOffset)
+                    .attr('y', margin - 5 + yOffset)
+                    .text('100%')
+                    .attr('text-anchor', 'start')
+                    .style('font-size', '20px')
+                    .attr('class', 'text100');
+            }
+
+            if (legendTitle.empty()) {
+                legendTitle = svg.append('text')
+                    .attr("transform", "rotate(90)")
+                    .attr('x', margin + yOffset + 40)
+                    .attr('y', -width + xOffset - 45)
+                    .text('Log Scale')
+                    .attr('text-anchor', 'start')
+                    .style('font-size', '25px')
+                    .attr('class', 'legendTitle')
+            }
+
+		}
+
+	}
+</script>

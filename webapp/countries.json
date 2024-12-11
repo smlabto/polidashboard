@@ -1,0 +1,306 @@
+[
+    {
+        "name": "Australia",
+        "code": "au",
+        "first date": "10-10-2023",
+        "currency": "AUD",
+        "currency symbol": "$",
+        "regions": {}
+    },
+    {
+        "name": "Austria",
+        "code": "at",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Belgium",
+        "code": "be",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Brazil",
+        "code": "br",
+        "first date": "10-10-2023",
+        "currency": "BRL",
+        "currency symbol": "R$",
+        "regions": {}
+    },
+    {
+        "name": "Bulgaria",
+        "code": "bg",
+        "first date": "15-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Canada",
+        "code": "ca",
+        "first date": "10-10-2023",
+        "currency symbol": "$",
+        "currency": "CAD",
+        "regions": {}
+    },
+    {
+        "name": "Croatia",
+        "code": "hr",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Cyprus",
+        "code": "cy",
+        "first date": "15-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Czechia",
+        "code": "cz",
+        "first date": "10-10-2023",
+        "currency": "CZK",
+        "currency symbol": "CZK",
+        "regions": {}
+    },
+    {
+        "name": "Denmark",
+        "code": "dk",
+        "first date": "10-10-2023",
+        "currency": "DKK",
+        "currency symbol": "Kr.",
+        "regions": {}
+    },
+    {
+        "name": "Estonia",
+        "code": "ee",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Egypt",
+        "code": "eg",
+        "first date": "03-10-2024",
+        "currency": "EGP",
+        "currency symbol": "E£",
+        "regions": {}
+    },
+    {
+        "name": "Finland",
+        "code": "fi",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "France",
+        "code": "fr",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Germany",
+        "code": "de",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Greece",
+        "code": "gr",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Hungary",
+        "code": "hu",
+        "first date": "10-10-2023",
+        "currency": "HUF",
+        "currency symbol": "Ft",
+        "regions": {}
+    },
+    {
+        "name": "Ireland",
+        "code": "ie",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "India",
+        "code": "in",
+        "first date": "10-10-2023",
+        "currency": "INR",
+        "currency symbol": "₹",
+        "regions": {}
+    },
+    {
+        "name": "Indonesia",
+        "code": "id",
+        "first date": "10-10-2023",
+        "currency": "IDR",
+        "currency symbol": "Rp",
+        "regions": {}
+    },
+    {
+        "name": "Italy",
+        "code": "it",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Latvia",
+        "code": "lv",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Lithuania",
+        "code": "lt",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Luxembourg",
+        "code": "lu",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Malta",
+        "code": "mt",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Nigeria",
+        "code": "ng",
+        "first date": "03-10-2024",
+        "currency": "NGN",
+        "currency symbol": "₦",
+        "regions": {}
+    },
+    {
+        "name": "Netherlands",
+        "code": "nl",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Philippines",
+        "code": "ph",
+        "first date": "10-10-2023",
+        "currency": "PHP",
+        "currency symbol": "₱",
+        "regions": {}
+    },
+    {
+        "name": "Poland",
+        "code": "pl",
+        "first date": "10-10-2023",
+        "currency": "PLN",
+        "currency symbol": "zł",
+        "regions": {}
+    },
+    {
+        "name": "Portugal",
+        "code": "pt",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Romania",
+        "code": "ro",
+        "first date": "10-10-2023",
+        "currency": "RON",
+        "currency symbol": "lei",
+        "regions": {}
+    },
+    {
+        "name": "Slovakia",
+        "code": "sk",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Slovenia",
+        "code": "si",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "Spain",
+        "code": "es",
+        "first date": "10-10-2023",
+        "currency": "EUR",
+        "currency symbol": "€",
+        "regions": {}
+    },
+    {
+        "name": "South Africa",
+        "code": "za",
+        "first date": "03-10-2024",
+        "currency": "ZAR",
+        "currency symbol": "R",
+        "regions": {}
+    },
+    {
+        "name": "Sweden",
+        "code": "se",
+        "first date": "10-10-2023",
+        "currency": "SEK",
+        "currency symbol": "SEK",
+        "regions": {}
+    },
+    {
+        "name": "United Kingdom",
+        "code": "gb",
+        "first date": "10-10-2023",
+        "currency": "GBP",
+        "currency symbol": "£",
+        "regions": {}
+    },
+    {
+        "name": "United States",
+        "code": "us",
+        "first date": "10-10-2023",
+        "currency": "USD",
+        "currency symbol": "$",
+        "regions": {}
+    }
+]

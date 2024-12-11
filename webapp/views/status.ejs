@@ -1,0 +1,111 @@
+<div class="row">
+	<div class="col-sm-6">
+		<div class="widget-container boxed">
+            <div class="inner">
+                <div class="navbar-header">
+                    <h3>Collectors</h3>
+                </div>
+                <div class="navbar-collapse" id="nav-items" style="align-self: center;">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a class="navbar-item" style="color: black; border: 1px solid #a6a6a6" href="https://polidashboard.statuspage.io/" target="_blank"><i class="fa-solid fa-up-right-from-square"></i>&nbsp; <span>View Data Collection Overtime</span></a>
+                        </li>
+                    </ul>
+                </div>
+                <hr style="margin: 8px;">
+                <table id="collector-table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Total Ads to Date</th>
+                            <th>Most Recent Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+	</div>
+	<div class="col-sm-6">
+		<div class="widget-container boxed">
+            <div class="inner">                
+                <h3 class="widget-title">
+                    About PoliDashboard
+                </h3>
+                <p>
+                    <span style="font-style: italic;">Making the invisible visible</span> — <a href="https://polidashboard.com/" target="_blank">PoliDashboard</a> is an app for tracking political advertisements on Meta-owned advertising platforms such as Facebook and Instagram. It is designed to help voters, journalists, campaign staffers and others to track the use of targeted ads around social issues, elections or politics. The data is automatically updated every day via the <a href="https://www.facebook.com/ads/library/api" target="_blank">Facebook Ad API</a>.
+                </p>
+                <p>
+                    <img src="/images/SML_logo_2012_transparent_black_text.png" style="max-height: 8em; width: auto; float: left; padding-right: 10px; padding-bottom: 8px;">
+                    The dashboard is developed by the <a href="https://socialmedialab.ca/" target="_blank">Social Media Lab</a> at <a href="https://www.torontomu.ca/" target="_blank">Toronto Metropolitan University</a> as part of an international election transparency initiative. Country-specific dashboards are presented in partnership with select academic and civic partners in countries where the <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=CA&media_type=all" target="_blank">Facebook Ad Library</a> is available. <br><br><span style="font-size: 16px;">See the <a href="https://polidashboard.com/about/" target="_blank">About page</a> for up-to-date information about PoliDashboard and our various academic and civic partners.</span>
+                </p>
+                <div id='log'>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+countries = <%- JSON.stringify(countries) %>
+
+countries.forEach(c => {
+    var row = d3.select('#collector-table tbody')
+        .append('tr')
+    
+    row.append('td')
+        .text(c.name)
+
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true);
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true);
+    row.append('td').classed('loading-cell', true).append('div').classed('status-loader', true).style('width', '24px');
+
+    $.post('/status/country', {country: c.code}, data => {
+        row.html('');
+        row.append('td')
+            .text(c.name)
+        row.append('td')
+            .text(data.total_ads)
+        row.append('td')
+            .text(data.timestamp)
+
+        var now = moment()
+        var last = moment(data.timestamp)
+        if (now.diff(last, 'hours') > 24) {
+            var status = 'Down'
+        } else {
+            var status = 'Up'
+        }
+
+        row.append('td')
+            .text(status)
+            .attr('class', status)
+
+    })
+})
+</script>
+
+<style>
+    /* HTML: <div class="loader"></div> */
+    .status-loader {
+        border-radius: 5px;
+        width: 60px;
+        height: 11px;
+        background: 
+            linear-gradient(90deg,#0001 33%,#0005 50%,#0001 66%)
+            #f2f2f2;
+        background-size:300% 100%;
+        animation: l1 1s infinite linear;
+    }
+    @keyframes l1 {
+        0% {background-position: right}
+    }
+
+    .loading-cell {
+        justify-items: right;
+        padding: 0;
+    }
+</style>

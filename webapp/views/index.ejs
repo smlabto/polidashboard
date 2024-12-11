@@ -1,0 +1,191 @@
+<!doctype html>
+<!--[if lt IE 8 ]><html lang="en" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9 ]><html lang="en" class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8">
+	<title>PoliDashboard</title>
+	<meta name="author" content="Toronto Metropolitan University - Social Media Lab">
+	<meta name="keywords" content="Polidashboard Political Targeted Ads Meta Facebook Instagram">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="cache-control" content="public">
+	<meta http-equiv="cache-control" content="max-age=86400">
+	<title>PoliDashboard</title>
+	<link rel="icon" type="image/png" href="/images/PD.png">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta property="og:description" content="PoliDashboard is developed by the Social Media Lab at Toronto Metropolitan University.">
+	<meta property="og:url" content="https://polidashboard.org/">
+	<meta property="og:site_name" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta property="article:modified_time" content="2024-05-01T17:50:32+00:00">
+	<meta property="og:image" content="https://app.polidashboard.org/images/main-logo.png">
+	<meta property="og:image:width" content="200">
+	<meta property="og:image:height" content="26">
+	<meta property="og:image:type" content="image/png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="PoliDashboard is an open-source app for tracking political advertisements.">
+	<meta name="twitter:description" content="PoliDashboard is developed by the Social Media Lab at Toronto Metropolitan University as part of an international." >
+	<meta name="twitter:image" content="https://app.polidashboard.org/images/main-logo.png">
+	<meta name="twitter:site" content="polidashboard">
+	<!-- main JS libs -->
+	<script src="/js/modernizr.min.js"></script>
+	<script src="/js/jquery-1.10.2.min.js"></script>
+	<script src="/js/jquery-ui.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/jquery.customInput.js"></script>
+	<script src="/js/countrySelect.min.js"></script>
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/daterangepicker.min.js"></script>
+	
+	<!-- icons -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+	<!-- Style -->
+	<link rel="stylesheet" href="/css/countrySelect.min.css">
+    <link href="/css/bootstrap.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/css/style.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/css/custom_styles.css" media="screen" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/daterangepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c3.min.css" />
+	
+	<!-- General Scripts -->
+    <script src="/js/general.js"></script>
+
+	<!-- DataTables -->
+	<script src="/js/jquery.dataTables.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	-->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<!-- <script src="https://cdn.datatables.net/1.11.6/js/dataTables.bootstrap.min.js"></script> -->
+	
+	<!-- Responsive Menu -->
+	<script src="/js/jquery.slicknav.min.js"></script>
+	<script src="https://unpkg.com/topojson@3"></script>
+    <script src="/js/d3.v5.min.js"></script>
+    <script src="/js/c3.min.js"></script>
+	<!-- <script src="https://raw.githubusercontent.com/timdream/wordcloud2.js/gh-pages/src/wordcloud2.js"></script> -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.2/wordcloud2.min.js" integrity="sha512-f1TzI0EVjfhwKkLEFZnu8AgzzzuUBE9X4YY61EoQJhjH8m+25VKdWmEfTJjmtnm0TEP8q9h+J061kCHvx3NJDA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.7/d3.layout.cloud.min.js" integrity="sha512-hStpcyoo0rWEs2cG9t9yrzAXWstzZOjOvufYbBCIMvX4YG8kw7pU6/yUIrLup1COQQalrxels1cbJ/+X7GdYEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<!-- <script src="https://cdn.ssjsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script> -->
+
+	<script>
+	  
+    $(document).ready(function(){
+      $('.menu').slicknav();
+    });
+
+    $("#filter_date_in, #filter_date_out").daterangepicker({
+        dateFormat: 'MM dd, yy',
+    	minDate: "10/10/2023",
+        showOtherMonths: true
+	});
+	
+	const numberOfDays = <%- days %>
+	const urlParams = new URLSearchParams(window.location.search)
+	const endDay = (urlParams.has('endDay')) ? urlParams.get('endDay') : 1
+	
+	var textStyle = {
+		bold: false,
+		fontSize: 10
+	};
+	let colorSchemes = {
+		'blue' :		'#2276b4',
+		'green' :		'#009966',
+		'red' :			'#cd5c5c',
+		'dark_blue' :	'#08485f',
+		'blue_green' :	'#007277',
+		'gray' :		'#aab6c7',
+		'purple' :		'#75538a',
+		'black' :		'#000000',
+		'pink' :		'#e69696',
+		'dark_green' :	'#05553b',
+		'light_blue' :	'#a2c8e2',
+	}
+	colorSchemes.range = [
+		colorSchemes.green, 
+		colorSchemes.blue_green, 
+		colorSchemes.dark_blue, 
+		colorSchemes.purple, 
+		colorSchemes.red
+	]
+	colorSchemes.discrete = [
+		colorSchemes.green, 
+		colorSchemes.blue, 
+		colorSchemes.gray, 
+		colorSchemes.red, 
+		colorSchemes.dark_blue, 
+		colorSchemes.blue_green, 
+		colorSchemes.purple
+	]
+
+	var barOptions = {
+		'height':400,
+		'vAxis':{
+			textStyle: textStyle,
+			title: '',
+		},
+		bars: 'horizontal',
+		'legend':{'position':'none'},
+		'colors': colorSchemes.blue,
+		chartArea: {width: '100%', height: '100%', left: '100%'},
+		hAxis: {textPosition: 'in', bold: false},
+		isStacked: true
+	};
+  </script>
+
+
+
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--[if lt IE 9]><script src="js/respond.min.js"></script><![endif]-->
+</head>
+
+<body>
+	<div class="body-wrap" style="background-color: #212121;">
+		<!--container-->
+		<nav class="navbar" style="background-color: #121212;">
+			<header>
+				<div class="navbar-header">
+					<a href="https://polidashboard.com/">
+						<img alt="polidashboard" src="/images/main-logo.png" id="main-logo">
+					</a>
+				</div>
+				<div class="navbar-collapse" id="nav-items" style="align-self: center;">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a class="navbar-item" href="https://app.polidashboard.org/status"><i class="fa-solid fa-tower-broadcast"></i>&nbsp; <span>Status</span></a>
+						</li>
+						<li>
+							<a class="navbar-item" href="https://polidashboard.com/about/" target="_blank"><i class="fa-solid fa-receipt"></i>&nbsp; <span>About</span></a>
+						</li>
+						<li>
+							<a class="navbar-item" href="https://github.com/smlabto/polidashboard" target="_blank"><i class="fa-brands fa-github">&nbsp; </i>Open Source</a>
+						</li>
+					</ul>
+				</div>
+			</header>
+		</nav>
+		
+		<div class="container">
+			<div class="content" style="padding-top: 0px;">
+				
+				
+				<%- include(child) %>
+
+				<footer>
+					<p><a href="/status">Status</a></p>
+				</footer>
+			</div>
+		</div>
+	</div>
+	<!--/ container -->
+</body>
+</html>
