@@ -1,5 +1,5 @@
 import os
-from fb_ads_library_api import FbAdsLibraryTraversal
+from fb_ads_library_api_prod import FbAdsLibraryTraversal
 from datetime import date, datetime, timedelta
 import pymongo
 from time import sleep
@@ -141,20 +141,6 @@ def update_audiences(ad, country):
                 }
             }, upsert=True)
 
-def update_regions(ad, country):
-    if 'delivery_by_region' in ad:
-        for region in ad['delivery_by_region']:
-            db['facebook_regions_'  + country].update_one({
-                '_id': {
-                    'ad': ad['id'],
-                    'region': region['region']
-                }
-            }, {
-                '$set': {
-                    'percentage': float(region['percentage'])
-                }
-            }, upsert=True)
-
 def update_page(ad, country):
     page_name = ad.get('page_name', '')
     data_to_set = {
@@ -192,7 +178,7 @@ if __name__=="__main__":
     except IndexError:
         print('No country given')
         exit()
-
+    
     print('Running ', country, datetime.now())
 
     page_limit = 100
@@ -200,30 +186,31 @@ if __name__=="__main__":
     after_date = datetime.now() - timedelta(days=2) # Only get ads from the last 2 days
     after_date = after_date.strftime('%Y-%m-%d')
 
-    n = 0
-    collector = FbAdsLibraryTraversal(
-        api_key,
-        "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages,estimated_audience_size",
-        ".",
-        # "''",
-        country,
-        after_date=after_date,
-        # cutoff_after_date=after_date,
-        page_limit=page_limit,
-        api_version="v21.0" # Current version as of Oct 2024
-    )
+    n = 0            
+    try:
+        collector = FbAdsLibraryTraversal(
+            api_key,
+            "id,ad_creation_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_descriptions,ad_creative_link_titles,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,currency,delivery_by_region,demographic_distribution,bylines,impressions,languages,page_id,page_name,publisher_platforms,spend,target_locations,target_gender,target_ages,estimated_audience_size",
+            ".",
+            country,
+            after_date=after_date,
+            page_limit=page_limit,
+            api_version="v21.0", # Current version as of Oct 2024
+        )
 
-    n = 0
-    for ads in collector.generate_ad_archives():
-        for ad in ads:
-            print(ad)
-            update_ad(ad, country)
-            update_audiences(ad, country)
-            update_page(ad, country)
-            update_timestamp(ad, country)
-            n += 1
-    
+        n = 0
+        for ads in collector.generate_ad_archives():
+            for ad in ads:
+                print(ad)
+                update_ad(ad, country)
+                update_audiences(ad, country)
+                update_page(ad, country)
+                update_timestamp(ad, country)
+                n += 1
+    except Exception as e:
+        print(e)
+        pass
+
     print(f'Got {n} ads | on {str(datetime.now())}')
-
     ensure_indices(country)
     print('Done')

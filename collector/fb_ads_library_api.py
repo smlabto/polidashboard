@@ -15,6 +15,7 @@ from datetime import datetime
 
 import requests
 import pymongo
+import sys
 from time import sleep
 db = pymongo.MongoClient()['polidashboard']
 
@@ -89,8 +90,9 @@ class FbAdsLibraryTraversal:
         last_retry_count = 0
         start_time_cutoff_after = datetime.strptime(cutoff_after_date, "%Y-%m-%d").timestamp()
         time_to_regain_access = 0
+        print("inside _get_ad_archives_from_ur ")
         while next_page_url is not None:
-            print(f"Time to regain access: {time_to_regain_access + 1} minutes")
+            print(f"sleeping inside of ad archive for: {time_to_regain_access + 1} minutes")
             sleep((time_to_regain_access + 1) * 60)
 
             try:
@@ -102,31 +104,43 @@ class FbAdsLibraryTraversal:
                 sleep(60)
                 continue
 
+            # print(f"TIME: {datetime.now()}") # debug
+            # print(f"RESPONSE HEADERS: {response.headers}") # debug
+
             business_use_case_usage = response.headers.get('x-business-use-case-usage', '{}')
             estimated_time = 0
             try:
                 usage_data = json.loads(business_use_case_usage)
                 key = next(iter(usage_data))  # Get the first key (e.g., '1651268252335870')
-                response_headers = usage_data[key][0]
-                estimated_time = response_headers.get('estimated_time_to_regain_access', 0)
+                estimated_time = usage_data[key][0].get('estimated_time_to_regain_access', 30)
             except (json.JSONDecodeError, KeyError, IndexError):
                 estimated_time = 0
             except StopIteration:
                 print("Ecountered Stop iteration error")
                 estimated_time = 0
-            
+                
             print("Estimated time: " + str(estimated_time))
             estimated_time = int(estimated_time)
             if estimated_time > 0:
                 sleep(int(estimated_time) * 60)
 
-            time_to_regain_access = estimated_time
-            if int(time_to_regain_access) == 0:
-                if int(response_headers['total_time']) > 100:
-                    time_to_regain_access = 60 # make it 60 minutes
+            try:
+                usage_data = json.loads(business_use_case_usage)
+                key = next(iter(usage_data))
+                response_headers = usage_data[key][0]
 
-            if int(time_to_regain_access) > 0:
-                continue # Go straight to sleeping since we have hit regain access limit
+                time_to_regain_access = response_headers['estimated_time_to_regain_access']
+                if int(time_to_regain_access) == 0:
+                    if int(response_headers['total_time']) > 100:
+                        time_to_regain_access = 60 # make it 60 minutes
+
+                if int(time_to_regain_access) > 0:
+                    continue # Go straight to sleeping since we have hit regain access limit
+
+            except Exception as ex:
+                print("Error inside of fb_ads_library_api.py")
+                print(ex)
+                pass
                             
             if "error" in response_data:
                 if next_page_url == last_error_url:
@@ -167,6 +181,12 @@ class FbAdsLibraryTraversal:
                 next_page_url = response_data["paging"]["next"]
             else:
                 next_page_url = None
+
+            try:
+                if int(response_headers['total_time']) >= 100: # Failsafe in case API key hits limit
+                    sys.exit()
+            except:
+                pass
 
     @classmethod
     def generate_ad_archives_from_url(cls, failure_url, after_date="1970-01-01"):
