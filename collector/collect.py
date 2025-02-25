@@ -1,5 +1,5 @@
 import os
-from fb_ads_library_api_prod import FbAdsLibraryTraversal
+from fb_ads_library_api import FbAdsLibraryTraversal
 from datetime import date, datetime, timedelta
 import pymongo
 from time import sleep
