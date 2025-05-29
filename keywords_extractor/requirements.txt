@@ -17,7 +17,7 @@ fastapi==0.115.4
 filelock==3.16.1
 fonttools==4.54.1
 fsspec==2024.10.0
-h11==0.14.0
+h11==0.16.0
 huggingface-hub==0.26.2
 idna==3.10
 jellyfish==1.1.0
@@ -56,7 +56,7 @@ safetensors==0.4.5
 scikit-learn==1.5.2
 scipy==1.14.1
 segtok==1.5.11
-setuptools==75.4.0
+setuptools==78.1.1
 shellingham==1.5.4
 six==1.16.0
 smart-open==7.0.5
@@ -73,9 +73,9 @@ tabulate==0.9.0
 thinc==8.3.2
 threadpoolctl==3.5.0
 tokenizers==0.20.3
-torch==2.6.0
+torch==2.7.0
 tqdm==4.67.0
-transformers==4.48.0
+transformers==4.50.0
 typer==0.13.0
 typing_extensions==4.12.2
 tzdata==2024.2
