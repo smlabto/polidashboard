@@ -6,7 +6,7 @@
 
 <a  href="https://polidashboard.org/"  target="_blank">
 
-<img  src="https://app.polidashboard.org/images/PoliDasboard-SocialLogo.png"  height="100px"  />
+<img  src="https://app.polidashboard.org/images/polidashboard with white tagline.png"  height="120px"  />
 
 </a>
 
