@@ -91,7 +91,7 @@ Install the PostgreSQL client:
 
 ## ❇️ Database
 
-Polidashboard stores the ad data that come from Meta's platforms inside of Postgres. Before fetching any data from Meta, it is necessary to create the required database and tables with the following instructions:
+Polidashboard stores the ad data that comes from Meta's platforms inside of Postgres. Before fetching any data from Meta, it is necessary to create the required database and tables with the following instructions:
 
   
 
@@ -99,9 +99,9 @@ Polidashboard stores the ad data that come from Meta's platforms inside of Postg
 
 `sudo -u postgres psql -c "CREATE ROLE \"polidashboard-admin\" WITH LOGIN PASSWORD 'admin';"`
 
-  
+Change password as you see fit
 
-**Creating the database:**
+**Create the database:**
 
 `sudo -u postgres createdb polidashboard -O "polidashboard-admin"`
 
@@ -117,13 +117,9 @@ Polidashboard stores the ad data that come from Meta's platforms inside of Postg
 
 `sudo -u postgres psql -c "CREATE ROLE \"polidashboard-viewer\" WITH LOGIN PASSWORD 'viewer';"`
 
+Change password as you see fit
+
 `sudo -u postgres psql -d polidashboard -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO \"polidashboard-viewer\";"`
-
-  
-
-From here, change passwords as you see fit
-
-  
 
 **Create the tables in the database:**
 
@@ -160,7 +156,7 @@ audience_lower_bound, audience_upper_bound, languages)
 
   
 
-This contains all the ad-specific metadata provided by Facebook, including funding entity, impressions, spend range, and page ID.
+This contains all the ad-specific metadata provided by Facebook, including funding entity, impressions, spending range, and page ID.
 
 Each ad has only one document in this collection, which is updated each time it is collected.
 
