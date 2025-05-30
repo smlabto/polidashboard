@@ -1,17 +1,15 @@
-This file describes where the original GeoJSON/TopoJSON came from for each country
+This file describes where the original GeoJSON/TopoJSON came from for each country, including licences
 Some maps were modifying using https://mapshaper.org/
 
-US: https://d3js.org/us-10m.v1.json
+
+The following maps are public domain under Copyright (c) 2024 Highsoft AS, Based on data from Natural Earth
+copyright url: http://www.naturalearthdata.com
 DE: https://code.highcharts.com/mapdata/countries/de/de-all.topo.json
 BR: https://code.highcharts.com/mapdata/countries/br/br-all.topo.json
 AU: https://code.highcharts.com/mapdata/countries/au/au-all.topo.json
 AT: https://code.highcharts.com/mapdata/countries/at/at-all.topo.json
 BE: https://code.highcharts.com/mapdata/countries/be/be-all.topo.json
 CD: https://code.highcharts.com/mapdata/countries/cd/cd-all.topo.json
-ES: https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json
-EG: https://code.highcharts.com/mapdata/countries/eg/eg-all.topo.json
-IT: https://github.com/openpolis/geojson-italy/blob/master/topojson/limits_IT_regions.topo.json
-PH: https://github.com/macoymejia/geojsonph/blob/master/Regions/Regions.50m.json
 GB: https://code.highcharts.com/mapdata/countries/gb/custom/gb-countries.topo.json
 DK: https://code.highcharts.com/mapdata/countries/dk/dk-all.topo.json
 IN: https://code.highcharts.com/mapdata/countries/in/custom/in-all-andaman-and-nicobar.topo.json
@@ -19,13 +17,11 @@ ID: https://code.highcharts.com/mapdata/countries/id/id-all.topo.json
 CA: https://code.highcharts.com/mapdata/countries/ca/ca-all.topo.json
 PL: https://code.highcharts.com/mapdata/countries/pl/pl-all.topo.json
 CZ: https://code.highcharts.com/mapdata/countries/cz/cz-all.topo.json
-EE: https://code.highcharts.com/mapdata/countries/ee/ee-all.topo.json
 FI: https://code.highcharts.com/mapdata/countries/fi/fi-all.topo.json
 GE: https://code.highcharts.com/mapdata/countries/ge/ge-all.topo.json
+EG: https://code.highcharts.com/mapdata/countries/eg/eg-all.topo.json
 GR: https://code.highcharts.com/mapdata/countries/gr/gr-all.topo.json
 HR: https://code.highcharts.com/mapdata/countries/hr/hr-all.topo.json
-HU: https://github.com/wuerdo/geoHungary/blob/master/counties.geojson
-IE: https://gist.githubusercontent.com/carsonfarmer/9791524/raw/b27ca0d78d46a84664fe7ef709eed4f7621f7a25/irish-counties.topojson
 LT: https://code.highcharts.com/mapdata/countries/lt/lt-all.topo.json
 LU: https://code.highcharts.com/mapdata/countries/lu/lu-all.topo.json
 LV: https://code.highcharts.com/mapdata/countries/lv/lv-all.topo.json  # Modified to use the post 2021 planning regions (https://en.wikipedia.org/wiki/Planning_regions_of_Latvia_(from_2021))
@@ -34,8 +30,38 @@ NL: https://code.highcharts.com/mapdata/countries/nl/nl-all.topo.json
 PT: https://code.highcharts.com/mapdata/countries/pt/pt-all.topo.json
 RO: https://code.highcharts.com/mapdata/countries/ro/ro-all.topo.json
 SE: https://code.highcharts.com/mapdata/countries/se/se-all.topo.json
-SI: https://github.com/cufarvid/slovenia-topo/blob/main/data/regions.json
 SK: https://code.highcharts.com/mapdata/countries/sk/sk-all.topo.json
 ZA: https://code.highcharts.com/mapdata/countries/za/za-all.topo.json
 BG: https://code.highcharts.com/mapdata/countries/bg/bg-all.topo.json
+
+-----
+
+Original Repo where map of Spain was obtained from: https://github.com/martgnz/es-atlas
+License under: https://creativecommons.org/licenses/by/4.0/
+ES: https://unpkg.com/es-atlas@0.5.0/es/autonomous_regions.json
+
+-----
+
+# Original Repo where map of Italy was obtained from: https://github.com/openpolis/geojson-italy
+# Licensed under: https://creativecommons.org/licenses/by/4.0/
+IT: https://github.com/openpolis/geojson-italy/blob/master/topojson/limits_IT_regions.topo.json
+
+-----
+
+# Sourced from this repo: https://github.com/stefanb/gurs-rpe
+# Licensed under: https://creativecommons.org/licenses/by/4.0/
+SI: https://github.com/cufarvid/slovenia-topo/blob/main/data/regions.json
+
+-----
+
+The following Map(s) data © OpenStreetMap contributors, licensed under the Open Database License (ODbL): https://www.openstreetmap.org/copyright
+EE: https://code.highcharts.com/mapdata/countries/ee/ee-all.topo.json
+
+----
+
+# Miscellaneous sources
+IE: https://gist.githubusercontent.com/carsonfarmer/9791524/raw/b27ca0d78d46a84664fe7ef709eed4f7621f7a25/irish-counties.topojson
+HU: https://github.com/wuerdo/geoHungary/blob/master/counties.geojson
+PH: https://github.com/macoymejia/geojsonph/blob/master/Regions/Regions.50m.json
 CY: https://github.com/dtrihinas/cyprus-geojson/blob/master/cyprus.geojson  # Modified with mapshaper (https://mapshaper.org/) adding FID's
+US: https://d3js.org/us-10m.v1.json

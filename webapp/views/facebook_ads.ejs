@@ -29,30 +29,30 @@
 
 		return s
 	}
-
+	
 	const country = <%- JSON.stringify(country) %>
-	const requested_advertiser = <%- JSON.stringify(requested_advertiser) %>
+	var requested_advertiser = <%- JSON.stringify(requested_advertiser) %>
 
-    // Create the duplicate dropdown
-    d3.select('#inner_country_select')
-		// .append('div')
-		// .attr('class', 'country-select')
-		.append('input')
-			.attr('type', 'text')
-			.attr('id', 'duplicateCountry');
-			// .on('change', duplicateDropdownChange);
+    // // Create the duplicate dropdown
+    // d3.select('#inner_country_select')
+	// 	// .append('div')
+	// 	// .attr('class', 'country-select')
+	// 	.append('input')
+	// 		.attr('type', 'text')
+	// 		.attr('id', 'duplicateCountry');
+	// 		// .on('change', duplicateDropdownChange);
 
-	$('#duplicateCountry').countrySelect({
-		onlyCountries: <%- JSON.stringify(validCountries) %>,
-		responsiveDropdown: true,
-		preferredCountries: [],		
-		defaultCountry: country
-	})
+	// $('#duplicateCountry').countrySelect({
+	// 	onlyCountries: <%- JSON.stringify(validCountries) %>,
+	// 	responsiveDropdown: true,
+	// 	preferredCountries: [],		
+	// 	defaultCountry: country
+	// })
 
-	$('#duplicateCountry').change(c => {
-		//console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2) // DEBUG
-		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
-	})
+	// $('#duplicateCountry').change(c => {
+	// 	//console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2) // DEBUG
+	// 	window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
+	// })
 
 </script>
 
@@ -61,17 +61,13 @@
 </div>
 
 
-<div class="row">
-	<div class="col-sm-6">
+<div class="row" style="display:flex;flex-wrap: wrap; justify-content: center;">
+	<div id="left-boot-column" class="col-sm-6" style="width: 100%; max-width: 1300px;">
 		<%- include('partials/top_funders') %>
-		<!-- <% if (fs.existsSync("views/partials/lang/" + country + "_top_funders.ejs")) { %>
-			<%- include("partials/lang/" + country + "_top_funders"); %>
-		<% } else { %>
-			<%- include('partials/top_funders') %>
-		<% } %> -->
+		<%- include('partials/heatmap') %>
 	</div>
-	<%- include('partials/heatmap') %>
-	<div class="col-sm-6">
+	
+	<div id="right-boot-column" class="col-sm-6" style="display:none">
 		<%- include('partials/statemap') %> 
 		<%- include('partials/summary') %>
 	</div>

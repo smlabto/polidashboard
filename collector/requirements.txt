@@ -1,0 +1,4 @@
+dotenv=0.9.9
+psycopg2==2.9.10
+requests==2.32.3
+sshtunnel==2.4.0

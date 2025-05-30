@@ -1,125 +1,272 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+
 <script type="text/javascript">
-	const boxSize = 45
-	var heatmaps = []
+    const boxSize = 45;
+    const heatmaps = {};
 
-	function sortMap(map, index) {
-		heatmaps[map].sort(index)
-	}
+    function sortMap(map, index) {
+        heatmaps[map].sort(index);
+    }
 
-	class Heatmap {
-		constructor(data, color, tableName, labels) {
+    class Heatmap {
+        constructor(data, color, tableName, labels, absolute, sortIndex, impressionsIndex, columnGroups = null, columnPairs = [], groupColors = null, plusColumns = []) {
+            this.index = Object.keys(heatmaps).length;
+            heatmaps[tableName] = this;
 
-			this.index = heatmaps.length
-			heatmaps.push(this)
+            this.data = data;
+            this.tableName = tableName;
+            this.color = color;
+            this.numberShown = 15;
+            this.mostAds = data[0][data[0].length - 1];
+            this.labels = labels;
+            this.allData = data;
+            this.absolute = absolute;
+            this.sortIndex = sortIndex === -1 ? data[0].length - 1 : sortIndex;
+            this.impressionsIndex = impressionsIndex;
 
-			this.data = data
-			this.tableName = tableName
-			this.color = color
-			this.nShown = 0
-			this.numberShown = 15
-			this.mostAds = data[0][1]
-			this.labels = labels
-			this.allData = data
+            // Initialize column groups (default: all columns in one group)
+            this.columnGroups = columnGroups || [Array.from({ length: data[0].length - 1 }, (_, i) => i + 1)];
 
-			$(`#${this.tableName}_legend th`)
-				.not('.key')
-				.remove()
+            // Define column pairs for combined display
+            this.columnPairs = columnPairs;
 
-			for (var i = 0; i < this.labels.length; i++) {
-				$(`<th class="range_header box_width"></th>`)
-					.appendTo(`#${this.tableName}_legend`)
-				
-				$(`#${this.tableName}_legend th:last`)
-					.append(`
-						<button 
-							id="${this.tableName}_filter_${i+1}"
-							onclick="heatmaps[${this.index}].sort(${i+1})"
-						>
-							<p class="sort-label">${(this.labels[i]=='Total'?'':currencySymbol)+this.labels[i]}</p>
-							<p class="sort"><img src="/images/sort_icon.png" /></p>
-						</button>
-					`)
-			}
-			this.draw()
+            // Assign colors to column groups
+            this.groupColors = groupColors || this.columnGroups.map(() => this.color);
 
-			if (requested_advertiser != "") {
-				let d = this.data
-				for (var x = 0; x < d.length; x++) {
-					if (requested_advertiser == d[x][0]) {
-						showFunder(d[x][0].trim());
-						break;
-					}
-				}
-			}
-		}
+            // Define columns that require a "+" suffix
+            this.plusColumns = plusColumns;
 
-		draw() {
-			let d = this.data
-			var table = $(`#${this.tableName} tbody`)
-					.empty()
-			for (var row = 0; row < this.numberShown && row < d.length; row++) {
-				var tr = $(`<tr id="#${this.tableName}_${row}"></tr>`)
-					.appendTo(table)
-					.css('height', boxSize)
-					.on('click', function() {
-						const advertiser = this.getAttribute('data_funder');
-						const url = new URL(window.location);
-						const params = url.searchParams;
-						params.set('advertiser', advertiser);
-						window.history.replaceState({}, '', `${url.pathname}?${params.toString()}`);
-						showFunder(advertiser);
-					})
-					.append(`
-						<td class="heatmap_name_cell" colspan="2">
-							<i class="fas fa-hand-point-right"></i>&nbsp;&nbsp;
-							<span style="overflow-wrap: break-word; white-space: initial;">
-								${d[row][0].trim()}
-							</span>
-						</td>
-					`)
-				
-				tr.attr('data_funder', d[row][0])
-				for (var col = 1; col < d[row].length; col++) {
-					var nAds = d[row][col]
-					var opacity = Math.log(nAds) / Math.log(this.mostAds)
-					var rgba = convertHex(this.color, opacity)
-					$(`<td class="box_width">${ d[row][col] }</td>`)
-						.appendTo(tr)
-						.css('background-color', rgba)
-				}
-			}
+            // Precompute max values for each column group
+            this.groupMaxValues = this.calculateGroupMaxValues();
 
-			if (this.numberShown < this.data.length) {
-				$(`<tr id="#${this.tableName}_button_row" class="heatmap_botton_row"></tr>`)
-					.appendTo(table)
-					.css('height', boxSize)
-					.append(`
-						<td class="heatmap_button_cell" colspan="8" onclick="heatmaps[${this.index}].showMore()">
-							<button style="font-size: 18px">See More</button>
-						</td>
-					`)
-			}
-		}
-		
-		sort(i) {
-			$('.heatmap button').removeClass('selected')
-			$(`#${this.tableName}_filter_${i}`).addClass('selected')
+            this.initializeTableHeaders();
+            this.sort(this.sortIndex);
 
-			//sorts data by the value of whatever's in the i index
-			var d = this.data
-			d.sort((a, b) => {return b[i] - a[i]})
-			this.draw()
-		}
+            // Automatically show requested advertiser if applicable
+            if (requested_advertiser  != 'undefined' && tableName === 'top_funders_spend') {
+                this.showRequestedAdvertiser();
+            }
+        }
 
-		filter(query) {
-			this.data = this.allData.filter(function(d) {return d[0].toLowerCase().includes(query.toLowerCase())})
-			this.draw()
-		}
-		
-		showMore() {
-			this.numberShown += 10
-			this.draw()
-		}
+        initializeTableHeaders() {
+            const legend = $(`#${this.tableName}_legend th`).not('.key').remove();
 
-	}
+            this.labels.forEach((label, i) => {
+                if (!label) return; // Skip if the current label is null
+
+                const truncatedLabel = label.length > 20 ? `${label.substring(0, 20)}...` : label;
+                const header = `
+                    <button id="${this.tableName}_filter_${i + 1}" onclick="heatmaps['${this.tableName}'].sort(${i + 1})">
+                    <p class="sort-label" value="${label}">${truncatedLabel}</p>
+                    <p class="sort"><i style="font-size: 14px;" class="sort-img fa-solid fa-bars"></i></p>
+                    </button>
+                `;
+
+                $(`<th class="range_header box_width"></th>`)
+                    .appendTo(`#${this.tableName}_legend`)
+                    .append(header);
+                });
+
+            $(".sort-label").tooltip({
+            title: function () {
+                    return $(this).attr("value");
+                },
+                trigger: "hover",
+                placement: "bottom",
+            });
+        }
+
+        showRequestedAdvertiser() {
+            const advertiserRow = this.data.find(row => row[0].trim() === requested_advertiser);
+            showFunder(requested_advertiser);
+        }
+
+        draw() {
+            const table = $(`#${this.tableName} tbody`).empty();
+            const rowsToShow = this.data.slice(0, this.numberShown);
+
+            rowsToShow.forEach((row, rowIndex) => {
+                const tr = $(`<tr id="#${this.tableName}_${rowIndex}"></tr>`)
+                    .appendTo(table)
+                    .css('height', boxSize)
+                    .attr('data_funder', row[0])
+                    .on('click', () => this.handleRowClick(row[0]))
+                    .on('mouseenter', function () {
+                        $(this).find('i').addClass('fa-bounce');
+                    })
+                    .on('mouseleave', function () {
+                        $(this).find('i').removeClass('fa-bounce');
+                    })
+                    .append(this.createNameCell(row[0]));
+
+                row.slice(1).forEach((nAds, colIndex) => {
+                    const cell = this.createDataCell(nAds,row, colIndex + 1, row.length);
+                    tr.append(cell);
+                });
+            });
+
+            if (this.numberShown < this.data.length) {
+                this.addShowMoreButton(table);
+            }
+            $(".standard-row-cell").tooltip({
+            title: function () {
+                    return $(this).attr("value");
+                },
+                trigger: "hover",
+                placement: "auto",
+                container: "body",
+            });
+
+            $(".tooltip").remove();
+        }
+
+        handleRowClick(advertiser) {
+            const url = new URL(window.location);
+            url.searchParams.set('advertiser', advertiser);
+            window.history.replaceState({}, '', `${url.pathname}?${url.searchParams.toString()}`);
+            requested_advertiser = advertiser;
+            showFunder(advertiser);
+        }
+
+        createNameCell(name) {
+            return `
+                <td class="heatmap_name_cell" colspan="1">
+                    <i class="fa-solid fa-hand-pointer"></i>&nbsp;&nbsp;
+                    <span style="overflow-wrap: break-word; white-space: initial;">${String(name).trim()}</span>
+                </td>
+            `;
+        }
+        customNumeral(value, addPlus = false) {
+            let output = value < 1000 ? Math.round(value) : capitalizeNumeralLetters(numeral(value).format('0a'))
+            return addPlus ? `${output}+` : output;
+        }
+
+        createDataCell(nAds,row, colIndex, rowLength) {
+            const value = nAds || 0;
+
+            // Determine the color for the column group
+            const groupIndex = this.columnGroups.findIndex(group => group.includes(colIndex));
+            const cellColor = this.groupColors[groupIndex] || this.color;
+
+            const opacity = this.calculateOpacity(value, colIndex);
+            const rgba = convertHex(cellColor, opacity);
+
+            // Check if the column is part of a pair
+            const pair = this.columnPairs.find(pair => pair[0] === colIndex || pair[1] === colIndex);
+            if (pair) {
+                if (colIndex === pair[0]) {
+                    // Display col1 - col2
+                    const [col1Value, col2Value] = pair.map(index => row[index] || 0);
+                    const displayValue = `${currencySymbol + this.customNumeral(col1Value)} - ${currencySymbol + this.customNumeral(col2Value)}`;
+                    return $(`<td class="box_width standard-row-cell" value="${currencySymbol}${addCommasToNumber(col1Value)} - ${currencySymbol}${addCommasToNumber(col2Value)}">${displayValue}</td>`).css('background-color', rgba);
+                }
+            } else {
+                // Default behavior for non-paired columns
+                const addPlus = this.plusColumns.includes(colIndex);
+                const displayValue = this.absolute || colIndex === rowLength - 1
+                    ? this.customNumeral(value, addPlus)
+                    : `${Math.round(value)}%`;
+                return $(`<td class="box_width standard-row-cell" value=${addCommasToNumber(value) + (this.absolute ? '' : '%')}>${displayValue}</td>`).css('background-color', rgba);
+            }
+            
+        }
+        
+
+        calculateGroupMaxValues() {
+            // Precompute the 99th percentile value for each column group
+            return this.columnGroups.map(group => {
+            return group.map(index => {
+                const values = this.data.map(row => parseFloat(row[index]) || 0).sort((a, b) => a - b);
+                const percentileIndex = Math.floor(0.99 * (values.length - 1)); // Take the 99th percentile as the max for sigmoid
+                return values[percentileIndex];
+            }).reduce((a, b) => Math.max(a, b), 0);
+            });
+        }
+
+        calculateOpacity(value, colIndex) {
+            if (value == 0) return 0;
+
+            // Check if the column is part of a pair
+            const pair = this.columnPairs.find(pair => pair[0] === colIndex || pair[1] === colIndex);
+            const effectiveIndex = pair ? pair[0] : colIndex; // Use col1 if part of a pair
+
+            // Determine the subgroup the column belongs to
+            const groupIndex = this.columnGroups.findIndex(group => group.includes(effectiveIndex));
+            const maxInGroup = this.groupMaxValues[groupIndex];
+            const b = 3 / maxInGroup; // Heatmap opacity tuning, 3 is baseline
+            const c = maxInGroup / 2;
+            return Math.min(1.0 / (1.0 + Math.exp(-b * (value - c))), 0.8);           
+        }
+
+        addShowMoreButton(table) {
+            $(`<tr id="#${this.tableName}_button_row" class="heatmap_button_row"></tr>`)
+                .appendTo(table)
+                .css('height', boxSize)
+                .append(`
+                    <td class="heatmap_button_cell" colspan="${this.data[0].length}" onclick="heatmaps['${this.tableName}'].showMore()">
+                        <button style="font-size: 18px">See More</button>
+                    </td>
+                `);
+        }
+
+        sort(index, ignoreAscending = false) {
+            this.sortIndex = index;
+            const button = $(`#${this.tableName}_filter_${index}`);
+            let isAscending = button.hasClass('selected') ? button.data('ascending') || false : false;
+            isAscending = ignoreAscending ? !isAscending: isAscending;
+            // Check if the column is part of a pair
+            const pair = this.columnPairs.find(pair => pair[0] === index || pair[1] === index);
+            const sortIndex = pair ? pair[0] : index; // Use col1 for sorting if part of a pair
+
+            $(`#${this.tableName} i.sort-img`).removeClass('fa-arrow-down-wide-short fa-arrow-up-wide-short').addClass('fa-bars');
+            $(`#${this.tableName} button`).removeClass('selected');
+            $(`#${this.tableName}_filter_${sortIndex}`).addClass('selected');
+
+            this.data.sort((a, b) => isAscending ? a[sortIndex] - b[sortIndex] : b[sortIndex] - a[sortIndex]);
+
+
+            // Toggle the sort order
+            !ignoreAscending ? button.data('ascending', !isAscending): false;
+
+            // Update the icon based on the sort order
+            const icon = button.find('i');
+            if (isAscending) {
+                icon.removeClass('fa-arrow-down-wide-short').addClass('fa-arrow-up-wide-short');
+            } else {
+                icon.removeClass('fa-arrow-up-wide-short').addClass('fa-arrow-down-wide-short');
+            }
+
+            this.draw();
+        }
+
+        filter(query, min = 0, max = Infinity) {
+            this.data = this.allData.filter(row => {
+            const matchesQuery = row[0].toLowerCase().includes(query.toLowerCase());
+            let impressionsValue = parseFloat(row[this.impressionsIndex]) || 0;
+            const withinRange = (impressionsValue >= min) && (impressionsValue <= max);
+            return matchesQuery && withinRange;
+            });
+            this.sort(this.sortIndex, true);
+        }
+
+        showMore() {
+            this.numberShown += 10;
+            this.draw();
+        }
+    }
+
+    function capitalizeNumeralLetters(str) {
+        const letters = ['m', 'b', 't'];
+        return str
+            .split('')
+            .map(char => (letters.includes(char) ? char.toUpperCase() : char))
+            .join('');
+    }
+
+    function addCommasToNumber(num) {
+        const [integerPart, decimalPart] = num.toString().split(".");
+        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const trimmedDecimal = decimalPart ? decimalPart.replace(/0+$/, "") : "";
+        return trimmedDecimal ? `${formattedInteger}.${trimmedDecimal}` : formattedInteger;
+    }
 </script>

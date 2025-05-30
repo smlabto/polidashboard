@@ -137,7 +137,7 @@ input::-moz-focus-inner {
 input {
   line-height: normal;
 }
-input[type="checkbox"],
+input[type="checkbox"] 
 input[type="radio"] {
   box-sizing: border-box;
   padding: 0;
@@ -2606,7 +2606,9 @@ input[type="search"] {
 }
 .radio input[type="radio"],
 .radio-inline input[type="radio"],
-.checkbox input[type="checkbox"],
+.checkbox input[type="checkbox"] { 
+  appearance: checkbox;
+}
 .checkbox-inline input[type="checkbox"] {
   position: absolute;
   margin-left: -20px;

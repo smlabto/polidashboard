@@ -1,17 +1,49 @@
 {
+  "name": "polidashboard-webapp",
+  "version": "3.0.0",
+  "description": "Frontend and API server for PoliDashboard, a web app that tracks political, election-related, and social issue ads on Meta-owned platforms.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"No test suite configured yet\" && exit 0",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smlabto/polidashboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smlabto/polidashboard/issues"
+  },
+  "homepage": "https://polidashboard.org",
+  "author": "Social Media Lab, Toronto Metropolitan University",
+  "license": "AGPL-3.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
+    "@huggingface/transformers": "^3.4.0",
     "cors": "^2.8.5",
     "d3-composite-projections": "^1.4.0",
     "datatables.net": "^1.13.6",
     "datatables.net-dt": "^1.13.6",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.6",
-    "express": "^4.17.1",
+    "express": "^4.21.2",
+    "ml-distance": "^4.0.1",
     "moment": "^2.30.1",
-    "mongoose": "^6.13.6",
+    "mysql2": "^3.13.0",
+    "natural": "^8.0.1",
     "node-fetch": "^3.3.2",
-    "nodemon": "^2.0.12",
+    "nodemon": "^2.0.22",
+    "pg": "^8.13.3",
+    "pm2": "^5.4.3",
     "underscore": "^1.13.1",
+    "vectorious": "^6.1.14",
     "wordcloud": "^1.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
   }
 }

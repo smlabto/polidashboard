@@ -8,14 +8,14 @@
 # Found here: https://github.com/facebookresearch/Ad-Library-API-Script-Repository/tree/main
 #
 # Modified by the Social Media Lab to serve the Polidashboard application.
+# This file is to be used with recollect_inactive.py
 
 import json
 import re
-from datetime import datetime
-
-import requests
 import sys
+from datetime import datetime
 from time import sleep
+import requests
 
 def get_ad_archive_id(data):
     """
@@ -29,9 +29,10 @@ class FbAdsLibraryTraversal:
         "https://graph.facebook.com/{}/ads_archive?unmask_removed_content=true&ad_type=POLITICAL_AND_ISSUE_ADS&access_token={}&"
         + "fields={}&search_terms={}&ad_reached_countries={}&search_page_ids={}&"
         + "ad_active_status={}&limit={}&"
-        + "ad_delivery_date_min={}"
+        + "ad_delivery_date_min={}&"
+        + "ad_delivery_date_max={}" # Adding max date to be able to query ad range more accurately to reduce API calls
     )
-    default_api_version = "v14.0"
+    default_api_version = "v21.0"
 
     def __init__(
         self,
@@ -40,8 +41,9 @@ class FbAdsLibraryTraversal:
         search_term,
         country,
         search_page_ids="",
-        ad_active_status="ALL",
+        ad_active_status="INACTIVE", # In this case we only care to look at inactive ads, if the ad is active then the main collect.py should pick it up
         after_date="1970-01-01",
+        max_date=datetime.now().strftime('%Y-%m-%d'),
         cutoff_after_date="2023-10-10",
         page_limit=100,
         api_version=None,
@@ -53,6 +55,7 @@ class FbAdsLibraryTraversal:
         self.search_term = search_term
         self.country = country
         self.after_date = after_date
+        self.max_date = max_date
         self.cutoff_after_date = cutoff_after_date
         self.search_page_ids = search_page_ids
         self.ad_active_status = ad_active_status
@@ -74,7 +77,8 @@ class FbAdsLibraryTraversal:
             self.search_page_ids,
             self.ad_active_status,
             self.page_limit,
-            self.after_date
+            self.after_date,
+            self.max_date
         )
         return self.__class__._get_ad_archives_from_url(
             next_page_url, cutoff_after_date = self.cutoff_after_date, country=self.country, retry_limit=self.retry_limit
@@ -82,70 +86,42 @@ class FbAdsLibraryTraversal:
 
     @staticmethod
     def _get_ad_archives_from_url(
-        next_page_url, cutoff_after_date="2023-10-10", country="unknown", retry_limit=5
+        next_page_url, cutoff_after_date="2023-10-10", country="unknown", retry_limit=3
     ):
         last_error_url = None
         last_retry_count = 0
         start_time_cutoff_after = datetime.strptime(cutoff_after_date, "%Y-%m-%d").timestamp()
         time_to_regain_access = 0
-        print("inside _get_ad_archives_from_ur ")
+
         while next_page_url is not None:
-            if time_to_regain_access > 0:
-                print(f"sleeping inside of ad archive for: {time_to_regain_access + 1} minutes")
-                sleep((time_to_regain_access + 1) * 60)
-            else:
-                print(f"sleeping inside of ad archive for just 70 seconds to catch some air!")
-                sleep(70)
+            # This is the amount of time it takes for API to stay at a stable rate
+            print(f"sleeping inside of ad archive for: 130 seconds")
+            sleep(130)
+
+            response = requests.get(next_page_url)
+            response_data = json.loads(response.text)
 
             try:
-                response = requests.get(next_page_url)
-                response_data = json.loads(response.text)
-            except Exception as response_error:
-                print("There was a error with the response, sleep ~1 minute and try again")
-                print(response_error)
-                sleep(65)
-                continue
-
-            business_use_case_usage = response.headers.get('x-business-use-case-usage', '{}')
-            estimated_time = 0
-            try:
-                usage_data = json.loads(business_use_case_usage)
-                # Extract 'estimated_time_to_regain_access' (assuming you are targeting the first key and the first dictionary item)
-                key = next(iter(usage_data))  # Get the first key (e.g., '1651268252335870')
-                estimated_time = usage_data[key][0].get('estimated_time_to_regain_access', 30)
-            except (json.JSONDecodeError, KeyError, IndexError):
-                estimated_time = 0
-            except StopIteration:
-                print("Ecountered Stop iteration error")
-                estimated_time = 0
+                response_headers = list(json.loads(response.headers['x-business-use-case-usage']).values())[0][0]
+            except:
+                pass
                 
-            print("Estimated time: " + str(estimated_time))
-            estimated_time = int(estimated_time)
-            if estimated_time > 0:
-                sleep(int(estimated_time) * 60)
-
             try:
-                usage_data = json.loads(business_use_case_usage)
-                # Extract 'estimated_time_to_regain_access' (assuming you are targeting the first key and the first dictionary item)
-                key = next(iter(usage_data))
-                response_headers = usage_data[key][0]
-
+                response_headers = list(json.loads(response.headers['x-business-use-case-usage']).values())[0][0]
                 time_to_regain_access = response_headers['estimated_time_to_regain_access']
-                if int(time_to_regain_access) == 0:
-                    if int(response_headers['total_time']) > 100:
-                        time_to_regain_access = 60 # make it 60 minutes
-
-                if int(time_to_regain_access) > 0:
-                    continue # Go straight to sleeping since we have hit regain access limit
-
             except Exception as ex:
-                print("Error in parsing response headers: ", ex)
-                            
+                print(ex)
+                response_headers = {}
+                
             if "error" in response_data:
+                estimated_time = '1'
+                try:
+                    estimated_time =  response_headers.get('estimated_time_to_regain_access', '30')
+                except (json.JSONDecodeError, KeyError, IndexError):
+                    estimated_time = '30'
                 if next_page_url == last_error_url:
                     # failed again
                     if last_retry_count >= retry_limit:
-                        print("Failed retry limit...")
                         raise Exception(
                             "Error message: [{}], failed on URL: [{}], Estimated time to regain access: [{}]".format(
                                 json.dumps(response_data["error"]), next_page_url, estimated_time
@@ -157,19 +133,14 @@ class FbAdsLibraryTraversal:
                 last_retry_count += 1
                 continue
 
+            # Removed any filtering because we have already modified the request URL to get exactly what we need
             filtered = list(
                 filter(
-                    lambda ad_archive: ("ad_delivery_start_time" in ad_archive)
-                    and (
-                        datetime.strptime(
-                            ad_archive["ad_delivery_start_time"], "%Y-%m-%d"
-                        ).timestamp()
-                        >= start_time_cutoff_after
-                    ),
+                    lambda ad_archive: ("ad_delivery_start_time" in ad_archive),
                     response_data["data"],
                 )
             )
-            # print("after filtered....")
+            
             if len(filtered) == 0:
                 print(" if no data after the after_date, break")
                 next_page_url = None
@@ -180,7 +151,7 @@ class FbAdsLibraryTraversal:
                 next_page_url = response_data["paging"]["next"]
             else:
                 next_page_url = None
-
+            
             # Added to kill script to prevent API call runaway, where the limit has already been reached, and the script still attempts to call the API
             # Which contributes to increasing the API limit even more, without this the script would need to be killed manually. 
             try:

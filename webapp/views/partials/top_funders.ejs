@@ -1,252 +1,1539 @@
-<div class="widget-container boxed" style="overflow-y: auto;">
-	<div class="inner">
-		<div style="text-align: center;">
-			<div id="inner_country_select"></div>
-			<br />
-			<div style="display: inline-block" id="date-dropdown">
-				<div class="date_picker time-select" style="display: flex;" >
-					<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
-						<div style="display: flex; margin: 10px; margin-right: 5px;">
-							<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
-						</div>
+<div class="widget-container boxed" style="background: rgb(33, 33, 33);">
+	<div class="inner" id="about-extra" style=" margin-top: 0px; margin-bottom: 20px; background: #ffffff;">
+		<div class="dropdown" style="z-index: 50; margin-bottom:0px;">
+			<button class="dropdown-btn widget-title"><span class="dropdown-arrow" style="transform: rotateZ(0deg);"><i
+						class="fas fa-arrow-right" aria-hidden="true"></i></span> How You Can Help Spot Deceptive
+				Advertisers Using PoliDashboard
+				</span></button>
+			<div class="dropdown-content collapsed" style="display: none;">
+				<p>
+					Deceptive ads have often flourished on platforms like Facebook, Instagram, and others—especially in
+					the lead-up to elections and major public events.
+					These ads are frequently designed to manipulate public opinion, spread misinformation, scam users,
+					and exploit gaps in platform oversight.
+					Despite efforts by social media companies to improve transparency and accountability, many of these
+					ads continue to slip through the cracks, reaching large audiences and shaping political
+					conversations with minimal scrutiny.
+				</p>
+				<p>
+					<strong style="font-weight: bold">A Guide to Spotting Deceptive Ads and Advertisers with
+						PoliDashboard:</strong>
+				<ol style="list-style-type: decimal">
+					<li><strong style="font-weight: bold">Bookmark <a href="https://polidashboard.org"
+								target="_blank">PoliDashboard.org</a></strong> and visit the app regularly—daily or
+						weekly.</li>
+					<li><strong style="font-weight: bold">Spend 10–15 minutes browsing the list of advertisers</strong>
+						shown in the dashboard.</li>
+					<li><strong style="font-weight: bold">Use the filter options</strong> to narrow down results. Be
+						systematic to avoid duplication and ensure you cover different segments.</li>
+					<li><strong style="font-weight: bold">Focus on unfamiliar advertisers</strong>—those you don’t
+						recognize or that seem out of place.</li>
+					<li><strong style="font-weight: bold">Review the statistics</strong> associated with these
+						advertisers (e.g., spending, number of ads, who saw their ads) to get a fuller picture of their
+						ad activity.</li>
+					<li><strong style="font-weight: bold">Visit the Facebook page(s) they manage</strong> for more
+						context.</li>
+					<li><strong style="font-weight: bold">Look at sample ads</strong> to assess the tone, messaging, and
+						potential for deception or manipulation.</li>
+					<li><strong style="font-weight: bold">If you find an advertiser running deceptive or suspicious
+							ads</strong>, email us at <span style="color: blue">admin@polidashboard.org</span>
+						<br>
+						Please include:
+						<ul>
+							<li>Links to the advertiser’s Facebook page(s)</li>
+							<li>Links or screenshots of the specific ads in question</li>
+							<li>A brief description (150 words or less) of why you believe the content is deceptive or
+								misleading</li>
+						</ul>
+					</li>
+				</ol>
+
+				<br>
+				By taking a few minutes to investigate, you can contribute to greater transparency and help hold
+				advertisers accountable.
+				</p>
+				<div class="dropdown" style="z-index: 15;">
+					<button class="dropdown-btn dropdown-navigation-btn widget-title">
+						<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right"
+								aria-hidden="true"></i></span>
+						&nbsp;&nbsp;Learn More About Misleading and Suspicious Ads:
+					</button>
+
+					<div class="dropdown-content dropdown-content-navigation"
+						style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 10px;">
+						<ol style="list-style-type: decimal">
+							<li>Fake election news ads are luring people into investment schemes: <a
+									href="https://www.cbc.ca/news/canada/more-fake-cbc-ads-investigation-1.7494923"
+									target="_blank">https://www.cbc.ca/news/canada/more-fake-cbc-ads-investigation-1.7494923</a>
+							</li>
+							<li>Misleading election-related ads targeting people 55+ in California, Texas & Florida: <a
+									href="https://bsky.app/profile/socialmedialab.ca/post/3l7xnzk26sk2z"
+									target="_blank">https://bsky.app/profile/socialmedialab.ca/post/3l7xnzk26sk2z</a>
+							</li>
+							<li>Exploiting Meta’s Weaknesses, Deceptive Political Ads Thrived on Facebook and Instagram
+								in Run-Up to Election: <a
+									href="https://www.propublica.org/article/facebook-instagram-meta-deceptive-political-ads-election"
+									target="_blank">https://www.propublica.org/article/facebook-instagram-meta-deceptive-political-ads-election</a>
+							</li>
+							<li>An AI powered financial scams ads featuring doctored video and audio of President Biden:
+								<a href="https://www.cbc.ca/news/canada/more-fake-cbc-ads-investigation-1.7494923"
+									target="_blank">https://bsky.app/profile/socialmedialab.ca/post/3kjweqyjtyv2m</a>
+							</li>
+							<li>A “dog whistle” ads—advertisements that appears harmless on the surface but carries a
+								hidden message intended to target or provoke specific groups in society: <a
+									href="https://getthetrollsout.org/articles/islamophobia-germany-and-its-pigs"
+									target="_blank">https://getthetrollsout.org/articles/islamophobia-germany-and-its-pigs</a>
+							</li>
+						</ol>
 					</div>
-					<span class="facebook_date"></span>
 				</div>
 			</div>
 		</div>
-
-		<br>
-
-		<div style="display: flex;">
-			<div class="infographic_box">
-				<h3>
-					<i class="fas fa-users red"></i>
-					<span class="total_advertisers_replace"></span>
-				</h3>
-				<p>Total # of Advertisers</p>
-			</div>
-			<div class="infographic_box">
-				<h3>
-					<i class="fas fa-layer-group red"></i>
-					<span class="total_advertisements_replace"></span>
-				</h3>
-				<p style="padding-right: 10px;">Total # of Advertisements</p>
-			</div>
-		</div>
-		
-		<br>
-		<div class="dropdown" style="z-index: 15;">
-			<button class="dropdown-btn widget-title" style="background: #c00001;"><span class="dropdown-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>&nbsp; List of Meta Advertisers Running Ads About Social Issues, Elections, or Politics</button>
-			<div class="dropdown-content">
-			
-				<div id="funder_table">
-					<div class="dropdown" style="z-index: 15;">
-						<button class="dropdown-btn dropdown-navigation-btn widget-title">
-							<span class="dropdown-arrow" style="transform: rotate(0deg);"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
-							&nbsp;&nbsp;Learn More
+	</div>
+	<div class="big_title" style="background: #ffffff;">
+		<span style="margin-top:20px; margin-bottom: -10px">Meta Advertisers:</span>
+		<span>Politics, Elections & Social Issues</span>
+	</div>
+	<div class="inner left_col" style="background: #ffffff; margin-bottom: 10px;">
+		<div id="sidebar">
+			<button id="inner_sidebar_button" class="sidebar_tab_button" onclick="togglePanel()"
+				style="position:relative; display: none; margin-top: auto; margin-bottom: auto; height: 400px">
+				<div style="display: flex; flex-direction: row; justify-content: space-between;">
+					<i class="filter-arrow-icon fa-solid fa-angles-right filter-spaced-arrows"></i>
+					<i class="filter-arrow-icon fa-solid fa-angles-right filter-spaced-arrows"></i>
+					<i class="filter-arrow-icon fa-solid fa-angles-right filter-spaced-arrows"></i>
+					<i class="filter-arrow-icon fa-solid fa-angles-right filter-spaced-arrows"></i>
+				</div>
+			</button>
+			<div id="sidebar_filter">
+				<div class="dropdown" style="z-index: 50; ">
+					<div class="filter_dropdown_button_div">
+						<button id="main-filter-button" class="dropdown-btn widget-title"
+							style="display: inline-flex; justify-content: space-between; align-items: center; vertical-align: middle; pointer-events: none">
+							<span style="pointer-events: none;"><span class="dropdown-arrow"><i class="fas fa-arrow-right"
+										aria-hidden="true"></i></span>&nbsp;Main Filters</span>
+							<i id="filter_spinner_spend_tab" class="filter_spinner fa-solid fa-spinner fa-spin"
+								style="display: none"></i>
+							<i id="filter_checkmark_spend_tab" class="filter_checkmark fa-solid fa-check"
+								style="display: none"></i>
 						</button>
-						
-						<div class="dropdown-content dropdown-content-navigation" style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px; margin-bottom: 0;">
-							<div class="navigation-instructions" id="right-navigation-instructions">
-								<p>This module shows the most active advertisers currently running ads about social issues, elections or politics across Meta’s platforms and technologies for the selected date range.</p>
-								<ul>
-									<li>For privacy and competitive reasons, Meta only reports ad spend - the cost of an ad -  as a range with a minima and maxima for each ad.</li>
-									<li>
-										Click on any advertiser to see:
-										<ul>
-											<li>What Facebook page(s) they are funding</li>
-											<li>What ads they are running</li>
-											<li>How much money they are spending on ads per Facebook page</li>
-											<li>How many ads they are running each day</li>
-											<li>Where geographically their ads are being shown</li>
-											<li>What demographic groups they are targeting</li>
-											<li>What is being said in their ads</li>
-										</ul>
-									</li>
-									<li>Click on <img src="/images/sort_icon.png" /> to sort advertisers by a particular ad spend range.</li>
-									<li>Best viewed on a desktop browser or as a desktop site on mobile.</li>
-								</ul>
-								<br>
-								<span style="color: #949494">Ad Library API Parameters used: <span style="font-style: italic;">page_name, page_id, spend</span></span>
+						<button class="filter_button red" onclick="togglePanel();"
+							style="display: inline-flex; padding: 4px 8px 3px 8px; vertical-align: middle; align-items: center; width: auto">
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</div>
+					<div class="dropdown-content"
+						style="display:none; background-color:white; padding:10px; box-shadow: none; border: 1px solid lightgrey;">
+						<div class="primary_filter_div">
+							<p style="margin-bottom: 5px;">Select Country:</p>
+							<input id="inner_country_select" type="text">
+							<br>
+							<br>
+							<hr class="filter_hr">
+							<div class="date_div">
+								<p>Find Ads that were:</p>
+								<div style="display: inline-block" id="date-dropdown">
+									<div class="date_picker time-select" style="display: flex;">
+										<div style="border-bottom-left-radius: 5px; border-top-left-radius: 5px;">
+											<div style="display: flex; margin: 10px; margin-right: 5px;">
+												<i class="fas fa-calendar-alt red" style="font-size: 17px;"></i>
+											</div>
+										</div>
+										<span class="facebook_date"></span>
+									</div>
+								</div>
+
+								<div
+									style="display: flex; flex-direction: row; align-items: center; gap: 10px;justify-content: center;">
+									<label> <input class="general-radio date-radio" type="radio"
+											name="started-during-radio-group" value="false" checked>Active
+										During</label>
+									<label> <input class="general-radio date-radio" type="radio"
+											name="started-during-radio-group" value="true">Posted During</label>
+									<span class="date-tooltip-icon" data-toggle="tooltip" data-placement="right"
+										data-html="true">?</span>
+
+								</div>
+							</div>
+							<br>
+							<hr class="filter_hr">
+							<p style="margin-bottom: 5px;">Platform:</p>
+							<div class="filter_options"
+								style="display: flex; flex-wrap: wrap; flex-direction: row; gap: 10px; ">
+								<label style="font-size: 12px"> <input class="general-radio platform-radio" type="radio"
+										name="platform-radio-group" value="null" checked>All</label>
+								<label style="font-size: 12px"> <input class="general-radio platform-radio" type="radio"
+										name="platform-radio-group" value="Facebook">Only Facebook</label>
+								<label style="font-size: 12px"> <input class="general-radio platform-radio"  type="radio"
+										name="platform-radio-group" value="Instagram">Only Instagram</label>
 							</div>
 						</div>
 					</div>
-					<br>
-					<div style="display: flex;">
-						<form id="heatmap_filter_form" onsubmit="return false" style="width: 100%">
-							<input id="search-input" type="text" placeholder="Search" oninput="heatmaps[0].filter(this.value)">
-						</form>
-						<button id="search-clear" class="btn-warning" style="width: 60px; height: 38px; margin-left: 10px;">
-							Clear
+				</div>
+				<div class="dropdown" style="z-index: 50; ">
+					<div class="filter_dropdown_button_div">
+						<button id="main-filter-button" class="dropdown-btn widget-title"
+							style="display: inline-flex; justify-content: space-between; align-items: center; vertical-align: middle;">
+							<span style="pointer-events: none;"><span class="dropdown-arrow"><i class="fas fa-arrow-right"
+										aria-hidden="true"></i></span>&nbsp;Demographics Filters</span>
+							<i id="filter_spinner_demo_tab" class="filter_spinner fa-solid fa-spinner fa-spin"
+								style="display: none"></i>
+							<i id="filter_checkmark_demo_tab" class="filter_checkmark fa-solid fa-check"
+								style="display: none"></i>
+						</button>
+						<button class="filter_button red" onclick="togglePanel();"
+							style="display: inline-flex; padding: 4px 8px 3px 8px; vertical-align: middle; align-items: center; width: auto">
+							<i class="fa-solid fa-xmark"></i>
 						</button>
 					</div>
-					<div class="second-thead">
-						Ads Spending Range (<%= currency %>) 
-					</div>
-					<table id="top_funders" class="heatmap">
-						<colgroup>
-							<col  />
-							<col style="width:28px" />
-							<col class="box_width" />
-							<col class="box_width" />
-							<col class="box_width" />
-							<col class="box_width" />
-							<col class="box_width" />
-						</colgroup>
-						<thead>
-							<tr id="top_funders_legend">
-								<th class="key" colspan="2">Advertisers</th>
-							</tr>
-						</thead>
-						<tbody>
-							
-						</tbody>
-					</table>
-					<div class="loader red" id="top_funders_loader">
-						<div class="lds-grid">
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
-							<div></div>
+					<div class="dropdown-content dropdown-content-navigation"
+						style="display:none; background-color:white; padding:10px;">
+						<div style="display: flex; flex-direction: row; align-items: stretch;">
+							<div class="filter_options" style="display: flex; flex-wrap: wrap; ">
+								<p>Gender: </p>
+								<label><input type="checkbox" class="gender-checkbox filter_input_refresh" value="male">
+									Men</label>
+								<label><input type="checkbox" class="gender-checkbox filter_input_refresh"
+										value="female"> Women</label>
+								<label><input type="checkbox" class="gender-checkbox filter_input_refresh"
+										value="unknown"> Unknown</label>
+							</div>
+							<div class="filter_options" style="display: flex; flex-wrap: wrap;">
+								<p>Age Range: </p>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="13-17">
+									13 - 17</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="18-24">
+									18 - 24</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="25-34">
+									25 - 34</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="35-44">
+									35 - 44</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="45-54">
+									45 - 54</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="55-64">
+									55 - 64</label>
+								<label><input type="checkbox" class="age-checkbox filter_input_refresh" value="65+">
+									65+</label>
+							</div>
+						</div>
+
+						<div class="filter_button_div"
+							style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+							<button id="demo_reset" class="filter_button red" onclick="resetFilters('demo_tab')"
+								style="display: none; margin-top: 10px;">Reset</button>
 						</div>
 					</div>
 				</div>
-				<h3 id="funder_error" style="text-align: center"></h3>
+				<div class="dropdown" style="z-index: 50; ">
+					<div class="filter_dropdown_button_div">
+						<button id="main-filter-button" class="dropdown-btn widget-title"
+							style="display: inline-flex; justify-content: space-between; align-items: center; vertical-align: middle;">
+							<span style="pointer-events: none;"><span class="dropdown-arrow"><i class="fas fa-arrow-right"
+										aria-hidden="true"></i></span>&nbsp;Location Filters</span>
+							<i id="filter_spinner_region_tab" class="filter_spinner fa-solid fa-spinner fa-spin"
+								style="display: none"></i>
+							<i id="filter_checkmark_region_tab" class="filter_checkmark fa-solid fa-check"
+								style="display: none"></i>
+						</button>
+						<button class="filter_button red" onclick="togglePanel();"
+							style="display: inline-flex; padding: 4px 8px 3px 8px; vertical-align: middle; align-items: center; width: auto">
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</div>
+					<div class="dropdown-content dropdown-content-navigation"
+						style="display:none; background-color:white; padding:10px;">
+						<div class="filter_div" style="margin-bottom: 0px">
+							<div id="region_select_container_id" class="region_select_container"
+								style="margin-bottom: 0px">
+								<label for="region_select_container_id">Select Regions:</label>
+								<div id="region_select" class="custom-select">
+								</div>
+							</div>
+						</div>
+						<div class="filter_button_div"
+							style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+							<button id="region_reset" class="filter_button red" onclick="resetFilters('region_tab')"
+								style="display: none; margin-top: 10px;">Reset</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<button id="outer_sidebar_button" class="sidebar_tab_button" onclick="togglePanel()"
+				style="position:relative; left:20px; "><i class="fa-solid fa-angles-right"></i>&nbsp;&nbsp; Filters
+				&nbsp;&nbsp;<i class="fa-solid fa-angles-right"></i></button>
+		</div>
+		<div id="filter_content">
+			<div id="main_infographic_div" class="infographic_div"
+				style="position: relative; border: 1px solid #006EBE">
+				<div class="infographic_title" style="color: #006EBE">Main Filters</div>
+				<div id="inner_main_infographic_div" class="inner_infographic_div">
+					<div class="infographic_box">
+						<div>
+							<div
+								style="display:flex;flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
+								<img class="flag_replace">
+								<h3>
+									<span class="country_replace"></span>
+								</h3>
+							</div>
+
+							<br>
+							<p>Country</p>
+						</div>
+					</div>
+					<div class="infographic_box">
+						<div
+							style="width: 80%;border-bottom: solid 1px rgb(204, 204, 204); margin-bottom: 10px; padding-bottom: 10px;">
+							<h3 style="padding-right: 5px;">
+								<span class="date_replace"></span>
+							</h3>
+							<p>Date Range</p>
+						</div>
+						<div>
+							<h3>
+								<span class="platform_replace"></span>
+							</h3>
+							<p>Platform(s)</p>
+						</div>
+					</div>
+					<div class="infographic_box" style="border-right:none;">
+						<div class="infographic_box_inner"
+							style="width: 80%;border-bottom: solid 1px rgb(204, 204, 204); margin-bottom: 10px; padding-bottom: 10px;">
+							<h3>
+								<span class="total_advertisers_replace"></span>
+							</h3>
+							<p>Total # of Advertisers</p>
+						</div>
+						<div>
+							<h3>
+								<span class="total_advertisements_replace"></span>
+							</h3>
+							<p>Total # of Ads</p>
+						</div>
+					</div>
+				</div>
+				<div id="main_infographic_hover_div" class="infographic_hover_div" style="color: #006EBE">
+					Adjust Filters &nbsp;
+					<i class="fa-solid fa-filter"></i>
+				</div>
+			</div>
+
+			<div id="additional_filter_infographic_div" class="infographic_div"
+				style="cursor: pointer; border: solid 1px #c00001; margin-top: 20px; display: none; position: relative">
+				<div class="infographic_title" style="color: #c00001">Optional Filters</div>
+				<div id="inner_additional_infographic_div" class="inner_infographic_div">
+					<div class="infographic_box">
+						<div class="scrollable-infographic">
+							<h3 style="padding-right: 5px;">
+								<span class="gender_replace"></span>
+							</h3>
+						</div>
+						<p>Gender</p>
+					</div>
+					<div class="infographic_box">
+						<div class="scrollable-infographic">
+							<h3 style="padding-right: 5px;">
+								<span class="age_replace"></span>
+							</h3>
+						</div>
+						<p>Age Range</p>
+					</div>
+					<div class="infographic_box" style="border-right:none;">
+
+						<div class="scrollable-infographic">
+							<h3 style="padding-right: 5px;">
+								<span class="region_replace"></span>
+							</h3>
+						</div>
+						<p>Locations</p>
+					</div>
+				</div>
+				<div id="additional_infographic_hover_div" class="infographic_hover_div" style="color: #c00001">
+					Remove Optional Filters &nbsp;
+					<i class="fa-solid fa-filter-circle-xmark"></i>
+				</div>
+			</div>
+			<div id="funder_table">
+				<div class="dropdown-polidashboard"
+					style="margin-top: 5px; margin-bottom: 10px; margin-left: auto; width: 100px; text-align:right;">
+					Polidashboard.org
+				</div>
+
+
+				<div id="filter_dropdown"
+					style="z-index: 15; margin-bottom: 0px; box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);">
+					<div class="tabs">
+						<button value="desc_tab" class="tabdesc"><span>Organized By:</span></button>
+						<button value="spend_tab" class="tablinks tab-slant tablinks-hover active"
+							onclick="openTab(event,'#filter_dropdown', '#spend_tab'); document.getElementById('fake_scroll_spend').style.width = document.getElementById('top_funders_spend').offsetWidth + 'px';">Spending</button>
+						<button value="demo_tab" class="tablinks tab-slant tablinks-hover"
+							onclick="openTab(event,'#filter_dropdown', '#demo_tab'); document.getElementById('fake_scroll_demo').style.width = document.getElementById('top_funders_demo').offsetWidth + 'px';">Demographics</button>
+						<button value="region_tab" class="tablinks tab-slant tablinks-hover"
+							onclick="openTab(event,'#filter_dropdown', '#region_tab'); document.getElementById('fake_scroll_region').style.width = document.getElementById('top_funders_region').offsetWidth + 'px';">Location</button>
+					</div>
+
+					<div id="spend_tab" class="filter_tab">
+						<div class="dropdown" style="z-index: 15;">
+							<button class="dropdown-btn dropdown-navigation-btn widget-title">
+								<span class="dropdown-arrow" style="transform: rotate(0deg);"><i
+										class="fas fa-arrow-right" aria-hidden="true"></i></span>
+								&nbsp;&nbsp;Learn More
+							</button>
+
+							<div class="dropdown-content dropdown-content-navigation"
+								style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+								<div class="navigation-instructions" id="right-navigation-instructions">
+									<p>This module shows a list of all advertisers running ads related to 
+										politics, elections, or social issues on Meta platforms, including Facebook and Instagram. 
+										(Best viewed on a desktop browser.)</p>
+									<ul>
+										<li>
+											Users can filter and view the list of advertisers in one of three ways:
+											<ul>
+												<li>Total # of Ads Purchased By Each Advertiser, Grouped By Ad Cost</li>
+												<li>Estimated Ads Impressions, Grouped By Demographics</li>
+												<li>Estimated Ads Impressions, Grouped By Regions</li>
+											</ul>
+										</li>
+										<li>For privacy and competitive reasons, 
+											Meta only reports ad spend - the cost of an ad - 
+											as a range with a minimum and maximum for each ad.</li>
+										<li>
+											Click on any advertiser to see:
+											<ul>
+												<li>What Facebook page(s) are they funding</li>
+												<li>How much money are they spending on ads per Facebook page</li>
+												<li>How many ads are they running each day</li>
+												<li>What ads are they running</li>
+												<li>Where geographically their ads are being shown</li>
+												<li>What demographic groups saw the advertiser's ads</li>
+												<li>What is being said in their ads</li>
+											</ul>
+										</li>
+										<li>Click on &nbsp;<i style="font-size: 14px;" class="sort-img fa-solid fa-bars"></i>&nbsp; to sort advertisers by an ad
+											spend range.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+
+						<div class="loader red filter_loader" id="loader_spend_tab">
+							<div class="lds-grid">
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+							</div>
+						</div>
+
+						<div class="results_div" id="results_div_spend_tab" style="display: none;">
+
+							<div style="display: flex;">
+								<form id="heatmap_filter_form" onsubmit="return false"
+									style="width: 100%; margin-bottom: 0px">
+									<input id="top_funders_spend-search-input" class="search-input" type="text" placeholder="Search for Advertisers"
+										oninput="filterHeatmap('top_funders_spend')">
+								</form>
+								<button class="btn-warning search-clear" value="top_funders_spend"
+									style="width: 60px; height: 38px; margin-left: 10px;">
+									Clear
+								</button>
+							</div>
+							<div class="infographic_div"
+								style=" border: solid 1px #c00001; margin-top: 20px; margin-left:auto;margin-right:auto; position: relative; cursor: auto; width: fit-content;">
+								<div class="infographic_title" style="color: #c00001">Impressions Options</div>
+								<div class="inner_infographic_div" style="width: fit-content">
+									<div class="infographic_box" style="width: fit-content; border-right: none;">
+										<div class="range-filter-div">
+											<div>Total Impressions Range Filter:</div>
+											<div class="range-selector">
+												<input type="number" id="top_funders_spend-min-input" class="imp-min-input" placeholder="Min" min='0' oninput="filterHeatmap('top_funders_spend')">
+												<span style="margin-left: 10px; margin-right: 10px;">–</span>
+												<input type="number" id="top_funders_spend-max-input" class="imp-max-input" placeholder="Max" min='0' oninput="filterHeatmap('top_funders_spend')"/>
+												<button  class="filter_button red" onclick="clearInputs('top_funders_spend')" style="margin-left: 10px">Clear</button>
+											</div>
+										</div>
+									</div>
+									
+
+								</div>
+							</div>
+							<br>
+							  
+							<div class="scroll-wrapper" id="fake_wrapper_spend">
+								<div class="scrollbar" id="fake_scroll_spend"></div>
+							</div>
+							<div class="result-table-div" id="top_funders_spend_div">
+								<div class="table_header_div">
+									<div class="table_filler_div"></div>
+									<div id="spend-header-tooltip" class="table_value_header_div">
+										<span style="margin: 0; margin-right: 10px; margin-left: auto">Total # of Ads
+											Purchased By Each Advertiser, Grouped By Ad Cost
+										</span>
+										<span style="color: black">|</span>
+										<span style="margin: 0; margin-left: 10px; margin-right: auto; color: #39c69a">
+											Advertiser's Ads Stats
+										</span>
+									</div>
+								</div>
+
+								<table id="top_funders_spend" class="heatmap">
+									<colgroup>
+
+										<col class="ad_name_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" />
+										<col class="box_width" style="min-width: 130px"/>
+										<col class="box_width" style="min-width: 130px"/>
+										<col class="box_width" style="min-width: 130px"/>
+									</colgroup>
+									<thead>
+
+										<tr id="top_funders_spend_legend">
+											<th class="key" colspan="1" style="color: #006EBE; font-size: 14px;">List of
+												Meta's Advertisers <span class="advertisers-tooltip-icon"
+													data-toggle="tooltip" data-placement="right"
+													data-html="true">?</span></th>
+										</tr>
+									</thead>
+									<tbody>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<h3 class="filter_error" id="error_spend_tab" style="text-align: center"></h3>
+						<br>
+					</div>
+					<div id="demo_tab" class="filter_tab" style="display: none;">
+						<div class="dropdown" style="z-index: 15;">
+							<button class="dropdown-btn dropdown-navigation-btn widget-title">
+								<span class="dropdown-arrow" style="transform: rotate(0deg);"><i
+										class="fas fa-arrow-right" aria-hidden="true"></i></span>
+								&nbsp;&nbsp;Learn More
+							</button>
+
+							<div class="dropdown-content dropdown-content-navigation"
+								style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+								<div class="navigation-instructions" id="right-navigation-instructions">
+									<p>This module features advertisers running ads on politics, elections or social
+										issues on Meta-owned platforms such as Facebook and Instagram. (Best viewed on a
+										desktop browser.)</p>
+									<ul>
+										<li>For privacy and competitive reasons, Meta only reports ad spend - the cost
+											of an ad - as a range with a minimum and maximum for each ad.</li>
+										<li>
+											Click on any advertiser to see:
+											<ul>
+												<li>What Facebook page(s) they are funding</li>
+												<li>How much money they are spending on ads per Facebook page</li>
+												<li>How many ads they are running each day</li>
+												<li>What ads they are running</li>
+												<li>Where geographically their ads are being shown</li>
+												<li>What demographic groups they are being shown</li>
+												<li>What is being said in their ads</li>
+											</ul>
+										</li>
+										<li>Click on &nbsp;<i style="font-size: 14px;" class="sort-img fa-solid fa-bars"></i>&nbsp; to sort advertisers by total
+											impressions.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="loader red filter_loader" id="loader_demo_tab">
+							<div class="lds-grid">
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+							</div>
+						</div>
+						<div class="results_div" id="results_div_demo_tab" style="display: none;">
+
+							<div style="display: flex;">
+								<form id="heatmap_filter_form" onsubmit="return false"
+									style="width: 100%;  margin-bottom: 0px">
+									<input id="top_funders_demo-search-input" class="search-input" type="text"
+										placeholder="Search for Advertisers" oninput="filterHeatmap('top_funders_demo')">
+								</form>
+								<button class="btn-warning  search-clear" value="top_funders_demo"
+									style="width: 60px; height: 38px; margin-left: 10px;">
+									Clear
+								</button>
+							</div>
+							<div class="infographic_div"
+								style=" border: solid 1px #c00001; margin-top: 20px; margin-left:auto;margin-right:auto; position: relative; cursor: auto; width: fit-content;">
+								<div class="infographic_title" style="color: #c00001">Impressions Options</div>
+								<div class="inner_infographic_div" style="width: fit-content">
+									<div class="infographic_box" style="width: fit-content">
+										<div class="range-filter-div">
+											<div>Total Impressions Range Filter:</div>
+											<div class="range-selector">
+												<input type="number" id="top_funders_demo-min-input" class="imp-min-input" placeholder="Min" min='0' oninput="filterHeatmap('top_funders_demo')">
+												<span style="margin-left: 10px; margin-right: 10px;">–</span>
+												<input type="number" id="top_funders_demo-max-input" class="imp-max-input" placeholder="Max" min='0' oninput="filterHeatmap('top_funders_demo')"/>
+												<button  class="filter_button red" onclick="clearInputs('top_funders_demo')" style="margin-left: 10px">Clear</button>
+											</div>
+										</div>
+									</div>
+									<div class="infographic_box" style="border-right:none; width: fit-content">
+										<div class="absolute_div">
+											<div>Display in %:</div>
+											<div class="original-switch">
+												<input type="checkbox" id="absolute-demo-radio-rel" hidefocus="true"
+													style="outline: none;" value="flase"
+													onchange="switchAbsolute('top_funders_demo', this.checked);">
+												<label for="absolute-demo-radio-rel" class="original-switch-label"></label>
+												<span class="original-switch-text" style="font-size: 14px;"></span>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>				
+							<br>
+							<div class="scroll-wrapper" id="fake_wrapper_demo">
+								<div class="scrollbar" id="fake_scroll_demo"></div> <!-- Fake scrollbar at the top -->
+							</div>
+							<div class="result-table-div" id="top_funders_demo_div">
+								<div class="table_header_div">
+									<div class="table_filler_div"></div>
+									<div class="table_value_header_div">
+										<p style="margin: 0; margin-left: auto; margin-right: auto">Estimated Ads
+											Impressions, Grouped By Demographics</p>
+									</div>
+								</div>
+								<table id="top_funders_demo" class="heatmap">
+									<colgroup id="top_funders_demo_colgroup">
+									</colgroup>
+									<thead>
+										<tr id="top_funders_demo_legend">
+											<th class="key" colspan="1" style="color: #006EBE; font-size: 14px;">List of
+												Meta's Advertisers <span class="advertisers-tooltip-icon"
+													data-toggle="tooltip" data-placement="right"
+													data-html="true">?</span></th>
+										</tr>
+									</thead>
+									<tbody>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<h3 class="filter_error" id="error_demo_tab" style="text-align: center"></h3>
+						<br>
+					</div>
+					<div id="region_tab" class="filter_tab" style="display: none;">
+						<div class="dropdown" style="z-index: 15;">
+							<button class="dropdown-btn dropdown-navigation-btn widget-title">
+								<span class="dropdown-arrow" style="transform: rotate(0deg);"><i
+										class="fas fa-arrow-right" aria-hidden="true"></i></span>
+								&nbsp;&nbsp;Learn More
+							</button>
+
+							<div class="dropdown-content dropdown-content-navigation"
+								style="display:none; border: 1px solid lightgrey; box-shadow: none; padding: 0px;">
+								<div class="navigation-instructions" id="right-navigation-instructions">
+									<p>This module features advertisers running ads on politics, elections or social
+										issues on Meta-owned platforms such as Facebook and Instagram. (Best viewed on a
+										desktop browser.)</p>
+									<ul>
+										<li>For privacy and competitive reasons, Meta only reports ad spend - the cost
+											of an ad - as a range with a minimum and maximum for each ad.</li>
+										<li>
+											Click on any advertiser to see:
+											<ul>
+												<li>What Facebook page(s) they are funding</li>
+												<li>How much money they are spending on ads per Facebook page</li>
+												<li>How many ads they are running each day</li>
+												<li>What ads they are running</li>
+												<li>Where geographically their ads are being shown</li>
+												<li>What demographic groups they are being shown</li>
+												<li>What is being said in their ads</li>
+											</ul>
+										</li>
+										<li>Click on &nbsp;<i style="font-size: 14px;" class="sort-img fa-solid fa-bars"></i>&nbsp; to sort advertisers by total
+											impressions.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+
+						<div class="loader red filter_loader" id="loader_region_tab">
+							<div class="lds-grid">
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+							</div>
+						</div>
+						<div class="results_div" id="results_div_region_tab" style="display: none;">
+
+
+							<div style="display: flex;">
+								<form id="heatmap_filter_form" onsubmit="return false"
+									style="width: 100%; margin-bottom: 0px">
+									<input id="top_funders_region-search-input" class="search-input" type="text"
+										placeholder="Search for Advertisers" oninput="filterHeatmap('top_funders_region')">
+								</form>
+								<button class="btn-warning search-clear" value="top_funders_region"
+									style="width: 60px; height: 38px; margin-left: 10px;">
+									Clear
+								</button>
+							</div>
+							<div class="infographic_div"
+								style=" border: solid 1px #c00001; margin-top: 20px; margin-left:auto;margin-right:auto; position: relative; cursor: auto; width: fit-content;">
+								<div class="infographic_title" style="color: #c00001">Impressions Options</div>
+								<div class="inner_infographic_div" style="width: fit-content">
+									<div class="infographic_box" style="width: fit-content">
+										<div class="range-filter-div">
+											<div>Total Impressions Range Filter:</div>
+											<div class="range-selector">
+												<input type="number" id="top_funders_region-min-input" class="imp-min-input" placeholder="Min" min='0' oninput="filterHeatmap('top_funders_region')">
+												<span style="margin-left: 10px; margin-right: 10px;">–</span>
+												<input type="number" id="top_funders_region-max-input" class="imp-max-input" placeholder="Max" min='0' oninput="filterHeatmap('top_funders_region')"/>
+												<button  class="filter_button red" onclick="clearInputs('top_funders_region')" style="margin-left: 10px">Clear</button>
+											</div>
+										</div>
+									</div>
+									<div class="infographic_box" style="border-right:none; width: fit-content">
+										<div class="absolute_div">
+											<div>Display in %:</div>
+											<div class="original-switch">
+												<input type="checkbox" id="absolute-region-radio-rel" hidefocus="true"
+													style="outline: none;" value="flase"
+													onchange="switchAbsolute('top_funders_region', this.checked);">
+												<label for="absolute-region-radio-rel" class="original-switch-label"></label>
+												<span class="original-switch-text" style="font-size: 14px;"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>				
+							<br>
+							<div class="scroll-wrapper" id="fake_wrapper_region">
+								<div class="scrollbar" id="fake_scroll_region"></div>
+							</div>
+							<div class="result-table-div" id="top_funders_region_div">
+								<div class="table_header_div">
+									<div class="table_filler_div"></div>
+									<div class="table_value_header_div">
+										<p style="margin: 0; margin-left: auto; margin-right: auto">Estimated Ads
+											Impressions, Grouped By Regions</p>
+									</div>
+								</div>
+								<table id="top_funders_region" class="heatmap">
+									<colgroup id="top_funders_region_colgroup">
+									</colgroup>
+									<thead>
+										<tr id="top_funders_region_legend">
+											<th class="key" colspan="1" style="color: #006EBE; font-size: 14px;">List of
+												Meta's Advertisers <span class="advertisers-tooltip-icon"
+													data-toggle="tooltip" data-placement="right"
+													data-html="true">?</span></th>
+										</tr>
+									</thead>
+									<tbody>
+
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+						<h3 class="filter_error" id="error_region_tab" style="text-align: center"></h3>
+						<br>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 
 <script type="text/javascript">
+	var fbStartDay = <%- JSON.stringify(fbStartDay) %>
+	var fbEndDay = <%- JSON.stringify(fbEndDay) %>
+	var currency = <%- JSON.stringify(currency) %>
+	var currencySymbol = <%- JSON.stringify(currencySymbol) %>
+	var country_regions = <%- JSON.stringify(country_regions) %>
 
-	var searchInput = document.getElementById('search-input');
-    var searchClearButton = document.getElementById('search-clear');
-
-    searchClearButton.addEventListener('click', function() {
-        searchInput.value = '';
-        searchClearButton.style.display = 'none';
-		heatmaps[0].filter('')
-    });
-
-    searchInput.addEventListener('input', function() {
-        searchClearButton.style.display = searchInput.value.trim() === '' ? 'none' : 'inline-block';
-    });
-
-    // Initially set the visibility based on the input's initial value
-    searchClearButton.style.display = searchInput.value.trim() === '' ? 'none' : 'inline-block';
-
-	// Create the duplicate dropdown
-	d3.select('#inner_country_select')
-		.style('text-align', 'center')
-		// .append('div')
-		// .attr('class', 'country-select')
-		.append('input')
-			.attr('type', 'text')
-			.attr('id', 'duplicateCountry')
-			.style('border', '1px solid black') // Border style
-    		.style('border-radius', '5px')
-			.style('font-size', '14px');
-
-
-	$('#duplicateCountry').countrySelect({
+	$('#inner_country_select').countrySelect({
 		onlyCountries: <%- JSON.stringify(validCountries) %>,
 		responsiveDropdown: true,
-		preferredCountries: [],		
+		preferredCountries: [],
 		defaultCountry: country
 	})
 
-	$('#duplicateCountry').change(c => {
-		//console.log($("#duplicateCountry").countrySelect("getSelectedCountryData").iso2)
-		window.location.href = "/facebook_ads_v2?country="+$("#duplicateCountry").countrySelect("getSelectedCountryData").iso2
+	$('#inner_country_select').change(c => {
+		window.location.href = "/meta_ads?country=" + $("#inner_country_select").countrySelect("getSelectedCountryData").iso2
 	})
-	
 
-	const fbStartDay = <%- JSON.stringify(fbStartDay) %>
-	const fbEndDay = <%- JSON.stringify(fbEndDay) %>
-	const currency = <%- JSON.stringify(currency) %>
-	const currencySymbol = <%- JSON.stringify(currencySymbol) %>
-
-	funders(30)
-	function funders(n) {
-		// Displays the number of funders (n) in the heatmap
-
-		// Get data from the API
-		$.post('/facebook_ads_v2/heatmap', 
-			{
-				startDay: fbStartDay,
-				endDay: fbEndDay,
-				country: country
-			},
-			data => {
-				var cleaned = []	
-				var spendRanges = ['0 - 99', '100 - 499', '500 - 999', '1000 - 4999', '5000+', 'Total']
-				var grandTotal = 0
-
-				// Organize the list of spend ranges into the 2D matrix for the heatmap
-				for (var i = 0; i < data.length; i++) {
-					if (data[i].funding_entity == null) {
-						continue;
-						// data[i].funding_entity = 'No funding entity given'
-					}
-					var row = [data[i].funding_entity, 0, 0, 0, 0, 0, 0]
-					for (var j = 0; j < data[i].spends.length; j++) {
-						var range = data[i].spends[j].spend
-						var idx = spendRanges.indexOf(rangeToLabel(range))+1
-						var n = data[i].spends[j].count
-						row[idx] += n
-						row[6] += n
-						grandTotal += n
-					}
-					cleaned.push(row)
-				}
-
-				// Update the number of total advertisers
-				d3.select('.total_advertisers_replace')
-					.text(d3.format(',')(cleaned.length))
-				// Update the number of total advertisements
-				d3.select('.total_advertisements_replace')
-					.text(d3.format(',')(grandTotal))
-				
-				try {
-					var heatmap = new Heatmap(cleaned, colorSchemes.red, 'top_funders', spendRanges);
-					$('#top_funders_loader').remove()
-					d3.select('#funder_table').style('display', 'block');
-					d3.select('#funder_error').style('display', 'none');
-				} catch (error) {
-					d3.select('#funder_table').style('display', 'none')
-					d3.select('#funder_error').style('display', 'block');
-					d3.select('#funder_error').text('No data available for this country + date range.')
-				}	
-
+	function populateRegions(regions) {
+		const select = document.getElementById('region_select');
+		regions.sort();
+		regions.forEach(region => {
+			if (region != "Unknown") {
+				const label = document.createElement('label');
+				const checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.className = 'region-checkbox filter_input_refresh';
+				checkbox.value = region;
+				label.className = 'region-checkbox-container';
+				label.appendChild(checkbox);
+				label.appendChild(document.createTextNode(region));
+				select.appendChild(label);
 			}
-		)
+
+		});
 	}
 
-	function isInRange(reportedRange, chartRange) {
-		// Check whether a range given by Facebook falls within a range from our chart
-		var lowerBoundGreater = reportedRange.lower_bound >= chartRange.lower_bound
-		var upperBoundLess = (reportedRange.upper_bound <= chartRange.upper_bound) || (lowerBoundGreater && (chartRange.upper_bound == "any"))
-		return lowerBoundGreater && upperBoundLess
-	}
+	// Sidebar logic
+	function togglePanel() {
+		const sidebar = document.querySelector("#sidebar");
+		const funderTable = document.querySelector("#funder_table");
+		const filterDropdown = document.querySelector("#filter_dropdown");
+		const innerSidebarButton = document.querySelector("#inner_sidebar_button");
+		const outerSidebarButton = document.querySelector("#outer_sidebar_button");
+		const infographicDiv = d3.select("#inner_main_infographic_div");
+		const infographicHoverDiv = d3.select("#main_infographic_hover_div");
 
-	function rangeToLabel(range) {
-		// Get string for a range
-		if (range.upper_bound < 100) {
-			return '0 - 99'
-		} else if (range.upper_bound < 500) {
-			return '100 - 499'
-		} else if (range.upper_bound < 1000) {
-			return '500 - 999'
-		} else if (range.upper_bound < 5000) {
-			return '1000 - 4999'
+		sidebar.classList.toggle("open");
+		const isOpen = sidebar.classList.contains("open");
+
+		funderTable.style.opacity = isOpen ? "0.5" : "1";
+		filterDropdown.style.pointerEvents = isOpen ? "none" : "auto";
+
+		if (isOpen) {
+			innerSidebarButton.style.display = "block";
+			outerSidebarButton.style.display = "none";
+			infographicDiv.style("opacity", "1");
+			infographicHoverDiv.style("opacity", "0");
 		} else {
-			return '5000+'
+			setTimeout(() => {
+				innerSidebarButton.style.display = "none";
+				outerSidebarButton.style.display = "block";
+			}, 400);
 		}
+
+		document.querySelectorAll("#sidebar .filter-arrow-icon").forEach(icon => {
+			icon.classList.toggle("fa-angles-right");
+			icon.classList.toggle("fa-angles-left");
+		});
+	}
+
+	function handleInfographicHover(element, innerDiv, hoverDiv, isOpen) {
+		if (!isOpen) {
+			d3.select(innerDiv).style("opacity", "0.05");
+			d3.select(hoverDiv).style("opacity", "1");
+		}
+	}
+
+	function resetHoverState(innerDiv, hoverDiv, isOpen) {
+		if (!isOpen) {
+			d3.select(innerDiv).style("opacity", "1");
+			d3.select(hoverDiv).style("opacity", "0");
+		}
+	}
+
+	document.querySelector("#main_infographic_div").addEventListener("click", togglePanel);
+	document.querySelector("#main_infographic_div").addEventListener("mouseover", () => handleInfographicHover("#main_infographic_div", "#inner_main_infographic_div", "#main_infographic_hover_div", document.querySelector("#sidebar").classList.contains("open")));
+	document.querySelector("#main_infographic_div").addEventListener("mouseout", () => resetHoverState("#inner_main_infographic_div", "#main_infographic_hover_div", document.querySelector("#sidebar").classList.contains("open")));
+
+	document.querySelector("#additional_filter_infographic_div").addEventListener("click", () => {
+		if (document.querySelector("#sidebar").classList.contains("open")) {
+			togglePanel();
+		} else {
+			resetFilters("demo_tab");
+			resetFilters("region_tab");
+		}
+	});
+	document.querySelector("#additional_filter_infographic_div").addEventListener("mouseover", () => handleInfographicHover("#additional_filter_infographic_div", "#inner_additional_infographic_div", "#additional_infographic_hover_div", document.querySelector("#sidebar").classList.contains("open")));
+	document.querySelector("#additional_filter_infographic_div").addEventListener("mouseout", () => resetHoverState("#inner_additional_infographic_div", "#additional_infographic_hover_div", document.querySelector("#sidebar").classList.contains("open")));
+
+	document.querySelectorAll("#funder_table, .big_title").forEach(element => {
+		element.addEventListener("click", () => {
+			if (document.querySelector("#sidebar").classList.contains("open")) {
+				togglePanel();
+			}
+		});
+	});
+
+	document.querySelectorAll(".infographic_div, .sidebar_tab_button").forEach(element => {
+		element.addEventListener("mouseover", () => {
+			document.querySelectorAll(".sidebar_tab_button").forEach(button => button.classList.add("hover"));
+		});
+		element.addEventListener("mouseout", () => {
+			document.querySelectorAll(".sidebar_tab_button").forEach(button => button.classList.remove("hover"));
+		});
+	});
+
+	const tooltips = [
+		{ selector: ".topf-tooltip-icon", title: "<span style='color: rgb(255, 207, 35);'>Exact: </span> Total impressions in column. <br><span style='color: rgb(255, 207, 35);'>Relative: </span>Percentage of total impressions in column.", placement: "auto" },
+		{ selector: ".date-tooltip-icon", title: "<span style='color: rgb(255, 207, 35);'>Active During: </span> Displays advertisers with ads that <strong>ran</strong> during the selected date range.<br><span style='color: rgb(255, 207, 35);'>Posted During: </span> Displays advertisers with ads that <strong>started running</strong> during the selected date range.", placement: "left" },
+		{ selector: ".advertisers-tooltip-icon", title: "Click on any advertiser to view more stats about the ads they're running.", placement: "auto" },
+		{ selector: "#main-filter-button", title: "The main filters are applied to all modules in the app.", placement: "auto" },
+		{ selector: "#demo-filter-button", title: "The demographic filters apply only to the main module on the left side of the app. It does not affect any other modules.", placement: "auto" },
+		{ selector: "#region-filter-button", title: "The region filter applies only to the main module on the left side of the app. It does not affect any other modules.", placement: "auto" },
+		{ selector: "#spend-header-tooltip", title: "Meta reports ad spend - the cost of an ad - as a range with a minimum and maximum for each ad.", placement: "auto" }
+	];
+
+	tooltips.forEach(({ selector, title, placement }) => {
+		$(selector).tooltip({
+			title,
+			trigger: "hover",
+			container: "body",
+			placement
+		});
+	});
+
+	function openTab(evt, parent, tabName) {
+		// Hide all tab content that are direct children of the parent
+		document.querySelectorAll(parent + " > .filter_tab").forEach(tab => tab.style.display = "none");
+
+		// Remove the active class from all tab links that are direct children of the parent
+		document.querySelectorAll(parent + " > .tabs > .tablinks").forEach(link => link.classList.remove("active"));
+
+		// Show the current tab and add an active class to the button that opened the tab
+		document.querySelector(tabName).style.display = "block";
+		evt.currentTarget.classList.add("active");
+
+		// Adjust table filler div widths
+		["spend_tab", "demo_tab", "region_tab"].forEach(tab => {
+			const fillerDiv = document.querySelector(`#${tab} .table_filler_div`);
+			const keyDiv = document.querySelector(`#${tab} .key`);
+			if (fillerDiv && keyDiv) fillerDiv.style.minWidth = keyDiv.offsetWidth + 'px';
+		});
+	}
+
+	function getActiveTabValue() {
+		const activeTabLink = document.querySelector('.tablinks.active');
+		return activeTabLink ? activeTabLink.value : null;
+	}
+
+
+	var loadSpinners = false;
+	document.addEventListener("DOMContentLoaded", () => {
+		populateRegions(country_regions);
+
+		// Add event listeners for filter changes
+		let filterTimeout;
+		document.querySelectorAll('.platform-radio, .date-radio, .filter_input_refresh').forEach(radio => {
+			radio.addEventListener('change', () => {
+				d3.selectAll(".results_div").style('display', 'none');
+				d3.selectAll(".filter_loader").style('display', 'block');
+				d3.selectAll(".filter_error").style('display', 'none');
+				d3.selectAll(".filter_spinner").style('display', 'block');
+				d3.selectAll(".filter_checkmark").style('display', 'none');
+				checkFilters();
+				clearTimeout(filterTimeout);
+				filterTimeout = setTimeout(() => {
+					loadSpinners = true;
+					["spend_tab", "demo_tab", "region_tab"].forEach(funders);
+				}, 1000);
+			});
+		});
+
+		// Initial load
+		d3.selectAll(".results_div").style('display', 'none');
+		d3.selectAll(".filter_loader").style('display', 'block');
+		d3.selectAll(".filter_error").style('display', 'none');
+		checkFilters();
+		["spend_tab", "demo_tab", "region_tab"].forEach(funders);
+
+		// Initialize impression filter inputs
+		function setSmartStep(input) {
+			const value = parseInt(input.value, 10) || 0;
+
+			const base = 1000;
+			let step = base;
+
+			for (let i = 0; i < 10; i++) {
+				const low = base * 10 ** i;
+				const smallStep = base * 10 ** (i - 1);
+				const bigStep = base * 10 ** i;
+				const mid = base * 2 * 10 ** i
+				const high = base * 10 ** (i + 1);
+
+				if (value < high) {
+					step = value <= mid ? smallStep : bigStep;
+					break;
+				}
+			}
+
+			input.step = step;
+		}
+
+		function attachSmartStep(input) {
+			input.addEventListener('input', () => setSmartStep(input));
+			input.addEventListener('focus', () => setSmartStep(input));
+			input.addEventListener('change', () => {
+				setSmartStep(input);
+				validateMinMaxInputs();
+			});
+			setSmartStep(input);
+		}
+
+		function validateMinMaxInputs() {
+			document.querySelectorAll('.imp-min-input, .imp-max-input').forEach(input => {
+				const minInput = document.getElementById(input.id.replace('-max-input', '-min-input'));
+				const maxInput = document.getElementById(input.id.replace('-min-input', '-max-input'));
+				if (minInput && maxInput) {
+					const minValue = parseInt(minInput.value, 10) || 0;
+					const maxValue = parseInt(maxInput.value, 10) || 0;
+					if (maxValue != 0 && minValue != 0 && minValue > maxValue) {
+						maxInput.value = minValue;
+					} else if (minValue != 0 && maxValue != 0 && maxValue < minValue) {
+						minInput.value = maxValue;
+					}
+				}
+			});
+		}
+
+		document.querySelectorAll('.imp-min-input, .imp-max-input').forEach(input => {
+			attachSmartStep(input);
+		});
+	});
+
+	function clearInputs(tableName) {
+		document.querySelectorAll(`#${tableName}-min-input, #${tableName}-max-input`).forEach(input => {
+			input.value = null;
+			input.step = 1000;
+			input.dispatchEvent(new Event('input'));
+		});
+	}
+
+	window.addEventListener('resize', () => {
+		document.querySelectorAll("#outer_sidebar_button").forEach(button => {
+			button.style.height = document.querySelector(".infographic_div").offsetHeight + "px";
+		});
+
+		["spend_tab", "demo_tab", "region_tab"].forEach(tab => {
+			const fakeScroll = document.getElementById(`fake_scroll_${tab.split('_')[0]}`);
+			const table = document.getElementById(`top_funders_${tab.split('_')[0]}`);
+			if (fakeScroll && table) {
+				fakeScroll.style.width = table.offsetWidth + (tab === "demo_tab" && document.getElementById('absolute-demo-radio-rel').checked ? 60 : 0) + 'px';
+			}
+
+			const fillerDiv = document.querySelector(`#${tab} .table_filler_div`);
+			const keyDiv = document.querySelector(`#${tab} .key`);
+			if (fillerDiv && keyDiv) fillerDiv.style.minWidth = keyDiv.offsetWidth + 'px';
+		});
+
+		const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+		d3.select("#left-boot-column").style("width", isDesktop && fundersOpen ? "50%" : "100%");
+		d3.select("#right-boot-column").style("width", isDesktop ? "50%" : "100%");
+
+
+	});
+
+	function switchAbsolute(tableName, absolute) {
+		const isDemo = tableName === "top_funders_demo";
+		const heatmapData = absolute ? (isDemo ? heatmapDemoRelData : heatmapRegionRelData) : (isDemo ? heatmapDemoAbsData : heatmapRegionAbsData);
+		const tabName = isDemo ? "demo_tab" : "region_tab";
+
+		makeHeatMap(heatmapData, tabName, !absolute);
+
+		const fakeScroll = document.getElementById(`fake_scroll_${tabName.split('_')[0]}`);
+		const table = document.getElementById(tableName);
+		if (fakeScroll && table) {
+			fakeScroll.style.width = table.offsetWidth + (absolute ? 60 : 0) + 'px';
+		}
+
+		const searchInputId = isDemo ? 'top_funders_demo-search-input' : 'top_funders_region-search-input';
+		try {
+			const min = document.getElementById(tableName + "-min-input").value || 0;
+			const max = document.getElementById(tableName + "-max-input").value || Infinity;
+			if (heatmaps[tableName]) {
+				heatmaps[tableName].filter(
+					document.getElementById(searchInputId).value,min,max
+				);
+			}
+		} catch (error) {
+			console.error("Error filtering heatmap:", error);
+		}
+	}
+
+	var age_ranges_check = null;
+	var genders_check = null;
+	var regions_check = null;
+	var platforms_check = null;
+	var startedDuringCheck = false;
+
+	function checkFilters() {
+		platforms_check = getCheckedRadioValue("platform-radio-group");
+		platforms_check = platforms_check === 'null' ? null : platforms_check;
+		startedDuringCheck = getCheckedRadioValue("started-during-radio-group") === 'true';
+
+		age_ranges_check = getChecked("age-checkbox") || getValuesByClass("age-checkbox");
+		genders_check = getChecked("gender-checkbox") || getValuesByClass("gender-checkbox");
+		document.getElementById('demo_reset').style.display = getChecked("age-checkbox") || getChecked("gender-checkbox") ? 'inline-block' : 'none';
+
+		regions_check = getChecked("region-checkbox") || getValuesByClass("region-checkbox");
+		document.getElementById('region_reset').style.display = getChecked("region-checkbox") ? 'inline-block' : 'none';
+	}
+
+	function resetFilters(tabName) {
+		if (tabName === "spend_tab") {
+			setCheckedRadioValue("spending-radio-group", "6");
+		} else if (tabName === "demo_tab") {
+			uncheckAll("age-checkbox");
+			uncheckAll("gender-checkbox");
+		} else if (tabName === "region_tab") {
+			uncheckAll("region-checkbox");
+		}
+		refreshFilters();
+	}
+
+	function refreshFilters() {
+		d3.selectAll(".results_div").style('display', 'none');
+		d3.selectAll(".filter_loader").style('display', 'block');
+		d3.selectAll(".filter_error").style('display', 'none');
+		d3.selectAll(".filter_spinner").style('display', 'block');
+		d3.selectAll(".filter_checkmark").style('display', 'none');
+		checkFilters();
+		["spend_tab", "demo_tab", "region_tab"].forEach(funders);
+	}
+
+	function setCheckedRadioValue(radioGroupName, value) {
+		document.querySelectorAll(`input[name="${radioGroupName}"]`).forEach(radio => {
+			radio.checked = radio.value === value;
+		});
+	}
+
+	function getChecked(className) {
+		const checkedItems = Array.from(document.getElementsByClassName(className))
+			.filter(item => item.checked && item.value !== "null")
+			.map(item => item.value);
+		return checkedItems.length ? checkedItems : null;
+	}
+
+	function uncheckAll(className) {
+		Array.from(document.getElementsByClassName(className)).forEach(item => item.checked = false);
+		return null;
+	}
+
+	function getValuesByClass(className) {
+		const values = Array.from(document.getElementsByClassName(className))
+			.filter(item => item.value !== "null")
+			.map(item => item.value);
+		return values.length ? values : null;
+	}
+
+	function getCheckedRadioValue(radioGroupName) {
+		const checkedRadio = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+		return checkedRadio ? checkedRadio.value : null;
+	}
+
+
+	var heatmapDemoAbsData = null;
+	var heatmapRegionAbsData = null;
+	var heatmapDemoRelData = null;
+	var heatmapRegionRelData = null;
+
+	var demo_tabs_count = 0
+	var region_tabs_count = 0
+
+	function funders(tabName) {
+		const postData = {
+			ageRanges: tabName === "demo_tab" ? age_ranges_check : getChecked("age-checkbox"),
+			genders: tabName === "demo_tab" ? genders_check : getChecked("gender-checkbox"),
+			regions: tabName === "region_tab" ? regions_check : getChecked("region-checkbox"),
+			region_list: country_regions,
+			platforms: platforms_check,
+			filterBy: tabName === "spend_tab" ? "spending_count" : tabName === "demo_tab" ? "demographic" : "region",
+			startDay: fbStartDay,
+			endDay: fbEndDay,
+			country: country,
+			startedDuring: startedDuringCheck
+		};
+		$.post('/meta_ads/heatmap', postData).done(data => {
+			let heatmapData, heatmapRelData, tableName, absoluteCheckboxId, fakeScrollId, searchInputId, tabsCount;
+
+			if (tabName === "spend_tab") {
+				heatmapData = data;
+				tableName = 'top_funders_spend';
+				fakeScrollId = 'fake_scroll_spend';
+				searchInputId = 'top_funders_spend-search-input';
+			} else if (tabName === "demo_tab") {
+				heatmapDemoAbsData = data;
+				heatmapDemoRelData = calculateRelative(heatmapDemoAbsData);
+				heatmapData = heatmapDemoAbsData;
+				heatmapRelData = heatmapDemoRelData;
+				tableName = 'top_funders_demo';
+				absoluteCheckboxId = 'absolute-demo-radio-rel';
+				fakeScrollId = 'fake_scroll_demo';
+				searchInputId = 'top_funders_demo-search-input';
+				tabsCount = demo_tabs_count;
+			} else if (tabName === "region_tab") {
+				heatmapRegionAbsData = data
+				heatmapRegionRelData = calculateRelative(heatmapRegionAbsData);
+				heatmapData = heatmapRegionAbsData;
+				heatmapRelData = heatmapRegionRelData;
+				tableName = 'top_funders_region';
+				absoluteCheckboxId = 'absolute-region-radio-rel';
+				fakeScrollId = 'fake_scroll_region';
+				searchInputId = 'top_funders_region-search-input';
+				tabsCount = region_tabs_count;
+			}
+			if (absoluteCheckboxId && document.getElementById(absoluteCheckboxId).checked) {
+				makeHeatMap(heatmapRelData, tabName, false);
+				document.getElementById(fakeScrollId).style.width = document.getElementById(tableName).offsetWidth + 60 + 'px';
+			} else {
+				makeHeatMap(heatmapData, tabName);
+				document.getElementById(fakeScrollId).style.width = document.getElementById(tableName).offsetWidth + 'px';
+			}
+
+			if (searchInputId) {
+				try {
+					const min = document.getElementById(tableName + "-min-input").value || 0;
+					const max = document.getElementById(tableName + "-max-input").value || Infinity;
+					if (heatmaps[tableName]) {
+						heatmaps[tableName].filter(
+							document.getElementById(searchInputId).value,min,max
+						);
+					}
+				} catch { }
+			}
+
+		}).fail(() => {});
+	}
+
+	function addDifferenceColumn(data, colName) {
+		const result = [];
+		let difference = 0
+		data.forEach(row => {
+			var processedRow = { "bylines_name": row.bylines_name };
+			Object.keys(row).forEach(key => {
+				if (key == 'total') {
+					difference = parseFloat(row["total_overall"]) - parseFloat(row["total"]);
+					processedRow[colName] = difference.toString();
+					processedRow["total"] = (parseFloat(row["total"]) + difference).toString();
+				} else {
+					processedRow[key] = row[key]
+				}
+			});
+			result.push(processedRow);
+		});
+		return result;
+	}
+
+	function calculateRelative(data) {
+		const result = [];
+		data.forEach(row => {
+			var processedRow = { "bylines_name": row.bylines_name };
+			Object.keys(row).forEach(key => {
+				if (key !== 'bylines_name' && key !== 'total_overall') {
+					processedRow[key] = row.total_overall === 0 ? 0 : Math.round((row[key] / row.total_overall * 100) * 100) / 100;
+				}
+			});
+			processedRow['total_overall'] = Math.round(row.total_overall * 100) / 100;
+			result.push(processedRow);
+		});
+		return result;
+	}
+
+	function filterHeatmap(tableName) {
+		const min = document.getElementById(tableName + "-min-input").value || 0;
+		const max = document.getElementById(tableName + "-max-input").value || Infinity;
+		if (max === 0) {
+			max = Infinity;
+		}
+		if (heatmaps[tableName]) {
+			heatmaps[tableName].filter(
+				document.getElementById(tableName + "-search-input").value,min,max
+			);
+		}
+	}
+	
+	// Sync scroll between fake wrappers and content
+	["fake_wrapper_spend", "fake_wrapper_demo", "fake_wrapper_region"].forEach((wrapperId, index) => {
+		const wrapper = document.getElementById(wrapperId);
+		const content = document.getElementById(["top_funders_spend_div", "top_funders_demo_div", "top_funders_region_div"][index]);
+
+		if (wrapper && content) {
+			wrapper.addEventListener("scroll", () => content.scrollLeft = wrapper.scrollLeft);
+			content.addEventListener("scroll", () => wrapper.scrollLeft = content.scrollLeft);
+		}
+	});
+
+	// Heatmap search clear button functionality
+	Array.from(document.getElementsByClassName('search-clear')).forEach((button, index) => {
+		const input = document.getElementsByClassName('search-input')[index];
+
+		const toggleButtonVisibility = () => {
+			button.style.display = input.value.trim() ? 'inline-block' : 'none';
+		};
+
+		button.addEventListener('click', () => {
+			input.value = '';
+			input.dispatchEvent(new Event('input'));
+			toggleButtonVisibility();
+		});
+
+		input.addEventListener('input', toggleButtonVisibility);
+
+		// Set initial visibility
+		toggleButtonVisibility();
+	});
+
+	function makeHeatMap(data, tabName, absolute = true) {
+		if (!data) data = [];
+
+		const spendRanges = [`${currencySymbol}0 - ${currencySymbol}99`, `${currencySymbol}100 - ${currencySymbol}499`, `${currencySymbol}500 - ${currencySymbol}999`, `${currencySymbol}1000 - ${currencySymbol}4999`, `${currencySymbol}5000+`, 'Total # of Ads',"Total Impressions", currencySymbol + " Per 1k Impressions",null, "Average Spend Per Ad",null, "Total Spending"];
+		const ageRangeLabels = ["M 13-17","F 13-17","M 18-24", "M 25-34", "M 35-44", "M 45-54", "M 55-64", "M 65+", "F 18-24", "F 25-34", "F 35-44", "F 45-54", "F 55-64", "F 65+", "Unknown", "Total"];
+		let labels = [];
+		let indices = [];
+		let cleaned = [];
+		let grandTotal = 0;
+		let sortIndex = -1;
+		let tableName;
+		let columnGroups = null
+		let columnPairs = []
+		let plusColumns = []
+		let groupColors = null
+		let tabs_pixel_length = 0;
+		let impressionsIndex = 0;
+
+		if (tabName === "spend_tab") {
+			labels = spendRanges;
+			tableName = 'top_funders_spend';
+			sortIndex = 12;
+			columnGroups = [[1,2,3,4,5,6],[7],[8],[9],[10],[11],[12],[13]];
+			columnPairs = [[8,9],[10,11],[12,13]];
+			groupColors = ["#259cda","#cd5c5c","#39c69a","#39c69a","#39c69a","#39c69a","#39c69a"];
+			plusColumns = [7]
+			tabs_pixel_length = 60 * 7 + 130 * 3;
+			impressionsIndex = 7;
+		} else if (tabName === "demo_tab") {
+			indices = ageRangeLabels.map((label, index) => {
+				if (label === "Unknown" && (!genders_check || genders_check.filter(Boolean).includes("unknown"))) return index;
+				if ((!genders_check || genders_check.some(g => label.includes(g.charAt(0).toUpperCase()))) &&
+					(!age_ranges_check || age_ranges_check.some(age => {
+						const ageRange = label.split(' ')[1];
+						return ageRange && ageRange.includes(age);
+					}))) return index;
+			}).filter(index => index !== undefined);
+			indices.push(ageRangeLabels.length - 1); // Add Tptal Label
+			labels = indices.map(i => ageRangeLabels[i].replace('F', 'W'));
+			tableName = 'top_funders_demo';
+
+			if (!absolute) {
+				labels.push('Total Impressions');
+				indices.push(ageRangeLabels.length);
+				document.querySelector('#demo_tab .result-table-div').style.paddingRight = '60px';
+				columnGroups = [
+					Array.from({ length: labels.length - 1 }, (_, i) => i + 1),
+					[labels.length]
+				];
+			} else {
+				document.querySelector('#demo_tab .result-table-div').style.paddingRight = '0px';
+			}
+			tabs_pixel_length = 60 * labels.length;
+			impressionsIndex = labels.length;
+		} else if (tabName === "region_tab") {
+			labels = country_regions.filter(region => !regions_check || regions_check.includes(region));
+			labels.push('Total');
+			tableName = 'top_funders_region';
+
+			if (!absolute) {
+				labels.push('Total Impressions');
+				indices.push(labels.length - 1);
+				document.querySelector('#region_tab .result-table-div').style.paddingRight = '60px';
+				columnGroups = [
+					Array.from({ length: labels.length - 1 }, (_, i) => i + 1),
+					[labels.length]
+				];
+			} else {
+				document.querySelector('#region_tab .result-table-div').style.paddingRight = '0px';
+			}
+			tabs_pixel_length = 60 * labels.length;
+			impressionsIndex = labels.length;
+		}
+
+
+		data.forEach(item => {
+
+			if (!item.bylines_name) return;
+
+			let row = [item.bylines_name];
+			if (tabName === "spend_tab") {
+				row.push(
+					item.count_0_99, 
+					item.count_100_499, 
+					item.count_500_999, 
+					item.count_1000_4999, 
+					item.count_5000_plus, 
+					item.total_ads, 
+					item.sum_impressions_lower_bound, 
+					Math.round(item.spend_lower_per_impression * 100) / 100,
+					Math.round(item.spend_upper_per_impression * 100) / 100, 
+					Math.trunc(item.avg_lower_spend), 
+					Math.trunc(item.avg_upper_spend), 
+					item.sum_spend_lower_bound, 
+					item.sum_spend_upper_bound)
+			} else if (tabName === "demo_tab") {
+				var keys = Object.keys(item);
+				for (var j = 0; j < indices.length; j++) {
+					var key = keys[indices[j] + 1]; 
+					row.push(item[key]);
+				}
+			} else if (tabName === "region_tab") {
+				row = []
+				var keys = Object.keys(item);
+				if (absolute) {
+					for (var j = 0; j < keys.length - 1; j++) {
+						row.push(item[keys[j]]);
+					}
+				} else {
+					for (var j = 0; j < keys.length; j++) {
+						row.push(item[keys[j]]);
+					}
+				}
+			}
+			grandTotal += parseInt(item.total_ads);
+			cleaned.push(row);
+		});
+
+		if (tabName === "spend_tab") {
+			updateInfographic(cleaned.length, grandTotal);
+		}
+
+		try {
+			if (!cleaned.length) {
+				showError(tabName, 'No data available for the selected filters');
+			} else {
+				new Heatmap(cleaned, colorSchemes.red, tableName, labels, absolute, sortIndex,impressionsIndex, columnGroups, columnPairs, groupColors, plusColumns);
+				showResults(tabName);
+			}
+		} catch (error) {
+			console.log(error)
+			showError(tabName, 'No data available for the selected filters');
+		} finally {
+			if (loadSpinners) {
+				d3.select(`#filter_spinner_${tabName}`).style('display', 'none');
+				d3.select(`#filter_checkmark_${tabName}`).style('display', 'block');
+			}
+			document.querySelector(`#${tabName} .table_filler_div`).style.minWidth = document.querySelector(`#${tabName} .key`).offsetWidth + 'px';
+			document.querySelector(`#${tabName} .table_value_header_div`).style.width = tabs_pixel_length + 'px';
+		}
+	}
+
+	function updateInfographic(totalAdvertisers, totalAds) {
+		d3.selectAll('.flag_replace').attr("src", getFlagImageUrl(country));
+		d3.selectAll('.country_replace').text($(".selected-flag").attr("title"));
+		d3.selectAll('.date_replace').text(`${formatDateSimple(fbStartDay)} - ${formatDateSimple(fbEndDay)}`);
+		d3.selectAll('.platform_replace').text(platforms_check ? capitalizeFirstLetter(platforms_check) : getValuesByClass("platform-radio").join(', '));
+
+		if (getChecked("age-checkbox") || getChecked("gender-checkbox") || getChecked("region-checkbox")) {
+			d3.select("#additional_filter_infographic_div").style('display', 'flex').classed('slide-down', true).classed('slide-up', false);
+			d3.selectAll('.gender_replace').text(getChecked("gender-checkbox")?.map(g => g === 'male' ? 'Men' : g === 'female' ? 'Women' : 'Unknown').join(', ') || 'No Filter Applied');
+			d3.selectAll('.age_replace').text(capitalizeFirstLetter(getChecked("age-checkbox"))?.map(range => range.replace(/(\d+)-(\d+)/, "$1 - $2")).join(', ') || 'No Filter Applied');
+			d3.selectAll('.region_replace').text(capitalizeFirstLetter(getChecked("region-checkbox"))?.join(', ') || 'No Filter Applied');
+		} else {
+			d3.select("#additional_filter_infographic_div").classed('slide-down', false).classed('slide-up', true);
+			setTimeout(() => d3.select("#additional_filter_infographic_div").style('display', 'none'), 500);
+		}
+
+		d3.select('.total_advertisers_replace').text(d3.format(',')(totalAdvertisers));
+		d3.select('.total_advertisements_replace').text(d3.format(',')(totalAds));
+		document.querySelectorAll("#outer_sidebar_button").forEach(button => {
+			button.style.height = document.querySelector("#main_infographic_div").offsetHeight + "px";
+		});
+	}
+
+	function showError(tabName, message) {
+		d3.select(`#loader_${tabName}`).style('display', 'none');
+		d3.select(`#error_${tabName}`).style('display', 'block').text(message);
+	}
+
+	function showResults(tabName) {
+		d3.select(`#loader_${tabName}`).style('display', 'none');
+		d3.select(`#results_div_${tabName}`).style('display', 'block');
+	}
+
+	function getFlagImageUrl(countryCode) {
+		return `https://flagcdn.com/w80/${countryCode.toLowerCase()}.png`;
+	}
+
+
+	function capitalizeFirstLetter(input) {
+		if (typeof input === 'string') {
+			return input.charAt(0).toUpperCase() + input.slice(1);
+		} else if (Array.isArray(input)) {
+			return input.map(str => str.charAt(0).toUpperCase() + str.slice(1));
+		}
+		return input;
+	}
+
+	function formatDateSimple(dateString) {
+		const [month, day, year] = dateString.split('-'); // Split MM-DD-YYYY
+
+		// Create the date in UTC using Date.UTC() (months are 0-indexed)
+		const date = new Date(Date.UTC(year, month - 1, day));
+
+		// Format the date as "Feb 27, 2025"
+		return date.toLocaleDateString('en-US', {
+			timeZone: 'UTC',
+			month: 'short', // "Feb"
+			day: 'numeric', // "27"
+			year: 'numeric' // "2025"
+		});
+	}
+
+
+	function rangeToLabel(d, type="spend") {
+		if (type =="spend") {
+			// Get string for a range
+			if (d.spend_upper_bound < 100) {
+				return `${currencySymbol}0 - ${currencySymbol}99`
+			} else if (d.spend_upper_bound < 500) {
+				return `${currencySymbol}100 - ${currencySymbol}499`
+			} else if (d.spend_upper_bound < 1000) {
+				return `${currencySymbol}500 - ${currencySymbol}999`
+			} else if (d.spend_upper_bound < 5000) {
+				return `${currencySymbol}1000 - ${currencySymbol}4999`
+			} else {
+				return `${currencySymbol}5000+`
+			}
+		} else if (type == "impressions") {
+			// Get string for a range
+			if (d.impressions_lower_bound < 1000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 999}`
+			} else if (d.impressions_lower_bound < 10000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 4999}`
+			} else if (d.impressions_lower_bound < 50000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 9999}`
+			} else if (d.impressions_lower_bound < 100000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 24999}`
+			} else if (d.impressions_lower_bound < 200000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 49999}`
+			} else if (d.impressions_lower_bound < 500000) {
+				return `${d.impressions_lower_bound} - ${d.impressions_lower_bound + 99999}`
+			} else {
+				return `${d.impressions_lower_bound}+`
+			}
+		}
+		
 	}
 
 	makeDateRangePickers()
@@ -258,24 +1545,24 @@
 		var endDate = moment(fbEndDay, 'MM-DD-YYYY')
 		var minDate = moment(<%- JSON.stringify(firstDay) %>, 'DD-MM-YYYY')
 
-		$(function() {
+		$(function () {
 			$('.date_picker').daterangepicker({
 				opens: 'right',
 				startDate: startDate,
 				endDate: endDate,
 				minDate: minDate,
 				maxDate: today
-			}, function(start, end, label) {
+			}, function (start, end, label) {
 				var newStartDate = start.format('MM-DD-YYYY');
 				var newEndDate = end.format('MM-DD-YYYY');
-
-				window.location.href = `/facebook_ads_v2?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
+				fbStartDay = newStartDate
+				fbEndDay = newEndDate
+				window.location.href = `/meta_ads?country=${country}&startDay=${newStartDate}&endDay=${newEndDate}`;
 			});
 		});
 	}
 
 
-function print(something) {
-	//console.log(something);
-}
+
+
 </script>

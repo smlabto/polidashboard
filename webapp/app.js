@@ -1,28 +1,39 @@
 var express = require('express')
-var mongoose = require('mongoose')
-var path = require('path')
+const path = require('path')
 var bodyParser = require('body-parser')
 var fs =  require('fs')
 const https = require("http") //https
 
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-mongoose.connect("mongodb://localhost:27017/polidashboard");
+console.log(`path: `, path.join(__dirname, '../../.env'));
+process.env.TZ = 'UTC';
+const port = process.env.PORT || 8088;
 
-mongoose.connection.once('open', function() {
-    var port = 8080; // Or set to any open port of your choice;
+var app = express()
 
-    var app = express()
+app.use('/', express.static(path.join(__dirname, 'public')))
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views')
+app.use(bodyParser.urlencoded({ extended: false }))
 
-    app.use('/', express.static(path.join(__dirname, 'public')))
-    app.set('view engine', 'ejs');
-    app.set('views', __dirname + '/views')
-    app.use(bodyParser.urlencoded({ extended: false }))
-	
-    var facebookRouter = require('./facebook_routes.js')
-    app.use('/', facebookRouter)
-    
-    app.listen(port, '127.0.0.1', () => {
-        console.log('Node.js app is running on port ' + port); // DEBUG
+var facebookRouter = require('./facebook_routes.js')
+app.use('/', facebookRouter)
+app.set('trust proxy', true);
+
+hostURL = process.env.HOST_URL || '127.0.0.1'
+
+const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+process.on('SIGINT', () => {
+    server.close(() => {
+        console.log('Server shut down gracefully');
+        process.exit(0);
     });
-})
+});
+
+server.setTimeout(300000); // 5 min
+server.keepAliveTimeout = 60000; // 1 min
+server.headersTimeout = 300000;  // 5 min

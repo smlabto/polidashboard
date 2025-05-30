@@ -1,6 +1,5 @@
 var express = require('express')
 var router = express.Router()
-var mongoose = require('mongoose')
 const fs = require('fs');
 var _ = require('underscore');
 var countries = require('./countries.json');
@@ -9,14 +8,17 @@ const https = require("http") //https
 const path = require('path');
 const cors = require('cors');
 const moment = require('moment');
+const { match } = require('assert');
+const redis = require('redis');
 
-var db = mongoose.connection.db
+const redisClient = redis.createClient();
+redisClient.connect().catch(console.error);
+
+const cacheDuration = 43200; // 12 hours
 
 router.get('/', function(req, res) {
-    res.redirect('/facebook_ads_v2?country=ca')
+    res.redirect('/meta_ads?country=ca')
 })
-
-router.use(require("./polidashboard_routes"));
 
 const jsonFilePath = path.join(__dirname, 'countries.json');
 let countryCurrencyMap = {};
@@ -31,13 +33,18 @@ try {
       countryCurrencyMap[country.code] = country.currency;
     }
   });
-
 } catch (err) {
   console.error('Error reading the JSON file:', err);
 }
 
 // countryCurrencyMap is now accessible globally
-module.exports = countryCurrencyMap;
+router.currencyMap = countryCurrencyMap;
+
+function convertDateFormat(dateStr) {
+    const [month, day, year] = dateStr.split('-');
+    return `${year}-${month}-${day}`;
+}
+
 
 function validateStartEnd(s, e) {
     function isValidDateFormat(dateString) {
@@ -69,15 +76,15 @@ function validateStartEnd(s, e) {
     return [start, end]
 }
 
-router.get('/facebook_ads_v2', function (req, res) {
+router.get('/meta_ads', function (req, res) {
     var dates = validateStartEnd(req.query.startDay, req.query.endDay);
     var start = dates[0];
     var end = dates[1];
-
     var requested_advertiser = decodeURI(req.query.advertiser);
     if (requested_advertiser == undefined) {
         requested_advertiser = "";
     }
+
 
     var country = req.query.country
     if (country == null) {
@@ -105,6 +112,7 @@ router.get('/facebook_ads_v2', function (req, res) {
             days: start-end,
             child: 'facebook_ads',
             country: country,
+            countries: countries,
             requested_advertiser: requested_advertiser,
             validCountries: validCountries,
             regions: regions,
@@ -112,6 +120,7 @@ router.get('/facebook_ads_v2', function (req, res) {
             firstDay: firstDay,
             currency: currency,
             currencySymbol: currencySymbol,
+            country_regions: Array.from(countryStates[country].keys())
         }
     );
 })
@@ -130,762 +139,722 @@ router.get('/status', function (req, res) {
     )
 })
 
-router.post('/status/country', function(req, res) {
+router.post('/status/country', async function(req, res) {
     var country = req.body.country
 
+    // Ensure country given in request exists within the country list
     if (!countries.some(c=> {return c.code==country})){
-        res.send(null)
-        return
+        res.send(null);
+        return;
     }
-    db.collection('facebook_ads_' + country).aggregate([
-        {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        },
-        {
-            '$match': {'funding_entity': {'$ne': null}}
-        },
-        {
-            '$sort': {
-                'latest_collected': -1
-            }
-        }, {
-            '$limit': 1
-        }
-    ]).toArray((err, data) => {        
-        try {
-            var timestamp = data[0].latest_collected
 
-            db.collection('facebook_ads_' + country).countDocuments({'currency': countryCurrencyMap[country], 'funding_entity': {'$ne': null}}).then(n => {
-                res.send({
-                    timestamp: timestamp,
-                    total_ads: n
-                })
-            })
-        } catch(e) {
-        }
-    })
+    const connection = await getDbConnection();
+    const currency = countryCurrencyMap[country]; 
+
+    const query = `
+        SELECT *, COUNT(*) OVER () AS total_count
+        FROM ad_data
+        WHERE country = '${country}' AND currency = '${currency}'
+        AND bylines_name IS NOT NULL
+        ORDER BY latest_collected DESC
+        LIMIT 1;
+    `;
+
+    const values = await getData(query, connection);
+    
+    if (values.length > 0) {
+        connection.release();
+        return res.send({
+            timestamp: values[0].latest_collected,
+            total_ads: values[0].total_count
+        })
+    } else {
+        connection.release();
+        return res.send({})
+    }
 })
 
-router.post('/facebook_ads_v2/heatmap', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    console.log(dates);
-    var country = req.body.country
-    generateHeatmap(start, end, country, res)
+router.post('/meta_ads/heatmap', async (req, res) => {
+    await handleRequest("heatmap", req.body, res, filterAdData);
 });
 
-router.post('/facebook_ads_v2/funder_pages', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    console.log(dates);
-    var funder = req.body.funder
-    var country = req.body.country
-    if (funder == '') funder = null;
-    generateFunderPages(start, end, funder, country, res)
+router.post('/meta_ads/funder_pages', async (req, res) => {
+    await handleRequest("funder_pages", req.body, res, getFunderPages);
 });
 
-router.post('/facebook_ads_v2/funder_demographics', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    var funder = req.body.funder
-    var country = req.body.country
-    if (funder == '') funder = null;
-    generateFunderDemographics(start, end, funder, country, res)
+router.post('/meta_ads/funder_demographics', async (req, res) => {
+    await handleRequest("funder_demographics", req.body, res, getFunderDemographics);
 });
 
-router.post('/facebook_ads_v2/funder_timeline', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    var funder = req.body.funder
-    var country = req.body.country
-    if (funder == '') funder = null;
-    generateFunderTimeline(start, end, funder, country, res)
+router.post('/meta_ads/funder_timeline', async (req, res) => {
+    await handleRequest("funder_timeline", req.body, res, getFunderAds);
 });
 
-router.post('/facebook_ads_v2/funder_map', (req, res) => {
-    console.log("RECEIVED MAP REQUEST")
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    var funder = req.body.funder
-    var country = req.body.country
-    var page_id = req.body.page_id
-    if (page_id == '') page_id = null;
-    if (funder == '') funder = null;
-    generateFunderMap(start, end, funder, country, page_id, res)
+router.post('/meta_ads/funder_map', async (req, res) => {
+    await handleRequest("funder_map", req.body, res, getFunderMap);
 });
 
-router.post('/facebook_ads_v2/frequency_table', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    var funder = req.body.funder
-    var country = req.body.country
-    var page_id = req.body.page_id
-    if (page_id == '') page_id = null;
-    if (funder == '') funder = null;
-    generateFreqTable(start, end, funder, country, page_id, res);
+router.post('/meta_ads/frequency_table', async (req, res) => {
+    await handleRequest("frequency_table", req.body, res, getFunderFrequency);
 });
 
-router.post('/facebook_ads_v2/funder_word', (req, res) => {
-    var dates = validateStartEnd(req.body.startDay, req.body.endDay);
-    var start = dates[0];
-    var end = dates[1];
-    var funder = req.body.funder
-    var country = req.body.country
-    var page_id = req.body.page_id
-    var is_wordcloud = req.body.is_wordcloud
-    if (funder == '') funder = null;
-    generateWordMap(start, end, funder, country, is_wordcloud, page_id, res);
+router.post('/meta_ads/funder_word', async (req, res) => {
+    await handleRequest("funder_word", req.body, res, getWordCloud);
 });
+
+function buildCacheKey(category, params) {
+    return `${category}:${Object.entries(params)
+        .map(([key, value]) => `${key}:${Array.isArray(value) ? value.sort().join(',') : value}`)
+        .join(':')}`;
+}
+
+async function handleRequest(cacheCategory, params, res, dataFunction) {
+    try {
+        const connection = await getDbConnection();
+        try {
+            const cacheKey = buildCacheKey(cacheCategory, params);
+            const cachedData = await redisClient.get(cacheKey);
+
+            if (cachedData) {
+                return res.send(JSON.parse(cachedData));
+            }
+
+            const result = await dataFunction(params, connection);
+            await redisClient.setEx(cacheKey, cacheDuration, JSON.stringify(result));
+            return res.send(result);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            connection.release();
+        }
+    } catch (error) {
+        console.error("Connection request timed out:", error);
+    }
+}
 
 module.exports = router
 
-var heatmapData = {};
+const psqlHost = "localhost"
+const psqlUser = process.env.POSTGRES_USER || "polidashboard-viewer"
+const psqlPass = process.env.POSTGRES_PASS || "viewer"
+const psqlDb = "polidashboard"
+console.log("Connecting to PostgreSQL using:\n Host: " + psqlHost + " | User: " + psqlUser + " | Database: " + psqlDb);
 
-function generateHeatmap(start, end, country, res=null) {
-    var query = [
-        {
-            '$match': quickDateFilter(start, end), 
-        }, {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        }, {
-            '$group': {
-            '_id': {
-                'funding_entity': '$funding_entity', 
-                'spend': '$spend'
-            }, 
-            'count': {
-                '$sum': 1
-            }
-            }
-        }, {
-            '$group': {
-            '_id': '$_id.funding_entity', 
-            'spends': {
-                '$push': {
-                    'spend': '$_id.spend', 
-                    'count': '$count'
-                }
-            }, 
-            'total': {
-                '$sum': '$count'
-            }
-            }
-        }, {
-            '$sort': {
-                'total': -1
-            }
-        }, {
-            '$project': {
-                'funding_entity': '$_id', 
-                '_id': 0, 
-                'spends': 1, 
-                'total': 1
-            }
-        }
-    ]
+const { Pool } = require('pg');
+const pool = new Pool({
+    host: psqlHost,
+    user: psqlUser,
+    password: psqlPass,
+    database: psqlDb,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+});
 
-    var heatmapCode = heatmapKey(start, end, country);
-    var oldestDate = new Date();
-
-    oldestDate.setHours(oldestDate.getHours() - 12)
-
-    if (
-        heatmapCode in heatmapData 
-        && heatmapData[heatmapCode]['timestamp'] > oldestDate
-        && res !== null
-    ) {
-        res.send(heatmapData[heatmapCode]['data'])
-    } else {
-        db.collection('facebook_ads_' + country)
-            .aggregate(query)
-            .toArray((err, data) => {
-                heatmapData[heatmapCode] = {
-                    data: data,
-                    timestamp: Date.now()
-                }
-                if (res !== null) {
-                    res.send(data)
-                }
-            })
-    }
+async function getDbConnection() {
+    return await pool.connect();
 }
 
-countries.forEach(c => {
-    generateHeatmap(0, 7, c.code)
-    setInterval(function() {generateHeatmap(0, 7, c.code)}, 1000*60*60*4)
-})
-
-function getDateFilter(start, end) {
-	// include ad if it was collected at any time during the timeframe
-	var lessThan = new Date( new Date() - end*60*60*24*1000)
-	lessThan.setHours( 23, 59, 59)
-	var greaterThan = new Date( new Date() - start*60*60*24*1000)
-	greaterThan.setHours( 0, 0, 0)
-	
-	return {
-		'_id.timestamp': {
-			$gte: greaterThan,
-			$lte: lessThan,
-		}
-	}
-}
-
-function quickDateFilter(start, end) {
-    var endTime = moment(end, 'MM-DD-YYYY').toDate();
-    var startTime = moment(start, 'MM-DD-YYYY').toDate();
-
-    return {
-      '$or': [
-        { 
-          '$and': [
-            { 'delivery_stop_time': { '$in': [null,''] } },
-            { 'latest_collected': { '$gte': startTime } },
-            { 'delivery_start_time': { '$lte': endTime } }
-          ]
-        },
-        { 
-          '$and': [
-            { 'delivery_stop_time': { '$exists': true } },
-            { 'delivery_stop_time': { '$gte': startTime } },
-            { 'delivery_start_time': { '$lte': endTime } }
-          ]
-        }
-      ]
+async function getData(query, connection, values = [], explain = false) {
+    if (explain) {
+        query = `EXPLAIN ANALYZE ${query}`;
     }
-}
- 
-function generateFunderPages(start, end, funder, country, res=null) {
-    var query = [
-        {
-          '$match': quickDateFilter(start, end)
-        }, {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        }, {
-          '$match': {
-            'funding_entity': funder
-          }
-        }, {
-          '$group': {
-            '_id': '$page_id', 
-            'spend_lower_bound': {
-              '$sum': '$spend.lower_bound'
-            }, 
-            'spend_upper_bound': {
-              '$sum': '$spend.upper_bound'
-            }, 
-            'impressions_lower_bound': {
-              '$sum': '$impressions.lower_bound'
-            }, 
-            'impressions_upper_bound': {
-              '$sum': '$impressions.upper_bound'
-            }, 
-            'total_ads': {
-              '$sum': 1
-            }
-          }
-        }, {
-          '$sort': {
-            'total_ads': -1
-          }
-        }, {
-          '$lookup': {
-            'from': 'facebook_pages_' + country, 
-            'localField': '_id', 
-            'foreignField': '_id', 
-            'as': 'page_info'
-          }
-        }, {
-          '$project': {
-            'page_id': '$_id', 
-            'spend': {
-              'lower_bound': '$spend_lower_bound', 
-              'upper_bound': '$spend_upper_bound'
-            }, 
-            'impressions': {
-              'lower_bound': '$impressions_lower_bound', 
-              'upper_bound': '$impressions_upper_bound'
-            }, 
-            'page_name': {
-              '$arrayElemAt': [
-                '$page_info.name', 0
-              ]
-            }, 
-            'total_ads': 1, 
-            '_id': 1
-          }
-        }
-      ]
-
-    db.collection('facebook_ads_' + country)
-            .aggregate(query)
-            .toArray((err, data) => {
-                if (res !== null) {
-                    res.send(data)
-                }
-            })
-}
-
-function generateFunderDemographics(start, end, funder, country, res=null) {
-    const query = [
-        {
-            '$match': {
-                '$and': [
-                    quickDateFilter(start, end),
-                    { 'funding_entity': funder }
-                ]
-            }
-        },
-        {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        },
-        {
-            '$lookup': {
-                'from': 'facebook_demographics_' + country,
-                'localField': '_id',
-                'foreignField': '_id',
-                'as': 'demographics'
-            }
-        },
-    ]
-    if (country != 'us') {
-        query.push(
-            {
-                '$lookup': {
-                    'from': 'facebook_regions_' + country,
-                    'localField': '_id',
-                    'foreignField': '_id.ad',
-                    'as': 'regions'
-                }
-            },
-            {
-                '$project': {
-                    'spend': 1,
-                    'impressions': 1,
-                    'demographics': { $ifNull: [ "$demographics", [] ] },
-                    'regions': 1, 
-                    'snapshot_url': 1,
-                    'titles': '$creative_link_titles',
-                    'page_id': 1
-                }
-            }
-        )
-    } else {
-        query.push(
-            {
-                '$project': {
-                    'spend': 1,
-                    'impressions': 1,
-                    'demographics': { $ifNull: [ "$demographics", [] ] },
-                    'snapshot_url': 1,
-                    'titles': '$creative_link_titles',
-                    'page_id': 1
-                }
-            }
-        )
-    }
-    
-    db.collection('facebook_ads_' + country)
-            .aggregate(query)
-            
-            .toArray((err, data) => {
-                if (res !== null) {
-                    res.send(data)
-                }       
-            })
-}
-
-function generateFunderTimeline(start, end, funder, country, res) {
-    var query = [
-        {
-            '$match': quickDateFilter(start, end)
-        }, {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        }, {
-            '$match': {
-                'funding_entity': funder
-            }
-        }, {
-            '$project': {
-                'spend': 1,
-                'first_collected': '$delivery_start_time',
-                'delivery_stop_time': 1,
-                'latest_collected': 1,
-                'page_id': 1
-            }
-        }
-    ]
-
-    var cursor = db.collection('facebook_ads_' + country)
-            .aggregate(query, {allowDiskUse: true})
-    cursor.toArray((err, data) => {
-                if (res !== null) {
-                    res.send(data)
-                }
-            })
-}
-
-async function generateFunderMap(start, end, funder, country, page_id, res) {
-    if (funder === "No funding entity given") {
-        funder = null;
-    }
-    var query = [
-        {
-            '$match': {
-                ...quickDateFilter(start, end),
-                'funding_entity': funder,
-                'delivery_by_region': { '$ne': null }
-            }
-        },
-        {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        },
-        {
-            '$project': {
-                'spend': 1,
-                'delivery_by_region': 1
-            }
-        }
-    ];
-
-    if (page_id != null) {
-        query = [
-            {
-                '$match': {
-                    ...quickDateFilter(start, end),
-                    'funding_entity': funder,
-                    'page_id': page_id
-                }
-            },
-            {
-                '$match': {'currency': countryCurrencyMap[country]}, 
-            },
-            {
-                '$project': {
-                    'spend': 1,
-                    'delivery_by_region': 1
-                }
-            }
-        ];
-    }
-
-    const stateCodeDictionary = countryStates[country];
-    
-    const cursor = db.collection('facebook_ads_' + country)
-        .aggregate(query, { allowDiskUse: true });
-
-    const stateTotals = new Map();
-    const minSpend = new Map();
-    const maxSpend = new Map();
-    let totalCount = 0;
-
-    const documents = await cursor.toArray();
-
-    for (const stateName of stateCodeDictionary.keys()) {
-        // Initialize the stateTotal for the current stateName
-        stateTotals.set(stateName, 0);
-        minSpend.set(stateName, 0);
-        maxSpend.set(stateName, 0);
-    }
-
-    documents.forEach(doc => {
-        const deliveryByRegion = doc.delivery_by_region;
-        const spendingByAd = doc.spend;
-        const spendLowerBound = spendingByAd.lower_bound;
-        const spendUpperBound = spendingByAd.upper_bound;
-
-        let stateId = "Unknown"
-        let deliveryAmount = 1.0;
-
-        if (deliveryByRegion !== null) {
-            totalCount++;
-            for (const state in deliveryByRegion) {
-                const stateName = state;
-                deliveryAmount = deliveryByRegion[state];
-
-                stateId = stateName;
-
-                if (!stateTotals.has(stateId)) { // If it is a region that isn't one of the defined countries regions, set it to "Unknown"
-                    stateId = "Unknown";
-                }
-
-                if (stateTotals.has(stateId)) {
-                    stateTotals.set(stateId, stateTotals.get(stateId) + deliveryAmount);
-                } else {
-                    stateTotals.set(stateId, deliveryAmount);
-                }
-
-                if (spendLowerBound > 0) { // it's possible for this to be 0
-                    let adLowerBoundFactoredByState = spendLowerBound * deliveryAmount;
-                    minSpend.set(stateId, minSpend.get(stateId) + adLowerBoundFactoredByState);
-                }
-                let adUpperBoundFactoredByState = spendUpperBound * deliveryAmount;
-                maxSpend.set(stateId, maxSpend.get(stateId) + adUpperBoundFactoredByState)
-            }
-        }
-    });
-
-    stateTotals.forEach((value, stateName) => {
-        stateTotals.set(stateName, value / totalCount);
-    });
-
-    if (res !== null) {
-        const stateTotalsArray = Array.from(stateTotals, ([name, value]) => ({ name, value }));
-        const stateTotalsArrayWithNames = stateTotalsArray.map(obj => {
-            const stateId = stateCodeDictionary.get(obj['name']);
-            const minSpendValue = minSpend.get(obj['name']);
-            const maxSpendValue = maxSpend.get(obj['name']);
-            return {
-                name: obj['name'],
-                stateId: stateId,
-                value: obj['value'],
-                minSpend: minSpendValue,
-                maxSpend: maxSpendValue
-            };
-        });
-        res.json(stateTotalsArrayWithNames);
-    }
-}
-
-// --- Helper functions for frequency summary table ---
-// ####################################################
-async function fetchPage(db, country, page_id) {
-    const pagesCollection = db.collection(`facebook_pages_${country}`);
-    const page = pagesCollection.findOne({ _id: page_id });
-    return page;
-}
-
-async function fetchAds(db, country, funding_entity, page_id, start, end) {
-    const adsCollection = db.collection(`facebook_ads_${country}`);
-
-    let query = [
-        {
-            '$match': {
-                ...quickDateFilter(start, end),
-            }
-        }, {
-            '$match': {'currency': countryCurrencyMap[country]}, 
-        }, {
-            '$match': {
-              'funding_entity': funding_entity
-            }
-        },
-    ];
-
-    if (funding_entity !== null) {
-        query[0].$match.funding_entity = funding_entity;
-    }
-
-    if (page_id !== null) {
-        query[0].$match.page_id = page_id;
-    }
-
-    const cursor = adsCollection.aggregate(query, { allowDiskUse: true });
-
-    const ads = await cursor.toArray();
-
-    // Convert to a list of dictionaries
-    const mergedAds = mergeMultipleCreativeBodies(ads);
-    return mergedAds;
-}
-
-function mergePageNameWithAssociatedAds(ads, pageName) {
-    for (const ad of ads) {
-        ad.page_name = pageName;
-    }
-    return ads;
-}
-
-async function mergeMultipleCreativeBodies(ads) {
-    for (const ad of ads) {
-        let creativeBodiesCombined = "";
-
-        try {
-            for (const creativeBody of ad.creative_bodies) {
-                if (creativeBodiesCombined === "") {
-                    creativeBodiesCombined = creativeBody;
-                }
-            }
-            ad.creative_bodies = creativeBodiesCombined;
-        } catch (error) {
-            ad.creative_bodies = "";
-        }
-    }
-    return ads;
-}
-
-function createAdsSummaryTable(ads, country, maxTableLength = 100) {
-    const adsSummaryTable = [];
-    
-    for (const ad of ads) {
-        let foundPreviousAd = false;
-
-        for (const uniqueAd of adsSummaryTable) {
-            if (ad.creative_bodies === uniqueAd.creative_bodies) {
-                foundPreviousAd = true;
-                uniqueAd.freq += 1;
-                uniqueAd.ad_ids.push(ad._id);
-                break;
-            }
-        }
-
-        function removeEmojis(input) {
-            // Define a regular expression to match emojis and special characters
-            return input;
-            const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-            
-            // Remove emojis and special characters
-            const cleanedInput = input.replace(emojiRegex, '');
-          
-            return cleanedInput;
-        }
-
-        if (!foundPreviousAd) {
-            country = country.toUpperCase();
-            
-            let shortenedBody = ad.creative_bodies;
-            let adId = ad._id;
-            shortenedBody = shortenedBody.replace(/\n/g, ' ');
-            const words = shortenedBody.split(/\s+/);
-            
-            if (words.length > 50) {
-                shortenedBody = words.slice(0, 50).join(" ");
-            }
-
-            const creativeBodyEncoded = encodeURIComponent(removeEmojis(shortenedBody).replace(/['"“”]/g, ""));
-
-            shortenedBody = shortenedBody.replace(/#/g, ''); // Remove hashtags, it breaks the URL search
-
-
-            // const snapshotUrl = `https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=${country}&q=${shortenedBody}&media_type=all`;
-            const snapshotUrl = `https://www.facebook.com/ads/library/?id=${adId}`                
-
-            adsSummaryTable.push({
-                creative_bodies: ad.creative_bodies,
-                freq: 1,
-                ad_ids: [ad._id],
-                funding_entity: ad.funding_entity,
-                snapshot_url: snapshotUrl,
-            });
-        }
-    }
-
-    adsSummaryTable.sort((a, b) => b.freq - a.freq);
-
-    if (adsSummaryTable.length > maxTableLength) {
-        adsSummaryTable.splice(maxTableLength);
-    }
-
-    return adsSummaryTable;
-}
-
-async function generateFreqTable(start, end, funder, country, page_id = null, res) {
-
-    // Only add the page name to the ads if pageId is provided
-    let pageName = '';
-    if (page_id !== null) {
-        const page = await fetchPage(db, country, page_id);
-        if (page !== null) {
-            pageName = page.name;
-        } else {
-            return { error: "An error occurred", data: null };
-        }
-    }
-
-    let ads = await fetchAds(db, country, funder, page_id, start, end);
-
-    if (page_id !== null) {
-        ads = mergePageNameWithAssociatedAds(ads, pageName);
-    }
-
-    const adsSummary = createAdsSummaryTable(ads, country);
-    const resultDict = { summary_table: adsSummary };
-    return res.json(resultDict);
-}
-
-async function generateWordMap(start, end, funder, country, is_wordcloud = false, page_id = null, res) {
-    const apiUrl = process.env.WORDCLOUD_API_URL;
-
-    // Replace with the appropriate query parameters
-    // Currently using temporary parameters
-    const _country = country;
-    var start_time = moment(start, 'MM-DD-YYYY').toDate();
-    var end_time = moment(end, 'MM-DD-YYYY').toDate();
-    
-    const queryParams = new URLSearchParams();
-    if (page_id != null) {
-        queryParams.append("page_id", page_id.toString());   
-    } else {
-        queryParams.append("funding_entity", funder);
-    }
-    queryParams.append("country", _country);
-    queryParams.append("start_time", start_time.toISOString());
-    queryParams.append("end_time", end_time.toISOString());
-    
-    const fullUrl = apiUrl + "?" + queryParams.toString();
     try {
-        // Parse the URL
-        const url = new URL(fullUrl);
-
-        // Create an HTTP request options object
-        const options = {
-            method: 'GET',
-            hostname: url.hostname,
-            port: url.port,
-            path: url.pathname + url.search,
-        };
-
-        // Make the HTTP GET request
-        const request = https.request(options, (response) => {
-            let data = '';
-
-            // Listen for data events and accumulate the response data
-            response.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            response.on('end', () => {
-                if (response.statusCode !== 200) {
-                    // Check for a 422 status code and handle the response body
-                    if (response.statusCode === 422) {
-                        try {
-                            const responseData = JSON.parse(data);
-                            console.error("Validation error:", responseData);
-                            return { error: "An error occurred", data: null };
-                        } catch (error) {
-                            console.error("Error parsing response body:", error);
-                            return { error: "An error occurred", data: null };
-                        }
-                    } else {
-                        console.error(`HTTP error! Status: ${response.statusCode}`);
-                        return { error: "An error occurred", data: null };
-                    }
-                } else {
-                    const responseData = JSON.parse(JSON.parse(data));
-                    res.json(responseData);
-                }
-            });
-        });
-
-        // Handle any errors that occur during the request
-        request.on('error', (error) => {
-            console.error("Request error:", error);
-            res.json({ 'error': "An error occurred" });
-        });
-
-        // Send the request
-        request.end();
+        const res = await connection.query(query, values); // Pass values to the query
+        if (explain) {
+            console.log("EXPLAIN Output:", res.rows);
+        }
+        return res.rows; // Return fetched data
     } catch (error) {
-        console.error("URL parsing error:", error);
-        res.json({ 'error': "An error occurred" });
+        console.error("Database Query Error:", error);
+        return null;
     }
 }
 
-function heatmapKey(start, end, country) {
-    return `${end}-${start}-${country}`
+async function filterAdData(params, connection) {
+    let results = null;
+    try {
+        const ageRanges = Array.isArray(params['ageRanges[]']) ? params['ageRanges[]'] : (params['ageRanges[]'] ? [params['ageRanges[]']] : []);
+        const genders = Array.isArray(params['genders[]']) ? params['genders[]'] : (params['genders[]'] ? [params['genders[]']] : []);
+        const regions = Array.isArray(params['regions[]']) ? params['regions[]'] : (params['regions[]'] ? [params['regions[]']] : []);
+
+        const startdate = params.startDay ? `${convertDateFormat(params.startDay)} 00:00` : null;
+        const enddate = params.endDay ? `${convertDateFormat(params.endDay)} 23:59` : null;
+        const platforms = params.platforms;
+
+        let paramIndex = 1;
+        let values = [];
+
+        let dateConditions = [];
+        if (startdate || enddate) {
+            if (params.startedDuring === "true") {
+                dateConditions.push(`ad_delivery_start_time >= $${paramIndex++}`);
+                dateConditions.push(`ad_delivery_start_time <= $${paramIndex++}`);
+            } else {
+                dateConditions.push(`ad_delivery_stop_time >= $${paramIndex++}`);
+                dateConditions.push(`ad_delivery_start_time <= $${paramIndex++}`);
+            }
+            values.push(startdate, enddate);
+        }
+        if (platforms) {
+            if (platforms.toLowerCase() === 'facebook') {
+                dateConditions.push(`platforms_facebook = true AND platforms_instagram = false`);
+            } else if (platforms.toLowerCase() === 'instagram') {
+                dateConditions.push(`platforms_instagram = true AND platforms_facebook = false`);
+            }
+        }
+        
+        values.push(params.country);
+        const dateClause = dateConditions.length ? dateConditions.join(" AND ") : "1=1"; // Fallback to true condition
+        const filterClause = `(${dateClause} AND country = $${paramIndex++})`;
+
+        console.log("Starting query for: " + params.filterBy);
+
+        if (params.filterBy === "spending_count") {
+            const query = `
+            WITH aggregated_data AS (
+                SELECT 
+                    bylines_name,
+                    COUNT(CASE WHEN spend_lower_bound >= 0 AND spend_upper_bound < 100 THEN 1 END) AS count_0_99,
+                    COUNT(CASE WHEN spend_lower_bound >= 100 AND spend_upper_bound < 500 THEN 1 END) AS count_100_499,
+                    COUNT(CASE WHEN spend_lower_bound >= 500 AND spend_upper_bound < 1000 THEN 1 END) AS count_500_999,
+                    COUNT(CASE WHEN spend_lower_bound >= 1000 AND spend_upper_bound < 5000 THEN 1 END) AS count_1000_4999,
+                    COUNT(CASE WHEN spend_lower_bound >= 5000 THEN 1 END) AS count_5000_plus,
+                    COUNT(*) AS total_ads,
+                    SUM(spend_lower_bound) AS sum_spend_lower_bound,
+                    SUM(spend_upper_bound) AS sum_spend_upper_bound,
+                    SUM(impressions_lower_bound) AS sum_impressions_lower_bound
+                FROM ad_data
+                WHERE ${filterClause}
+                GROUP BY bylines_name
+            )
+            SELECT 
+                bylines_name,
+                count_0_99,
+                count_100_499,
+                count_500_999,
+                count_1000_4999,
+                count_5000_plus,
+                total_ads,
+                sum_impressions_lower_bound,
+                CASE WHEN sum_impressions_lower_bound > 0 THEN sum_spend_lower_bound::FLOAT / sum_impressions_lower_bound::FLOAT * 1000.0 ELSE 0 END AS spend_lower_per_impression,
+                CASE WHEN sum_impressions_lower_bound > 0 THEN sum_spend_upper_bound::FLOAT / sum_impressions_lower_bound::FLOAT * 1000.0 ELSE 0 END AS spend_upper_per_impression,
+                CASE WHEN total_ads > 0 THEN sum_spend_lower_bound::FLOAT / total_ads::FLOAT ELSE 0 END AS avg_lower_spend,
+                CASE WHEN total_ads > 0 THEN sum_spend_upper_bound::FLOAT / total_ads::FLOAT ELSE 0 END AS avg_upper_spend,
+                sum_spend_lower_bound,
+                sum_spend_upper_bound
+            FROM aggregated_data
+            ORDER BY sum_spend_lower_bound DESC;
+            `;
+            results = await getData(query, connection, values);
+        }
+
+        if (params.filterBy === "demographic" || params.filterBy === "all") {
+            console.log("Demographic query starts");
+            const conditions = [];
+            
+            let ageRangesString = `1=1`
+            if (ageRanges.length) {
+                ageRangesString = `(${ageRanges.map(() => `age_range = $${paramIndex++}`).join(" OR ")})`
+                conditions.push(ageRangesString);
+                values.push(...ageRanges);
+            }
+            if (genders.length) {
+                conditions.push(`(${genders.map(() => `gender = $${paramIndex++}`).join(" OR ")})`);
+                values.push(...genders);
+            }
+
+            const whereClause = conditions.join(" AND ");
+            const query = `
+                SELECT
+                    bylines_name,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '13-17' AND gender = 'male') AS male_13_17,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '13-17' AND gender = 'female') AS female_13_17,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '18-24' AND gender = 'male') AS male_18_24,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '25-34' AND gender = 'male') AS male_25_34,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '35-44' AND gender = 'male') AS male_35_44,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '45-54' AND gender = 'male') AS male_45_54,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '55-64' AND gender = 'male') AS male_55_64,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '65+' AND gender = 'male') AS male_65_plus,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '18-24' AND gender = 'female') AS female_18_24,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '25-34' AND gender = 'female') AS female_25_34,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '35-44' AND gender = 'female') AS female_35_44,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '45-54' AND gender = 'female') AS female_45_54,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '55-64' AND gender = 'female') AS female_55_64,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE age_range = '65+' AND gender = 'female') AS female_65_plus,
+                    SUM(age_impressions_lower_bound) FILTER (WHERE (${ageRangesString}) AND (gender = 'unknown') ) AS unknown, 
+                    SUM(age_impressions_lower_bound) FILTER (WHERE ${whereClause}) AS total,
+                    SUM(age_impressions_lower_bound) AS total_overall
+                FROM ad_demographic
+                WHERE ${filterClause}
+                GROUP BY bylines_name
+                ORDER BY total DESC;`;
+
+            results = await getData(query, connection, values);
+            console.log("Demographic query ends");
+        }
+
+        if (params.filterBy === "region" || params.filterBy === "all") {
+            console.log("Region query starts");
+
+            const regionSelectList = regions.map(region => {
+            const columnName = region.toLowerCase().replace(/[^a-z0-9]/g, "_");
+            values.push(region);
+            return `SUM(region_impressions_lower_bound) FILTER (WHERE region = $${paramIndex++}) AS ${columnName}`;
+            }).join(",\n");
+
+            const whereClause = regions.map(region => {
+            values.push(region);
+            return `region = $${paramIndex++}`;
+            }).join(" OR ");
+
+            const query = `
+            SELECT
+            bylines_name,
+            ${regionSelectList},
+            SUM(region_impressions_lower_bound) FILTER (WHERE ${whereClause}) AS total,
+            SUM(region_impressions_lower_bound) AS total_overall
+            FROM ad_region
+            WHERE ${filterClause}
+            GROUP BY bylines_name
+            ORDER BY total_overall DESC;`;
+
+            results = await getData(query, connection, values);
+            console.log("Region query ends");
+        }
+
+        console.log("Query for " + params.filterBy + " done");
+        return results;
+    } catch (error) {
+        console.log("ERROR " + params.filterBy + " query", error);
+    }
 }
+
+function buildWhereClause(params, table="ad_data") {
+    const startdate = params.startDay ? `${convertDateFormat(params.startDay)} 00:00` : null;
+    const enddate = params.endDay ? `${convertDateFormat(params.endDay)} 23:59` : null;
+
+    // Define filters with defaults
+    const platforms = params.platforms;
+    const bylines = params.bylines;
+
+    let dateConditions = [];
+    if (startdate || enddate) {
+        if (params.startedDuring === "true") {
+            if (startdate) dateConditions.push(`${table}.ad_delivery_start_time >= $1`);
+            if (enddate) dateConditions.push(`${table}.ad_delivery_start_time <= $2`);
+        } else {
+            if (enddate) dateConditions.push(`${table}.ad_delivery_start_time <= $2`);
+            if (startdate) dateConditions.push(`${table}.ad_delivery_stop_time >= $1`);
+        }
+    }
+    if (platforms) {
+        if (platforms.toLowerCase() === 'facebook') {
+            dateConditions.push(`${table}.platforms_facebook = true AND ${table}.platforms_instagram = false`);
+        } else if (platforms.toLowerCase() === 'instagram') {
+            dateConditions.push(`${table}.platforms_instagram = true AND ${table}.platforms_facebook = false`);
+        }
+    }
+    if (bylines) {
+        dateConditions.push(`${table}.bylines_name = $3`);
+    }
+    const dateClause = dateConditions.length ? dateConditions.join(" AND ") : "1=1"; // Fallback to true condition
+    return dateClause;
+}
+
+async function getFunderPages(params, connection) {
+    let whereClause = buildWhereClause(params);
+    let verifiedCountry = params.country.slice(0, 2);
+    const query = `
+    SELECT 
+        page_name,
+        page_id,
+        SUM(impressions_lower_bound) AS impressions_lower_bound,
+        SUM(impressions_upper_bound) AS impressions_upper_bound,
+        SUM(spend_lower_bound) AS spend_lower_bound,
+        SUM(spend_upper_bound) AS spend_upper_bound,
+        COUNT(*) AS page_ad_count
+    FROM ad_data_${verifiedCountry} ad_data
+    WHERE ${whereClause}
+    GROUP BY page_id, page_name
+    ORDER BY page_ad_count DESC;
+    `;
+    const result = await getData(query, connection, [params.startDay, params.endDay, params.bylines]);
+
+    return result;
+}
+async function getFunderAds(params, connection) {
+    let whereClause = buildWhereClause(params);
+    let verifiedCountry = params.country.slice(0, 2);
+
+    const query = `
+    SELECT 
+        page_name AS page_name,
+        page_id AS page_id,
+        ad_data.id AS ad_id,
+        impressions_lower_bound,
+        impressions_upper_bound,
+        spend_lower_bound,
+        spend_upper_bound,
+        ad_delivery_start_time as delivery_start_time,
+        ad_delivery_stop_time as delivery_stop_time,
+        latest_collected as latest_collected
+    FROM ad_data_${verifiedCountry} ad_data
+    WHERE ${whereClause}
+    `;
+    const result = await getData(query, connection, [params.startDay, params.endDay, params.bylines]);
+
+    return result;
+}
+
+async function getFunderMap(params, connection) {
+    let whereClause = buildWhereClause(params, "ad_region");
+    let verifiedCountry = params.country.slice(0, 2);
+    let partitionClause, groupByClause = [];
+    let values = [params.startDay, params.endDay, params.bylines]
+
+    if (params.page_id) {
+        whereClause = `${whereClause} AND ad_region.page_id = $4`;
+        values.push(params.page_id);
+        partitionClause = "ad_region.page_id";
+        groupByClause = "ad_region.region, ad_region.bylines_name, ad_region.page_id";
+    } else {
+        partitionClause = "ad_region.bylines_name";
+        groupByClause = "ad_region.region, ad_region.bylines_name";
+    }
+
+
+    const query = `
+    SELECT
+        name,
+        CASE WHEN total_impressions > 0 THEN region_impressions_lower_bound / total_impressions ELSE 0 END AS value,
+        region_spend_lower_bound AS "minSpend",
+        region_spend_upper_bound AS "maxSpend"
+    FROM (
+        SELECT 
+            bylines_name,
+            region AS name,
+            SUM(region_impressions_lower_bound) AS region_impressions_lower_bound,
+            SUM(region_spend_lower_bound) AS region_spend_lower_bound,
+            SUM(region_spend_upper_bound) AS region_spend_upper_bound,
+            SUM(SUM(region_impressions_lower_bound)) OVER (PARTITION BY ${partitionClause}) AS total_impressions
+        FROM ad_region_${verifiedCountry} ad_region
+        WHERE ${whereClause}
+        GROUP BY ${groupByClause}
+    ) subquery
+    `;
+    var result = await getData(query, connection, values);
+    result = result.filter(entry => entry.value !== '0');
+    if (result.length === 0) {
+        return [];
+    }
+    var skip = false;
+    for (const subRegion of countryStates[params.country].keys()) {
+        skip = false;
+        for (const row of result) {
+            if (row.name === subRegion) {
+                row.stateId = countryStates[params.country].get(row.name);
+                skip = true;
+                continue;
+            }
+        }
+        if (!skip) {
+            result.push({
+                name: subRegion,
+                value: 0,
+                minSpend: 0,
+                maxSpend: 0,
+                stateId: countryStates[params.country].get(subRegion),
+            });
+        }
+    }
+
+    return result;
+}
+
+async function getFunderDemographics(params, connection) {
+    let whereClause = buildWhereClause(params, "ad_data");
+    let values = [params.startDay, params.endDay, params.bylines]
+    let verifiedCountry = params.country.slice(0, 2);
+
+    if (params.page_id) {
+        whereClause = `${whereClause} AND ad_data.page_id = $4`;
+        values.push(params.page_id);
+        partitionClause = "ad_data.page_id";
+        groupByClause = "ad_data.page_id";
+    } else {
+        partitionClause = "ad_data.bylines_name";
+        groupByClause = "ad_data.bylines_name";
+    }
+
+    const query = `
+        SELECT 
+            ad_data.id AS ad,
+            ad_data.page_id AS page_id,
+            ad_demographic.gender AS gender,
+            ad_demographic.age_range AS age_range,
+            ad_demographic.age_percent as percentage,
+            ad_data.impressions_lower_bound AS impressions_lower_bound,
+            ad_data.impressions_upper_bound AS impressions_upper_bound,
+            ad_data.spend_lower_bound AS spend_lower_bound,
+            ad_data.spend_upper_bound AS spend_upper_bound
+        FROM ad_data_${verifiedCountry} ad_data
+        INNER JOIN ad_demographic_${verifiedCountry} ad_demographic ON ad_data.id = ad_demographic.id
+        WHERE ${whereClause}
+    `;
+    const result = await getData(query, connection, values);
+
+    return result;
+}
+
+function filterText(text) {
+    if (text !== null) {
+        // Remove links
+        let shortenedBody = text.replace(/https?:\/\/\S+/g, "").replace(/\n/g, " ");
+        const words = shortenedBody.split(/\s+/);
+        if (words.length > 50) {
+            shortenedBody = words.slice(0, 50).join(" ");
+        }
+        return shortenedBody;
+    }
+    return text;
+}
+
+async function getFunderFrequency(params, connection) {
+    let verifiedCountry = params.country.slice(0, 2);
+    let whereClause = buildWhereClause(params, "ad_creative_content");
+    let values = [params.startDay, params.endDay, params.bylines]
+
+
+    const query = `
+        SELECT 
+            bylines_name AS funder,
+            ad_creative_content.body AS ad_content,
+            COUNT(*) AS ad_count,
+            MIN(ad_snapshot_url) AS ad_url
+        FROM ad_creative_content_${verifiedCountry} ad_creative_content
+        WHERE ${whereClause} AND ad_creative_content.content_order = 1
+        GROUP BY bylines_name, ad_creative_content.body
+        ORDER BY ad_count DESC
+        LIMIT 50;
+    `;
+
+
+    const result = await getData(query, connection, values);
+
+    for (const row of result) {
+        row.ad_content = filterText(row.ad_content); // Filter the text
+    }
+
+    return result;
+}
+
+// Wordcloud freqeuncy calculation pipeline starts here
+const natural = require("natural");
+
+// Function to tokenize, remove stopwords
+async function tokenizeAndFilter(text) {
+    if (text === null) {
+        return [];
+    }
+
+    // Regex to split on whitespace or emojis
+    const splitRegex = /([\p{Emoji_Presentation}\p{Emoji}\u200d]+|\s+)/gu;
+
+    // Split text into tokens, keeping only non-empty, non-whitespace, non-emoji tokens
+    const tokens = text
+        .split(splitRegex)
+        .map(t => t.trim())
+        .filter(t => t.length > 0 && !/^[\p{Emoji_Presentation}\p{Emoji}\u200d]+$/gu.test(t));
+    return tokens;
+}
+
+// Step 1: Compute Term Frequency (TF)
+async function computeTF(docs) {
+    let tfArray = [];
+
+    for (const doc of docs) {
+        if (doc !== null || doc !== "null") {
+            let tfMap = {};
+            let words = await tokenizeAndFilter(doc);
+
+            words.forEach(word => {
+                tfMap[word] = (tfMap[word] || 0) + 1;
+            });
+
+            tfArray.push(tfMap);
+        }
+    }
+
+    return tfArray;
+}
+
+// Step 2: Compute Inverse Document Frequency (IDF)
+async function computeIDF(tfArray) {
+    let idfMap = {};
+    let totalDocs = tfArray.length;
+
+    tfArray.forEach(tfMap => {
+        Object.keys(tfMap).forEach(word => {
+            if (!idfMap[word]) idfMap[word] = 0;
+            idfMap[word] += 1;
+        });
+    });
+
+    Object.keys(idfMap).forEach(word => {
+        idfMap[word] = Math.log(totalDocs / (idfMap[word] + 1)); // +1 to avoid div by zero
+    });
+
+    return idfMap;
+}
+
+// Step 3: Compute TF-IDF for Each Word
+async function computeTFIDF(tfArray, idfMap) {
+    return tfArray.map(tfMap => {
+        let tfidfMap = {};
+        Object.keys(tfMap).forEach(word => {
+            tfidfMap[word] = tfMap[word] * idfMap[word]; // TF * IDF
+        });
+        return tfidfMap;
+    });
+}
+
+// Step 4: Generate N-Gram Scores by Multiplying Word TF-IDF Scores
+async function getWeightedNGramScores(doc, tfidfMap, n) {
+    if (doc === null) {
+        return {}; // Return an empty object if doc is null
+    }
+    const sentences = doc
+        .split(/(?:\r\n|\r|\n|[.,:?!;]|\s{2,})/)
+        .map(sentence => sentence.trim());
+    const ngramScores = {};
+
+    for (const sentence of sentences) {
+        const words = await tokenizeAndFilter(sentence);
+        if (words.length < n) continue; // Skip if not enough words for an n-gram
+
+        const NGrams = natural.NGrams.ngrams(words, n);
+
+        NGrams.forEach(ngram => {
+            let score = ngram.reduce((acc, word) => {
+                const tfidfScore = tfidfMap[word] || 1;
+                const sigmoidScore = 1 / (1 + Math.exp(-tfidfScore));
+                return acc * sigmoidScore;
+            }, 1);
+
+            const phrase = ngram.join(" ");
+            ngramScores[phrase] = score * n;
+        });
+    }
+
+    return ngramScores;
+}
+
+function cosineSimilarity(ngram1, ngram2) {
+    const set1 = new Set(ngram1);
+    const set2 = new Set(ngram2);
+
+    const intersection = [...set1].filter(x => set2.has(x)).length;
+    const magnitude1 = Math.sqrt(set1.size);
+    const magnitude2 = Math.sqrt(set2.size);
+
+    return intersection / (magnitude1 * magnitude2);
+}
+
+
+async function mergeSimilarNGrams(ngramsWithScores, similarityThreshold = 0.4) {
+    const sortedNGrams = Object.entries(ngramsWithScores)
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => ({ ngram: entry[0], score: entry[1] }));
+    const mergedNGrams = [];
+
+    while (sortedNGrams.length > 0) {
+        const current = sortedNGrams.shift();
+        let similarNGrams = [current]; 
+
+        // Compare it with other ngrams and merge if similarity > threshold
+        for (let i = 0; i < sortedNGrams.length; i++) {
+            const comparison = sortedNGrams[i];
+            const similarity = cosineSimilarity(current.ngram.split(' '), comparison.ngram.split(' '));
+            if (similarity >= similarityThreshold) {
+                similarNGrams.push(comparison);
+                sortedNGrams.splice(i, 1); 
+                i--; 
+            }
+        }
+        const bestNGram = similarNGrams.reduce((best, ngram) => (ngram.score > best.score ? ngram : best));
+
+        mergedNGrams.push(bestNGram.ngram);
+    }
+
+    return mergedNGrams;
+}
+
+async function mergeAndSumSimilarNGrams(ngramsWithScores, similarityThreshold = 0.4) {
+    const sortedNGrams = Object.entries(ngramsWithScores)
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => ({ ngram: entry[0], score: entry[1] }));
+    const mergedNGrams = []; 
+
+    while (sortedNGrams.length > 0) {
+        const current = sortedNGrams.shift(); 
+        let totalScore = current.score; 
+
+        // Compare it with other ngrams and merge if similarity > threshold
+        for (let i = 0; i < sortedNGrams.length; i++) {
+            const comparison = sortedNGrams[i];
+            const similarity = cosineSimilarity(current.ngram.split(' '), comparison.ngram.split(' '));
+            if (similarity >= similarityThreshold) {
+                totalScore += comparison.score; 
+                sortedNGrams.splice(i, 1);
+                i--; 
+            }
+        }
+
+        mergedNGrams.push({"text": current.ngram, "size": totalScore});
+    }
+
+    return mergedNGrams;
+}
+
+async function getWordCloud(params, connection) {
+    var data = await getFunderFrequency(params, connection);
+
+    const adContents = data.map(item => item.ad_content);
+    const adFreq = data.map(item => parseInt(item.ad_count));
+
+    let tf = await computeTF(adContents);
+    let idf = await computeIDF(tf);
+    let tfidf = await computeTFIDF(tf, idf);
+
+    var ngramResults2 = await Promise.all(adContents.map((doc, i) => getWeightedNGramScores(doc, tfidf[i], 2)));
+    var ngramResults3 = await Promise.all(adContents.map((doc, i) => getWeightedNGramScores(doc, tfidf[i], 3)));
+    var mergedResults2 = await Promise.all(ngramResults2.map(ngram => mergeSimilarNGrams(ngram)));
+    var mergedResults3 = await Promise.all(ngramResults3.map(ngram => mergeSimilarNGrams(ngram)));
+
+    var keyword_freq = {};
+    mergedResults2.forEach((keywords_list, index) => {
+        keywords_list.forEach(keyword => {
+            if (keyword_freq[keyword]) {
+                keyword_freq[keyword] += adFreq[index];
+            } else {
+                keyword_freq[keyword] = adFreq[index];
+            }
+        });
+    });
+
+    mergedResults3.forEach((keywords_list, index) => {
+        keywords_list.forEach(keyword => {
+            if (keyword_freq[keyword]) {
+                keyword_freq[keyword] += Math.round(adFreq[index] * 1.2);
+            } else {
+                keyword_freq[keyword] = Math.round(adFreq[index] * 1.2);
+            }
+        });
+    });
+    var result = await mergeAndSumSimilarNGrams(keyword_freq);
+    result.sort((a, b) => b.size - a.size);
+    return result.slice(0, 50);
+}
+
+
