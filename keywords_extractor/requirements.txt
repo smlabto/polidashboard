@@ -66,7 +66,6 @@ spacy==3.8.2
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
 srsly==2.4.8
-starlette==0.41.2
 stop-words==2018.7.23
 sympy==1.13.1
 tabulate==0.9.0
@@ -86,3 +85,4 @@ weasel==0.4.1
 wordcloud==1.9.4
 wrapt==1.16.0
 yake==0.4.8
+
